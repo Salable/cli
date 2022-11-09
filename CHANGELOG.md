@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/Salable/cli/compare/v1.1.0...v1.1.1) (2022-11-09)
+
+
+### Bug Fixes
+
+* updated scripts to build prior to version ([0af7fb3](https://github.com/Salable/cli/commit/0af7fb39af53d2b818d8e2e407a01675de87ce90))
+
 # [1.1.0](https://github.com/Salable/cli/compare/v1.0.0...v1.1.0) (2022-11-09)
 
 
