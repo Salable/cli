@@ -3,10 +3,10 @@
 import * as inquirer from 'inquirer';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as shell from 'shelljs';
 import * as template from './utils/template';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import * as yargs from 'yargs';
+import { exec } from 'child_process';
 
 const CHOICES = fs.readdirSync(path.join(__dirname, '../templates'));
 
@@ -79,7 +79,8 @@ inquirer
       showMessage(options);
     }
   })
-  .catch((err) => console.error(err));
+  .catch((err) => console.error(err))
+  .finally(() => exec('exit'));
 
 function showMessage(options: CliOptions) {
   console.log('');
@@ -133,22 +134,23 @@ function isNode(options: CliOptions) {
 }
 
 function postProcessNode(options: CliOptions) {
-  shell.cd(options.tartgetPath);
+  exec(`cd ${options.tartgetPath}`);
 
   let cmd = '';
 
-  if (shell.which('yarn')) {
-    cmd = 'yarn';
-  } else if (shell.which('npm')) {
+  if (exec('which npm')) {
     cmd = 'npm install';
+  } else if (exec('which yarn')) {
+    cmd = 'yarn';
   }
 
   if (cmd) {
-    const result = shell.exec(cmd);
-
-    if (result.code !== 0) {
-      return false;
-    }
+    exec(cmd, (error, _, stderr) => {
+      if (error || stderr) {
+        return false;
+      }
+      return;
+    });
   } else {
     console.log(chalk.red('No yarn or npm found. Cannot run installation.'));
   }
