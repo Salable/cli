@@ -27,7 +27,8 @@
     "build": "rollup -c",
     "test": "jest --passWithNoTests",
     "test:globalCoverage": "jest --coverage --passWithNoTests",
-    "test:coverage": "jest --coverage --changedSince=origin/main --passWithNoTests"
+    "test:coverage": "jest --coverage --changedSince=origin/main --passWithNoTests",
+    "preversion": "npm run build"
   },
   "bin": {
     "salable": "dist/index.js"
