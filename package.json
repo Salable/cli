@@ -13,7 +13,8 @@
   "author": "Salable",
   "license": "MIT",
   "files": [
-    "dist"
+    "dist",
+    "templates"
   ],
   "publishConfig": {
     "access": "public"
