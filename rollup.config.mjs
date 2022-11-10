@@ -33,6 +33,11 @@ const config = {
     commonjs(),
     typescript({
       tsconfig: 'tsconfig.json',
+      tsconfigOverride: {
+        compilerOptions: {
+          module: 'esnext',
+        },
+      },
     }),
   ],
 };
