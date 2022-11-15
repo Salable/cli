@@ -5,8 +5,13 @@ import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import json from 'rollup-plugin-json';
 import shebang from 'rollup-plugin-preserve-shebang';
-
+import copy from 'rollup-plugin-copy';
+import replace from '@rollup/plugin-replace';
+import injectProcessEnv from 'rollup-plugin-inject-process-env';
+import dotenv from 'dotenv';
 import packageJson from './package.json' assert { type: 'json' };
+
+dotenv.config();
 
 const config = {
   input: './src/index.ts',
@@ -31,6 +36,11 @@ const config = {
     }),
     resolve(),
     commonjs(),
+    replace({
+      'process.env.AUTH0_CLIENT_ID': `"${process.env.AUTH0_CLIENT_ID}"`,
+      'process.env.AUTH0_DOMAIN': `"${process.env.AUTH0_DOMAIN}"`,
+      'process.env.AUTH0_TOKEN_AUDIENCE': `"${process.env.AUTH0_TOKEN_AUDIENCE}"`,
+    }),
     typescript({
       tsconfig: 'tsconfig.json',
       tsconfigOverride: {
@@ -38,6 +48,12 @@ const config = {
           module: 'esnext',
         },
       },
+    }),
+    injectProcessEnv({
+      NODE_ENV: 'production',
+    }),
+    copy({
+      targets: [{ src: 'src/auth/**.html', dest: 'dist/auth' }],
     }),
   ],
 };

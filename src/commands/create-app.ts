@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
-import * as inquirer from 'inquirer';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as template from '../utils/template';
 import chalk from 'chalk';
 import * as yargs from 'yargs';
 import { exec } from 'child_process';
+import { isProd } from '../config';
+import inquirer from 'inquirer';
 
 export interface TemplateConfig {
   files?: string[];
@@ -23,7 +24,9 @@ export interface CliOptions {
 
 const SKIP_FILES = ['node_modules', '.template.json'];
 
-const CHOICES = fs.readdirSync(path.join(__dirname, './templates'));
+const templateDirPath = isProd ? './templates/' : '../templates/';
+
+const CHOICES = fs.readdirSync(path.join(__dirname, templateDirPath));
 
 const QUESTIONS = [
   {
@@ -160,42 +163,42 @@ function createDirectoryContents(
 }
 
 const handler = async () => {
-  await inquirer
-    .prompt(QUESTIONS)
-    .then((answers) => {
-      let ans = answers as { [key: string]: string };
-      ans = Object.assign({}, ans, yargs.argv);
+  try {
+    const answers = await inquirer.prompt(QUESTIONS);
 
-      if (ans instanceof Object) {
-        const projectChoice = ans['template'];
-        const projectName = ans['name'];
-        const templatePath = path.join(__dirname, './templates', projectChoice);
-        const tartgetPath = path.join(CURR_DIR, projectName);
-        const templateConfig = getTemplateConfig(templatePath);
+    let ans = answers as { [key: string]: string };
+    ans = Object.assign({}, ans, yargs.argv);
 
-        const options: CliOptions = {
-          projectName,
-          templateName: projectChoice,
-          templatePath,
-          tartgetPath,
-          config: templateConfig,
-        };
+    if (ans instanceof Object) {
+      const projectChoice = ans['template'];
+      const projectName = ans['name'];
+      const templatePath = path.join(__dirname, templateDirPath, projectChoice);
+      const tartgetPath = path.join(CURR_DIR, projectName);
+      const templateConfig = getTemplateConfig(templatePath);
 
-        if (!createProject(tartgetPath)) {
-          return;
-        }
+      const options: CliOptions = {
+        projectName,
+        templateName: projectChoice,
+        templatePath,
+        tartgetPath,
+        config: templateConfig,
+      };
 
-        createDirectoryContents(templatePath, projectName, templateConfig);
-
-        if (!postProcess(options)) {
-          return;
-        }
-
-        showMessage(options);
+      if (!createProject(tartgetPath)) {
+        return;
       }
-    })
-    .catch((err) => console.error(err))
-    .finally(() => exec('exit'));
+
+      createDirectoryContents(templatePath, projectName, templateConfig);
+
+      if (!postProcess(options)) {
+        return;
+      }
+
+      showMessage(options);
+    }
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 export default {
