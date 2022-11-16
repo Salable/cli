@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/Salable/cli/compare/v1.2.0...v1.3.0) (2022-11-16)
+
+
+### Features
+
+* added list-products command ([0a8af06](https://github.com/Salable/cli/commit/0a8af06db6267d4881f02aa058338bbf3ab5ad64))
+
 # [1.2.0](https://github.com/Salable/cli/compare/v1.1.2...v1.2.0) (2022-11-16)
 
 
