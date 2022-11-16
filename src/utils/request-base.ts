@@ -1,15 +1,12 @@
 import 'isomorphic-fetch';
+import { IRequestBase } from '../types';
 import refreshTokens from './refresh-tokens';
 import { getToken } from './salable-rc-utils';
-
-interface IRequestBase {
-  endpoint: string;
-  method: 'GET' | 'POST' | 'PUT' | 'DEL';
-}
 
 export default async function RequestBase<T>({
   endpoint,
   method,
+  body = {},
 }: IRequestBase): Promise<T | undefined> {
   let attempts = 0;
 
@@ -29,6 +26,12 @@ export default async function RequestBase<T>({
           'content-type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
+        // If not a GET Request then add in the body property
+        ...(method !== 'GET'
+          ? {
+              body: JSON.stringify(body),
+            }
+          : {}),
       });
 
       if ((await res).status !== 200) {
