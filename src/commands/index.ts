@@ -1,2 +1,3 @@
-export { default as auth } from './auth';
-export { default as createApp } from './create-app';
+export { auth } from './auth';
+export { createApp } from './create-app';
+export { listProducts } from './list-products';

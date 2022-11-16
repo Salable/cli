@@ -3,6 +3,7 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import * as commands from './commands';
+import { ICommand } from './types';
 import commandBase from './utils/command-base';
 
 (async () => {
@@ -16,12 +17,19 @@ import commandBase from './utils/command-base';
   } = await cli.argv;
 
   // Loop over the comamnds from the commands directory and add a command for it
-  Object.values(commands).map(async ({ command, desc, handler }) =>
-    cli.command({
-      command,
-      describe: desc,
-      handler: await commandBase({ handler, command, executedCommand }),
-    })
+  Object.values(commands).map(
+    async ({ command, desc, builder, handler }: ICommand) => {
+      return cli.command({
+        command,
+        describe: desc,
+        builder,
+        handler: await commandBase({
+          handler,
+          command,
+          executedCommand,
+        }),
+      });
+    }
   );
 
   await cli.argv;
