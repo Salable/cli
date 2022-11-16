@@ -201,7 +201,7 @@ const handler = async () => {
   }
 };
 
-export default {
+export const createApp = {
   command: 'create-app',
   desc: 'Create an example application using Salable',
   handler,

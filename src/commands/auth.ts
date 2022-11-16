@@ -49,7 +49,7 @@ const handler = async (): Promise<void> => {
   process.exit(0);
 };
 
-export default {
+export const auth = {
   command: 'auth',
   desc: 'Authenticate with your Salable Account',
   handler,

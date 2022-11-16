@@ -13,7 +13,7 @@ const handler = async () => {
   }
 };
 
-export default {
+export const listProducts = {
   command: 'list-products',
   desc: 'List all the products from your Salable account',
   handler,
