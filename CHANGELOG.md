@@ -1,3 +1,11 @@
+# [1.2.0](https://github.com/Salable/cli/compare/v1.1.2...v1.2.0) (2022-11-16)
+
+
+### Features
+
+* added auth command and reorganised cli structure ([549eee1](https://github.com/Salable/cli/commit/549eee1c3d3867234354c8816398272ab02d474c))
+* refactored auth command and added auth validation ([bb79f15](https://github.com/Salable/cli/commit/bb79f15fbcadc579ab1f52edb06168e9bf5600f5))
+
 ## [1.1.2](https://github.com/Salable/cli/compare/v1.1.1...v1.1.2) (2022-11-09)
 
 
