@@ -16,7 +16,13 @@ const handler = async () => {
       endpoint: 'products',
     });
 
-    if (yargs.argv['showDeprecated'] as boolean) {
+    const ans = Object.assign({}, yargs.argv) as {
+      [key: string]: string;
+    };
+
+    const showDeprecated = ans['showDeprecated'];
+
+    if (showDeprecated === 'true') {
       console.log(products);
       return;
     }

@@ -90,25 +90,25 @@ export type IPlan = {
   uuid: string;
   name: string;
   description: null;
-  displayName: 'Bespoke Paid';
-  status: 'ACTIVE';
-  trialDays: null;
-  evaluation: false;
-  evalDays: 0;
-  organisation: 'org_gsne690Ck2Q1ZUek';
-  visibility: 'private';
-  licenseType: 'customId';
-  interval: 'day';
-  length: 1;
-  active: true;
-  planType: 'Bespoke';
-  pricingType: 'paid';
-  environment: 'stg';
-  type: 'custom';
-  paddlePlanId: null;
-  productUuid: '06cb124b-b1f3-4ce9-b309-846b1622ed6a';
-  salablePlan: false;
-  updatedAt: '2022-07-18T10:43:58.190Z';
+  displayName: string;
+  status: IStatus;
+  trialDays: null | number;
+  evaluation: boolean;
+  evalDays: number;
+  organisation: string;
+  visibility: string;
+  licenseType: string;
+  interval: string;
+  length: number;
+  active: boolean;
+  planType: string;
+  pricingType: string;
+  environment: string;
+  type: string;
+  paddlePlanId: null | string;
+  productUuid: string;
+  salablePlan: boolean;
+  updatedAt: string;
   capabilities: ICapability[];
   features: IFeature[];
   currencies: ICurrency[];
@@ -151,3 +151,19 @@ export type IProduct = {
   plans: IPlan[];
   licenses: ILicense[];
 };
+
+export interface IAWSPresignedPostResponse {
+  url: string;
+  filePath: string;
+  fields: {
+    Policy: string;
+    'X-Amz-Algorithm': string;
+    'X-Amz-Credential': string;
+    'X-Amz-Date': string;
+    'X-Amz-Security-Token': string;
+    'X-Amz-Signature': string;
+    acl: string;
+    bucket: string;
+    key: string;
+  };
+}
