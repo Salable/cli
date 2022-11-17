@@ -16,7 +16,7 @@ const handler = async () => {
       endpoint: 'products',
     });
 
-    const ans = Object.assign({}, yargs.argv) as {
+    const ans = Object.assign({}, yargs(process.argv).argv) as {
       [key: string]: string;
     };
 
