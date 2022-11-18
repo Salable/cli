@@ -1,3 +1,11 @@
+# [1.4.0](https://github.com/Salable/cli/compare/v1.3.0...v1.4.0) (2022-11-18)
+
+
+### Features
+
+* added create-product command ([ae367d4](https://github.com/Salable/cli/commit/ae367d407b9775b0d934af4b7286d42247a5d406))
+* added showDeprecated flag to list-products command ([3ad8a9c](https://github.com/Salable/cli/commit/3ad8a9c8a70f7198a24b7afc2d816ab82767d32f))
+
 # [1.3.0](https://github.com/Salable/cli/compare/v1.2.0...v1.3.0) (2022-11-16)
 
 
