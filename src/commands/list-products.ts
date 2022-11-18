@@ -1,6 +1,8 @@
 import yargs from 'yargs';
+import ErrorResponse from '../error-response';
 import { IProduct } from '../types';
 import RequestBase from '../utils/request-base';
+import chalk from 'chalk';
 
 const builder = {
   showDeprecated: {
@@ -11,7 +13,7 @@ const builder = {
 
 const handler = async () => {
   try {
-    const products: IProduct[] | undefined = await RequestBase({
+    const products = await RequestBase<IProduct[]>({
       method: 'GET',
       endpoint: 'products',
     });
@@ -27,13 +29,15 @@ const handler = async () => {
       return;
     }
 
-    const activeProducts = products?.filter(
-      ({ status }) => status !== 'DEPRECATED'
-    );
+    const activeProducts =
+      Array.isArray(products) &&
+      products?.filter(({ status }) => status !== 'DEPRECATED');
 
     console.log(activeProducts);
   } catch (e) {
-    console.error(e);
+    if (!(e instanceof ErrorResponse)) return;
+
+    console.error(chalk.red(e.message));
   }
 };
 

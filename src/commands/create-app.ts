@@ -6,6 +6,7 @@ import * as yargs from 'yargs';
 import { exec } from 'child_process';
 import { isProd } from '../config';
 import inquirer from 'inquirer';
+import ErrorResponse from '../error-response';
 
 export interface TemplateConfig {
   files?: string[];
@@ -194,8 +195,10 @@ const handler = async () => {
 
       showMessage(options);
     }
-  } catch (err) {
-    console.error(err);
+  } catch (e) {
+    if (!(e instanceof ErrorResponse)) return;
+
+    console.error(chalk.red(e.message));
   }
 };
 
