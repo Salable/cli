@@ -23,7 +23,7 @@ type IGetRequest = {
 };
 
 type IRequest = {
-  method: 'POST' | 'PUT' | 'DEL';
+  method: 'POST' | 'PUT' | 'DELETE';
   body?: {
     [key: string]:
       | string
@@ -166,4 +166,16 @@ export interface IAWSPresignedPostResponse {
     bucket: string;
     key: string;
   };
+}
+
+export enum HttpStatusCodes {
+  ok = 200,
+  created = 201,
+  noContent = 204,
+  multipleChoices = 300,
+  badRequest = 400,
+  unauthorized = 401,
+  forbidden = 403,
+  notFound = 404,
+  methodNotAllowed = 405,
 }

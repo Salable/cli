@@ -9,11 +9,13 @@ import {
   AUTH0_DOMAIN,
   AUTH0_TOKEN_AUDIENCE,
 } from '../constants';
+import ErrorResponse from '../error-response';
 import {
   createSalableRc,
   salableRcExists,
   updateSalableRc,
 } from '../utils/salable-rc-utils';
+import chalk from 'chalk';
 
 const handler = async (): Promise<void> => {
   const basePath = isProd ? path.join(__dirname, './auth/') : './src/auth/';
@@ -41,8 +43,10 @@ const handler = async (): Promise<void> => {
     } else {
       createSalableRc(result.access_token, result.refresh_token);
     }
-  } catch (err) {
-    console.error('Authentication failed', err);
+  } catch (e) {
+    if (!(e instanceof ErrorResponse)) return;
+
+    console.error(chalk.red(e.message));
     process.exit(1);
   }
 

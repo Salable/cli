@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import yargs from 'yargs';
+import ErrorResponse from '../error-response';
 import RequestBase from '../utils/request-base';
 
 const QUESTIONS = [
@@ -68,7 +69,9 @@ const handler = async () => {
 
     console.log(chalk.green(`Product: ${name} created succesfully`));
   } catch (e) {
-    console.error(chalk.red(e));
+    if (!(e instanceof ErrorResponse)) return;
+
+    console.error(chalk.red(e.message));
   }
 };
 

@@ -1,50 +1,88 @@
 import 'isomorphic-fetch';
-import { IRequestBase } from '../types';
+import ErrorResponse from '../error-response';
+import { HttpStatusCodes, IRequestBase } from '../types';
 import refreshTokens from './refresh-tokens';
 import { getToken } from './salable-rc-utils';
 
 export default async function RequestBase<T>({
   endpoint,
   method,
-  body = {},
-}: IRequestBase): Promise<T | undefined> {
-  let attempts = 0;
+  body,
+}: IRequestBase): Promise<T | undefined | string | void> {
+  try {
+    let data;
+    const token = await getToken('ACCESS_TOKEN');
 
-  while (attempts < 2) {
-    try {
-      const token = await getToken('ACCESS_TOKEN');
+    if (!token) {
+      throw new ErrorResponse(
+        HttpStatusCodes.badRequest,
+        'Access token is invalid'
+      );
+    }
 
-      if (!token) {
-        throw new Error(
-          'No ACCESS_TOKEN could be found, please run `salable auth` to reauthenticate.'
-        );
-      }
-
-      const res = await fetch(`https://salable.org/api/2.0/${endpoint}`, {
-        method,
-        headers: {
-          'content-type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        // If not a GET Request then add in the body property
-        ...(method !== 'GET' && {
+    const res = await fetch(`https://salable.org/api/2.0/${endpoint}`, {
+      method,
+      headers: {
+        'content-type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      // If not a GET Request and body is truthy, add in the body property
+      ...(method !== 'GET' &&
+        body && {
           body: JSON.stringify(body),
         }),
-      });
+    });
 
-      const data = (await res.json()) as Promise<T>;
+    if (res.status !== HttpStatusCodes.noContent) {
+      data = (await res.json()) as Promise<T> | string;
+    }
 
-      // If response status is not successful, throw an error to retry
-      if (res.status < 200 || res.status >= 300) {
-        throw new Error('Fetch request to Salable API failed');
-      }
+    if (
+      res.status === HttpStatusCodes.badRequest &&
+      data === 'Access token is invalid'
+    ) {
+      throw new ErrorResponse(res.status, data);
+    }
 
-      return data;
-    } catch (e) {
-      // If the request fails, refresh the tokens and try again
+    // If response status is not successful, throw an error to retry
+    if (
+      res.status < HttpStatusCodes.ok ||
+      res.status >= HttpStatusCodes.multipleChoices
+    ) {
+      throw new ErrorResponse(
+        res.status,
+        `Request to Salable API failed. Error Message: ${
+          typeof data === 'string' ? data : JSON.stringify(data)
+        }`
+      );
+    }
+
+    return data;
+  } catch (e) {
+    if (!(e instanceof ErrorResponse)) return;
+
+    if (
+      e.statusCode === HttpStatusCodes.badRequest &&
+      e.message === 'Access token is invalid'
+    ) {
+      // If the request fails with an invalid token, refresh the tokens and try fetching again
       await refreshTokens();
-      attempts += 1;
+
+      if (method !== 'GET') {
+        await RequestBase({
+          endpoint,
+          method,
+        });
+      } else {
+        await RequestBase({
+          endpoint,
+          method,
+          body,
+        });
+      }
+    } else {
+      // If it fails for any other reason, throw the error as normal
+      throw new ErrorResponse(e.statusCode, e.message);
     }
   }
-  throw new Error('Fetch request retry failed...');
 }
