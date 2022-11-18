@@ -31,7 +31,7 @@ const handler = async () => {
 
     const activeProducts =
       Array.isArray(products) &&
-      products?.filter(({ status }) => status !== 'DEPRECATED');
+      products.filter(({ status }) => status !== 'DEPRECATED');
 
     console.log(activeProducts);
   } catch (e) {
