@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/Salable/cli/compare/v1.4.0...v1.5.0) (2022-11-18)
+
+
+### Features
+
+* added the deprecate-product command ([4b7e9a1](https://github.com/Salable/cli/commit/4b7e9a16de235fc80b553d32e4493b80ba4910a0))
+
 # [1.4.0](https://github.com/Salable/cli/compare/v1.3.0...v1.4.0) (2022-11-18)
 
 
