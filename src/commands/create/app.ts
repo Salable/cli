@@ -1,12 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as template from '../utils/template';
+import * as template from '../../utils/template';
 import chalk from 'chalk';
 import * as yargs from 'yargs';
 import { exec } from 'child_process';
-import { isProd } from '../config';
+import { isProd } from '../../config';
 import inquirer from 'inquirer';
-import ErrorResponse from '../error-response';
+import ErrorResponse from '../../error-response';
+import { ICommand } from '../../types';
 
 export interface TemplateConfig {
   files?: string[];
@@ -23,7 +24,7 @@ export interface CliOptions {
 
 const SKIP_FILES = ['node_modules', '.template.json'];
 
-const templateDirPath = isProd ? './templates/' : '../templates/';
+const templateDirPath = isProd ? './templates/' : '../../templates/';
 
 const CHOICES = fs.readdirSync(path.join(__dirname, templateDirPath));
 
@@ -202,8 +203,8 @@ const handler = async () => {
   }
 };
 
-export const createApp = {
-  command: 'create-app',
-  desc: 'Create an example application using Salable',
+export const createApp: ICommand = {
+  command: 'app',
+  describe: 'Create an example application using Salable',
   handler,
 };

@@ -1,8 +1,9 @@
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import yargs from 'yargs';
-import ErrorResponse from '../error-response';
-import RequestBase from '../utils/request-base';
+import ErrorResponse from '../../error-response';
+import { ICommand } from '../../types';
+import RequestBase from '../../utils/request-base';
 
 const QUESTIONS = [
   {
@@ -75,9 +76,9 @@ const handler = async () => {
   }
 };
 
-export const createProduct = {
-  command: 'create-product',
-  desc: 'Create a new product on your Salable account',
+export const createProduct: ICommand = {
+  command: 'product',
+  describe: 'Create a new product on your Salable account',
   builder,
   handler,
 };

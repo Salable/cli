@@ -1,7 +1,7 @@
 import yargs from 'yargs';
-import ErrorResponse from '../error-response';
-import { IProduct } from '../types';
-import RequestBase from '../utils/request-base';
+import ErrorResponse from '../../error-response';
+import { ICommand, IProduct } from '../../types';
+import RequestBase from '../../utils/request-base';
 import chalk from 'chalk';
 
 const builder = {
@@ -41,9 +41,9 @@ const handler = async () => {
   }
 };
 
-export const listProducts = {
-  command: 'list-products',
-  desc: 'List all the products from your Salable account',
+export const listProducts: ICommand = {
+  command: 'products',
+  describe: 'List all the products from your Salable account',
   builder,
   handler,
 };

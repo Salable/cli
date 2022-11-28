@@ -1,8 +1,7 @@
 // Generic Commands
 export { auth } from './auth';
-export { createApp } from './create-app';
 
-// Product Commands
-export { listProducts } from './list-products';
-export { createProduct } from './create-product';
-export { deprecateProduct } from './deprecate-product';
+// Sub-directory commands
+export { createCommands } from './create';
+export { listCommands } from './list';
+export { deprecateCommands } from './deprecate';

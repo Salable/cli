@@ -8,7 +8,7 @@ export interface IAuth0Tokens {
 
 export interface ICommand {
   command: string;
-  desc: string;
+  describe: string;
   handler: () => Promise<void>;
   builder?: {
     [key: string]: {

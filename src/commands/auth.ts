@@ -16,6 +16,7 @@ import {
   updateSalableRc,
 } from '../utils/salable-rc-utils';
 import chalk from 'chalk';
+import { ICommand } from '../types';
 
 const handler = async (): Promise<void> => {
   const basePath = isProd ? path.join(__dirname, './auth/') : './src/auth/';
@@ -53,8 +54,8 @@ const handler = async (): Promise<void> => {
   process.exit(0);
 };
 
-export const auth = {
+export const auth: ICommand = {
   command: 'auth',
-  desc: 'Authenticate with your Salable Account',
+  describe: 'Authenticate with your Salable Account',
   handler,
 };
