@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as template from '../../utils/template';
 import chalk from 'chalk';
-import * as yargs from 'yargs';
+import yargs from 'yargs';
 import { exec } from 'child_process';
 import { isProd } from '../../config';
 import inquirer from 'inquirer';
@@ -34,13 +34,13 @@ const QUESTIONS = [
     type: 'list',
     message: 'What project template would you like to generate?',
     choices: CHOICES,
-    when: () => !yargs.argv['template'],
+    when: () => !Object.keys(yargs(process.argv).argv).includes('template'),
   },
   {
     name: 'name',
     type: 'input',
     message: 'Project name:',
-    when: () => !yargs.argv['name'],
+    when: () => !Object.keys(yargs(process.argv).argv).includes('name'),
     validate: (input: string) => {
       if (/^([A-Za-z\-\_\d])+$/.test(input)) return true;
       else
@@ -48,6 +48,17 @@ const QUESTIONS = [
     },
   },
 ];
+
+const builder = {
+  template: {
+    type: 'string',
+    description: 'What project template would you like to generate?',
+  },
+  name: {
+    type: 'string',
+    description: 'What would you like to name your project?',
+  },
+};
 
 const CURR_DIR = process.cwd();
 
@@ -166,36 +177,36 @@ const handler = async () => {
   try {
     const answers = await inquirer.prompt(QUESTIONS);
 
-    let ans = answers as { [key: string]: string };
-    ans = Object.assign({}, ans, yargs.argv);
+    const ans = Object.assign({}, answers, yargs(process.argv).argv) as {
+      [key: string]: string;
+    };
 
-    if (ans instanceof Object) {
-      const projectChoice = ans['template'];
-      const projectName = ans['name'];
-      const templatePath = path.join(__dirname, templateDirPath, projectChoice);
-      const tartgetPath = path.join(CURR_DIR, projectName);
-      const templateConfig = getTemplateConfig(templatePath);
+    const projectChoice = ans['template'];
+    const projectName = ans['name'];
 
-      const options: CliOptions = {
-        projectName,
-        templateName: projectChoice,
-        templatePath,
-        tartgetPath,
-        config: templateConfig,
-      };
+    const templatePath = path.join(__dirname, templateDirPath, projectChoice);
+    const tartgetPath = path.join(CURR_DIR, projectName);
+    const templateConfig = getTemplateConfig(templatePath);
 
-      if (!createProject(tartgetPath)) {
-        return;
-      }
+    const options: CliOptions = {
+      projectName,
+      templateName: projectChoice,
+      templatePath,
+      tartgetPath,
+      config: templateConfig,
+    };
 
-      createDirectoryContents(templatePath, projectName, templateConfig);
-
-      if (!postProcess(options)) {
-        return;
-      }
-
-      showMessage(options);
+    if (!createProject(tartgetPath)) {
+      return;
     }
+
+    createDirectoryContents(templatePath, projectName, templateConfig);
+
+    if (!postProcess(options)) {
+      return;
+    }
+
+    showMessage(options);
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
@@ -205,6 +216,7 @@ const handler = async () => {
 
 export const createApp: ICommand = {
   command: 'app',
-  describe: 'Create an example application using Salable',
+  describe: 'Create an example project using Salable',
+  builder,
   handler,
 };

@@ -1,13 +1,13 @@
 import yargs from 'yargs';
 import ErrorResponse from '../../error-response';
-import { ICommand, IProduct } from '../../types';
+import { ICommand } from '../../types';
 import RequestBase from '../../utils/request-base';
 import chalk from 'chalk';
 
 const builder = {
   showDeprecated: {
     type: 'boolean',
-    description: 'Show depcrecated products as well as active ones',
+    description: 'Show depcrecated API keys as well as active ones',
   },
 };
 
@@ -19,24 +19,24 @@ const handler = async () => {
 
     const showDeprecated = ans['showDeprecated'];
 
-    const products = await RequestBase<IProduct[]>({
+    const apiKeys = await RequestBase({
       method: 'GET',
-      endpoint: 'products',
+      endpoint: 'api-keys',
     });
 
     if (showDeprecated === 'true') {
-      console.log(products);
+      console.log(apiKeys);
       return;
     }
 
-    const activeProducts =
-      Array.isArray(products) &&
-      products.filter(({ status }) => status !== 'DEPRECATED');
+    const activeApiKeys =
+      Array.isArray(apiKeys) &&
+      apiKeys.filter(({ status }) => status !== 'DEPRECATED');
 
-    if (Array.isArray(products) && !products.length) {
-      console.log(chalk.yellow(`No products found`));
+    if (Array.isArray(activeApiKeys) && !activeApiKeys?.length) {
+      console.log(chalk.yellow(`No API keys found`));
     } else {
-      console.log(activeProducts);
+      console.log(activeApiKeys);
     }
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
@@ -45,9 +45,9 @@ const handler = async () => {
   }
 };
 
-export const listProducts: ICommand = {
-  command: 'products',
-  describe: 'List all the products from your Salable account',
+export const listApiKeys: ICommand = {
+  command: 'api-keys',
+  describe: 'List all the API keys from your Salable account',
   builder,
   handler,
 };

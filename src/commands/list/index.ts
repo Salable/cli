@@ -1,4 +1,5 @@
 import { Argv } from 'yargs';
+import { listApiKeys } from './api-keys';
 import { listProducts } from './products';
 
 export const listCommands = (cli: Argv) => {
@@ -7,16 +8,26 @@ export const listCommands = (cli: Argv) => {
     'List your existing [products|api keys] in your Salable Account';
 
   const builder = (yargs: Argv) => {
-    return yargs
-      .usage('usage: $0 list <item> [options]')
-      .command({
-        command: listProducts.command,
-        describe: listProducts.describe,
-        builder: listProducts.builder,
-        handler: listProducts.handler,
-      })
-      .wrap(null)
-      .showHelpOnFail(true);
+    return (
+      yargs
+        .usage('usage: $0 list <item> [options]')
+        // list products
+        .command({
+          command: listProducts.command,
+          describe: listProducts.describe,
+          builder: listProducts.builder,
+          handler: listProducts.handler,
+        })
+        // list api-keys
+        .command({
+          command: listApiKeys.command,
+          describe: listApiKeys.describe,
+          builder: listApiKeys.builder,
+          handler: listApiKeys.handler,
+        })
+        .wrap(null)
+        .showHelpOnFail(true)
+    );
   };
 
   cli.command({

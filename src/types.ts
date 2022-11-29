@@ -29,6 +29,7 @@ type IRequest = {
       | string
       | boolean
       | number
+      | string[]
       | {
           [key: string]: string | boolean;
         }
@@ -179,3 +180,15 @@ export enum HttpStatusCodes {
   notFound = 404,
   methodNotAllowed = 405,
 }
+
+export type IDecodedToken = {
+  iss: string;
+  sub: string;
+  aud: string;
+  iat: number;
+  exp: number;
+  azp: string;
+  scope: string;
+  org_id: string;
+  permissions: string[];
+};
