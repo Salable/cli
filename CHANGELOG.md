@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/Salable/cli/compare/v1.5.0...v1.5.1) (2022-11-30)
+
+
+### Bug Fixes
+
+* retry command on invalid token not returning data ([d5e6239](https://github.com/Salable/cli/commit/d5e6239d02b64573202f36b20c6da254f6bed72f))
+
 # [1.5.0](https://github.com/Salable/cli/compare/v1.4.0...v1.5.0) (2022-11-18)
 
 
