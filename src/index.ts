@@ -2,8 +2,12 @@
 
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { auth, createCommands, deprecateCommands } from './commands';
-import { listCommands } from './commands/list';
+import {
+  auth,
+  createCommands,
+  deprecateCommands,
+  listCommands,
+} from './commands';
 import { validateAuth } from './middleware/validate-auth';
 
 (async () => {
