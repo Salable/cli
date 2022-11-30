@@ -1,7 +1,7 @@
 import yargs from 'yargs';
 import ErrorResponse from '../../error-response';
 import { ICommand } from '../../types';
-import RequestBase from '../../utils/request-base';
+import { RequestBase } from '../../utils/request-base';
 import chalk from 'chalk';
 
 const builder = {

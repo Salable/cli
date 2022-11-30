@@ -1,10 +1,10 @@
-import decodeToken from '../../utils/decode-token';
+import { decodeToken } from '../../utils/decode-token';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import yargs from 'yargs';
 import ErrorResponse from '../../error-response';
 import { ICommand } from '../../types';
-import RequestBase from '../../utils/request-base';
+import { RequestBase } from '../../utils/request-base';
 
 const QUESTIONS = [
   {

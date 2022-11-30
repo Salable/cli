@@ -4,7 +4,7 @@ import { getToken } from './salable-rc-utils';
 /**
  * Decode the ACCESS_TOKEN JWT to access the data inside it
  **/
-export default async function decodeToken() {
+export const decodeToken = async () => {
   const token = await getToken('ACCESS_TOKEN');
 
   if (!token) return;
@@ -14,4 +14,4 @@ export default async function decodeToken() {
   ) as IDecodedToken;
 
   return decodedToken;
-}
+};
