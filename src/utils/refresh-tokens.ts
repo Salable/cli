@@ -6,7 +6,7 @@ import { getToken, updateSalableRc } from './salable-rc-utils';
 /**
  * Refresh both the `access_token` and `refresh_token` from Auth0 and update the `.salablerc` file.
  **/
-export default async function refreshTokens() {
+export const refreshTokens = async () => {
   try {
     const res = fetch(`https://${AUTH0_DOMAIN}/oauth/token`, {
       method: 'POST',
@@ -27,4 +27,4 @@ export default async function refreshTokens() {
   } catch (e) {
     console.error(e);
   }
-}
+};

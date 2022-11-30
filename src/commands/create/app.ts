@@ -1,12 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as template from '../utils/template';
+import * as template from '../../utils/template';
 import chalk from 'chalk';
 import * as yargs from 'yargs';
 import { exec } from 'child_process';
-import { isProd } from '../config';
+import { isProd } from '../../config';
 import inquirer from 'inquirer';
-import ErrorResponse from '../error-response';
+import ErrorResponse from '../../error-response';
+import { ICommand } from '../../types';
 
 export interface TemplateConfig {
   files?: string[];
@@ -23,7 +24,7 @@ export interface CliOptions {
 
 const SKIP_FILES = ['node_modules', '.template.json'];
 
-const templateDirPath = isProd ? './templates/' : '../templates/';
+const templateDirPath = isProd ? './templates/' : '../../templates/';
 
 const CHOICES = fs.readdirSync(path.join(__dirname, templateDirPath));
 
@@ -50,7 +51,7 @@ const QUESTIONS = [
 
 const CURR_DIR = process.cwd();
 
-function showMessage(options: CliOptions) {
+const showMessage = (options: CliOptions) => {
   console.log('');
   console.log(chalk.green('Done.'));
   console.log(chalk.green(`Go into the project: cd ${options.projectName}`));
@@ -62,9 +63,9 @@ function showMessage(options: CliOptions) {
     console.log(chalk.yellow(message));
     console.log('');
   }
-}
+};
 
-function getTemplateConfig(templatePath: string): TemplateConfig {
+const getTemplateConfig = (templatePath: string): TemplateConfig => {
   const configPath = path.join(templatePath, '.template.json');
 
   if (!fs.existsSync(configPath)) return {};
@@ -76,9 +77,9 @@ function getTemplateConfig(templatePath: string): TemplateConfig {
   }
 
   return {};
-}
+};
 
-function createProject(projectPath: string) {
+const createProject = (projectPath: string) => {
   if (fs.existsSync(projectPath)) {
     console.log(
       chalk.red(`Folder ${projectPath} exists. Delete or use another name.`)
@@ -88,20 +89,20 @@ function createProject(projectPath: string) {
 
   fs.mkdirSync(projectPath);
   return true;
-}
+};
 
-function postProcess(options: CliOptions) {
+const postProcess = (options: CliOptions) => {
   if (isNode(options)) {
     return postProcessNode(options);
   }
   return true;
-}
+};
 
-function isNode(options: CliOptions) {
+const isNode = (options: CliOptions) => {
   return fs.existsSync(path.join(options.templatePath, 'package.json'));
-}
+};
 
-function postProcessNode(options: CliOptions) {
+const postProcessNode = (options: CliOptions) => {
   exec(`cd ${options.tartgetPath}`);
 
   let cmd = '';
@@ -124,13 +125,13 @@ function postProcessNode(options: CliOptions) {
   }
 
   return true;
-}
+};
 
-function createDirectoryContents(
+const createDirectoryContents = (
   templatePath: string,
   projectName: string,
   config: TemplateConfig
-) {
+) => {
   const filesToCreate = fs.readdirSync(templatePath);
 
   filesToCreate.forEach((file) => {
@@ -159,7 +160,7 @@ function createDirectoryContents(
       );
     }
   });
-}
+};
 
 const handler = async () => {
   try {
@@ -202,8 +203,8 @@ const handler = async () => {
   }
 };
 
-export const createApp = {
-  command: 'create-app',
-  desc: 'Create an example application using Salable',
+export const createApp: ICommand = {
+  command: 'app',
+  describe: 'Create an example application using Salable',
   handler,
 };

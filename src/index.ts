@@ -2,37 +2,35 @@
 
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import * as commands from './commands';
-import { ICommand } from './types';
-import commandBase from './utils/command-base';
+import {
+  auth,
+  createCommands,
+  deprecateCommands,
+  listCommands,
+} from './commands';
+import { validateAuth } from './middleware/validate-auth';
 
 (async () => {
   const cli = yargs(hideBin(process.argv))
     // Useful aliases.
-    .alias({ h: 'help' });
+    .alias({ h: 'help' })
+    .strict()
+    .middleware(validateAuth);
 
-  // Get the command executed by the user from the CLI arguments
-  const {
-    _: [executedCommand],
-  } = await cli.argv;
+  // auth command
+  cli.command({
+    command: auth.command,
+    describe: auth.describe,
+    builder: auth.builder,
+    handler: auth.handler,
+  });
 
-  // Loop over the comamnds from the commands directory and add a command for it
-  Object.values(commands).map(
-    async ({ command, desc, builder, handler }: ICommand) => {
-      return cli.command({
-        command,
-        describe: desc,
-        builder,
-        handler: await commandBase({
-          handler,
-          command,
-          executedCommand,
-        }),
-      });
-    }
-  );
+  // sub commands
+  listCommands(cli);
+  createCommands(cli);
+  deprecateCommands(cli);
 
-  await cli.argv;
+  await cli.wrap(null).argv;
 })().catch((e) => {
   console.error(e);
 });

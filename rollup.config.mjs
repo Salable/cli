@@ -40,6 +40,7 @@ const config = {
       'process.env.AUTH0_CLIENT_ID': `"${process.env.AUTH0_CLIENT_ID}"`,
       'process.env.AUTH0_DOMAIN': `"${process.env.AUTH0_DOMAIN}"`,
       'process.env.AUTH0_TOKEN_AUDIENCE': `"${process.env.AUTH0_TOKEN_AUDIENCE}"`,
+      'process.env.SALABLE_API_ENDPOINT': `"${process.env.SALABLE_API_ENDPOINT}"`,
     }),
     typescript({
       tsconfig: 'tsconfig.json',

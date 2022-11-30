@@ -9,14 +9,14 @@ export const salableRcExists = fs.existsSync(salableRcPath);
 /**
  * Get the file contents of the `.salablerc` file.
  **/
-async function getFileContents() {
+const getFileContents = async () => {
   return await fs.promises.readFile(salableRcPath);
-}
+};
 
 /**
  * Create the `.salablerc` file if it does not already exist.
  **/
-export function createSalableRc(accessToken: string, refreshToken: string) {
+export const createSalableRc = (accessToken: string, refreshToken: string) => {
   if (salableRcExists) return;
 
   fs.writeFileSync(
@@ -24,12 +24,15 @@ export function createSalableRc(accessToken: string, refreshToken: string) {
     `ACCESS_TOKEN=${accessToken}
 REFRESH_TOKEN=${refreshToken}`
   );
-}
+};
 
 /**
  *  Update the existing `.salablerc` file, replace the line with `searchString` on to be `newValue` instead.
  **/
-export async function updateSalableRc(searchString: string, newValue: string) {
+export const updateSalableRc = async (
+  searchString: string,
+  newValue: string
+) => {
   const regex = new RegExp(`${searchString}.*`);
 
   const fileContents = await getFileContents();
@@ -39,12 +42,12 @@ export async function updateSalableRc(searchString: string, newValue: string) {
     .replace(regex, `${searchString}=${newValue}`);
 
   await fs.promises.writeFile(salableRcPath, newLine);
-}
+};
 
 /**
  *  Fetch the requested token from the `.salablerc` file
  **/
-export async function getToken(type: 'ACCESS_TOKEN' | 'REFRESH_TOKEN') {
+export const getToken = async (type: 'ACCESS_TOKEN' | 'REFRESH_TOKEN') => {
   const fileContents = await getFileContents();
 
   const splitStrings = fileContents.toString().split('\n');
@@ -55,4 +58,4 @@ export async function getToken(type: 'ACCESS_TOKEN' | 'REFRESH_TOKEN') {
   const token = tokenLine.split('=')[1];
 
   return token;
-}
+};
