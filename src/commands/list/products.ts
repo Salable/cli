@@ -1,8 +1,8 @@
 import yargs from 'yargs';
 import ErrorResponse from '../../error-response';
 import { ICommand, IProduct } from '../../types';
-import RequestBase from '../../utils/request-base';
 import chalk from 'chalk';
+import { RequestBase } from '../../utils/request-base';
 
 const builder = {
   showDeprecated: {

@@ -4,7 +4,7 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { auth, createCommands, deprecateCommands } from './commands';
 import { listCommands } from './commands/list';
-import validateAuth from './middleware/validate-auth';
+import { validateAuth } from './middleware/validate-auth';
 
 (async () => {
   const cli = yargs(hideBin(process.argv))
