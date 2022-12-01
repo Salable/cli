@@ -13,6 +13,7 @@ jobs:
   release:
     name: Release
     concurrency: release
+    environment: Production
     runs-on: ubuntu-latest
 
     steps:
