@@ -1,1 +1,2 @@
-console.log('hello trello app');
+const apiKey = '<%= apiKey %>';
+const projectName = '<%= projectName %>';

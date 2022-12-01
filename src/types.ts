@@ -169,6 +169,19 @@ export interface IAWSPresignedPostResponse {
   };
 }
 
+export interface IApiKey {
+  uuid: string;
+  name: string;
+  description: string | null;
+  status: IStatus;
+  value: string;
+  scopes: string[];
+  organisation: string;
+  sub: string;
+  awsId: string;
+  updatedAt: string;
+}
+
 export enum HttpStatusCodes {
   ok = 200,
   created = 201,
@@ -192,3 +205,8 @@ export type IDecodedToken = {
   org_id: string;
   permissions: string[];
 };
+
+export interface TemplateData {
+  projectName: string;
+  apiKey: string;
+}

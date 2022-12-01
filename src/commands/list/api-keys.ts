@@ -1,6 +1,6 @@
 import yargs from 'yargs';
 import ErrorResponse from '../../error-response';
-import { ICommand } from '../../types';
+import { IApiKey, ICommand } from '../../types';
 import { RequestBase } from '../../utils/request-base';
 import chalk from 'chalk';
 
@@ -19,7 +19,7 @@ const handler = async () => {
 
     const showDeprecated = ans['showDeprecated'];
 
-    const apiKeys = await RequestBase({
+    const apiKeys = await RequestBase<IApiKey[]>({
       method: 'GET',
       endpoint: 'api-keys',
     });

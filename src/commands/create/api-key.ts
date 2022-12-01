@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import yargs from 'yargs';
 import ErrorResponse from '../../error-response';
-import { ICommand } from '../../types';
+import { IApiKey, ICommand } from '../../types';
 import { RequestBase } from '../../utils/request-base';
 
 const QUESTIONS = [
@@ -35,7 +35,7 @@ const handler = async () => {
 
     const tokenValues = await decodeToken();
 
-    await RequestBase({
+    const res = await RequestBase<IApiKey>({
       method: 'POST',
       endpoint: 'api-keys',
       body: {
@@ -46,7 +46,13 @@ const handler = async () => {
       },
     });
 
-    console.log(chalk.green(`API key: ${name} created succesfully`));
+    console.log(
+      chalk.green(
+        `API key "${name}" created succesfully with value: ${
+          res ? res?.value : ''
+        }`
+      )
+    );
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 

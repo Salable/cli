@@ -1,3 +1,6 @@
 {
-  "name": "salable-trello"
+  "name": "<%= projectName %>",
+  "dependencies": {
+    "chalk": "^4.1.2"
+  }
 }

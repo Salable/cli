@@ -18,7 +18,7 @@ import {
 import chalk from 'chalk';
 import { ICommand } from '../types';
 
-const handler = async (): Promise<void> => {
+const handler = async () => {
   const basePath = isProd ? path.join(__dirname, './auth/') : './src/auth/';
 
   const loginProcessor = new Auth0LoginProcessor(

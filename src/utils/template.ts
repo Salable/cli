@@ -1,8 +1,5 @@
 import * as ejs from 'ejs';
-
-export interface TemplateData {
-  projectName: string;
-}
+import { TemplateData } from 'src/types';
 
 export const render = (content: string, data: TemplateData) => {
   return ejs.render(content, data);
