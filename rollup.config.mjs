@@ -48,13 +48,17 @@ const config = {
         compilerOptions: {
           module: 'esnext',
         },
+        exclude: ['**/templates/**'],
       },
     }),
     injectProcessEnv({
       NODE_ENV: 'production',
     }),
     copy({
-      targets: [{ src: 'src/auth/**.html', dest: 'dist/auth' }],
+      targets: [
+        { src: 'src/auth/**.html', dest: 'dist/auth' },
+        { src: 'src/templates', dest: 'dist' },
+      ],
     }),
   ],
 };

@@ -234,9 +234,11 @@ const handler = async () => {
     let apiKeyValue = '';
 
     if (apiKey === 'Create a new API Key') {
-      const { stdout } = await execPromise(
-        `npm run start create api-key -- --name="${apiKeyName}"`
-      );
+      const command = isProd
+        ? `salable create api-key --name="${apiKeyName}"`
+        : `npm run start create api-key -- --name="${apiKeyName}"`;
+
+      const { stdout } = await execPromise(command);
 
       apiKeyValue = stdout.split(':')[1].trim();
     } else {
