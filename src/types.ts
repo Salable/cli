@@ -29,6 +29,7 @@ type IRequest = {
       | string
       | boolean
       | number
+      | string[]
       | {
           [key: string]: string | boolean;
         }
@@ -168,6 +169,19 @@ export interface IAWSPresignedPostResponse {
   };
 }
 
+export interface IApiKey {
+  uuid: string;
+  name: string;
+  description: string | null;
+  status: IStatus;
+  value: string;
+  scopes: string[];
+  organisation: string;
+  sub: string;
+  awsId: string;
+  updatedAt: string;
+}
+
 export enum HttpStatusCodes {
   ok = 200,
   created = 201,
@@ -178,4 +192,21 @@ export enum HttpStatusCodes {
   forbidden = 403,
   notFound = 404,
   methodNotAllowed = 405,
+}
+
+export type IDecodedToken = {
+  iss: string;
+  sub: string;
+  aud: string;
+  iat: number;
+  exp: number;
+  azp: string;
+  scope: string;
+  org_id: string;
+  permissions: string[];
+};
+
+export interface TemplateData {
+  projectName: string;
+  apiKey: string;
 }

@@ -10,7 +10,7 @@ export const RequestBase = async <T>({
   endpoint,
   method,
   body,
-}: IRequestBase): Promise<T | undefined | string | void> => {
+}: IRequestBase): Promise<T | undefined | void> => {
   try {
     let data;
     const token = await getToken('ACCESS_TOKEN');
@@ -66,7 +66,7 @@ export const RequestBase = async <T>({
       );
     }
 
-    return data;
+    return data as Promise<T>;
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 

@@ -1,6 +1,7 @@
 import { Argv } from 'yargs';
 import { createProduct } from './product';
 import { createApp } from './app';
+import { createApiKey } from './api-key';
 
 export const createCommands = (cli: Argv) => {
   const COMMAND_NAME = 'create';
@@ -11,6 +12,7 @@ export const createCommands = (cli: Argv) => {
     return (
       yargs
         .usage('usage: $0 create <item> [options]')
+        // create example app
         .command({
           command: createApp.command,
           describe: createApp.describe,
@@ -23,6 +25,13 @@ export const createCommands = (cli: Argv) => {
           describe: createProduct.describe,
           builder: createProduct.builder,
           handler: createProduct.handler,
+        })
+        // create api-key
+        .command({
+          command: createApiKey.command,
+          describe: createApiKey.describe,
+          builder: createApiKey.builder,
+          handler: createApiKey.handler,
         })
         .wrap(null)
         .showHelpOnFail(true)

@@ -39,6 +39,9 @@ Options:
 
 - `salable auth`: Authenticate with your Salable Account
 - `salable list products`: List all the products from your Salable account
+- `salable list api-keys`: List all the API keys from your Salable account
 - `salable create app`: Create an example application using Salable
+- `salable create api-key`: Create a new API key for your Salable account
 - `salable create product`: Create a new product on your Salable account
-- `salable deprecate`: Deprecate a product from your Salable account
+- `salable deprecate product`: Deprecate a product from your Salable account
+- `salable deprecate api-key`: Deprecate an API key from your Salable account

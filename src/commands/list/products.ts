@@ -13,16 +13,16 @@ const builder = {
 
 const handler = async () => {
   try {
-    const products = await RequestBase<IProduct[]>({
-      method: 'GET',
-      endpoint: 'products',
-    });
-
     const ans = Object.assign({}, yargs(process.argv).argv) as {
       [key: string]: string;
     };
 
     const showDeprecated = ans['showDeprecated'];
+
+    const products = await RequestBase<IProduct[]>({
+      method: 'GET',
+      endpoint: 'products',
+    });
 
     if (showDeprecated === 'true') {
       console.log(products);
@@ -33,7 +33,11 @@ const handler = async () => {
       Array.isArray(products) &&
       products.filter(({ status }) => status !== 'DEPRECATED');
 
-    console.log(activeProducts);
+    if (Array.isArray(products) && !products.length) {
+      console.log(chalk.yellow(`No products found`));
+    } else {
+      console.log(activeProducts);
+    }
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 

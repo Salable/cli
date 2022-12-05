@@ -2,12 +2,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as template from '../../utils/template';
 import chalk from 'chalk';
-import * as yargs from 'yargs';
+import yargs from 'yargs';
 import { exec } from 'child_process';
 import { isProd } from '../../config';
-import inquirer from 'inquirer';
+import inquirer, { Answers } from 'inquirer';
 import ErrorResponse from '../../error-response';
-import { ICommand } from '../../types';
+import { IApiKey, ICommand, TemplateData } from '../../types';
+import { RequestBase } from '../../utils/request-base';
+import util from 'util';
 
 export interface TemplateConfig {
   files?: string[];
@@ -22,32 +24,65 @@ export interface CliOptions {
   config: TemplateConfig;
 }
 
+const execPromise = util.promisify(exec);
+
 const SKIP_FILES = ['node_modules', '.template.json'];
 
 const templateDirPath = isProd ? './templates/' : '../../templates/';
 
-const CHOICES = fs.readdirSync(path.join(__dirname, templateDirPath));
+const API_KEYS: IApiKey[] = [];
+
+const TEMPLATE_CHOICES = fs.readdirSync(path.join(__dirname, templateDirPath));
+const API_KEY_CHOICES = ['Create a new API Key'];
 
 const QUESTIONS = [
   {
     name: 'template',
     type: 'list',
     message: 'What project template would you like to generate?',
-    choices: CHOICES,
-    when: () => !yargs.argv['template'],
+    choices: TEMPLATE_CHOICES,
+    when: () => !Object.keys(yargs(process.argv).argv).includes('template'),
   },
   {
     name: 'name',
     type: 'input',
     message: 'Project name:',
-    when: () => !yargs.argv['name'],
+    when: () => !Object.keys(yargs(process.argv).argv).includes('name'),
     validate: (input: string) => {
       if (/^([A-Za-z\-\_\d])+$/.test(input)) return true;
       else
         return 'Project name may only include letters, numbers, underscores and hashes.';
     },
   },
+  {
+    name: 'api-key',
+    type: 'list',
+    message: 'What api-key would you like to uset to generate the project?',
+    choices: API_KEY_CHOICES,
+    when: () => !Object.keys(yargs(process.argv).argv).includes('api-key'),
+  },
+  {
+    name: 'new-api-key-name',
+    type: 'input',
+    message: 'What would you like to name the new API Key?',
+    when: (answers: Answers) => answers['api-key'] === 'Create a new API Key',
+  },
 ];
+
+const builder = {
+  template: {
+    type: 'string',
+    description: 'What project template would you like to generate?',
+  },
+  name: {
+    type: 'string',
+    description: 'What would you like to name your project?',
+  },
+  'api-key': {
+    type: 'string',
+    description: 'What API key would you like to use to generate the project?',
+  },
+};
 
 const CURR_DIR = process.cwd();
 
@@ -91,9 +126,9 @@ const createProject = (projectPath: string) => {
   return true;
 };
 
-const postProcess = (options: CliOptions) => {
+const postProcess = async (options: CliOptions) => {
   if (isNode(options)) {
-    return postProcessNode(options);
+    return await postProcessNode(options);
   }
   return true;
 };
@@ -102,24 +137,22 @@ const isNode = (options: CliOptions) => {
   return fs.existsSync(path.join(options.templatePath, 'package.json'));
 };
 
-const postProcessNode = (options: CliOptions) => {
-  exec(`cd ${options.tartgetPath}`);
-
+const postProcessNode = async (options: CliOptions) => {
   let cmd = '';
 
-  if (exec('which npm')) {
+  const { stdout: whichnpm } = await execPromise('which npm');
+  const { stdout: whichyarn } = await execPromise('which yarn');
+
+  if (whichnpm) {
     cmd = 'npm install';
-  } else if (exec('which yarn')) {
+  } else if (whichyarn) {
     cmd = 'yarn';
   }
 
   if (cmd) {
-    exec(cmd, (error, _, stderr) => {
-      if (error || stderr) {
-        return false;
-      }
-      return;
-    });
+    const { stderr } = await execPromise(`cd ${options.projectName} && ${cmd}`);
+
+    if (stderr) return false;
   } else {
     console.log(chalk.red('No yarn or npm found. Cannot run installation.'));
   }
@@ -127,11 +160,19 @@ const postProcessNode = (options: CliOptions) => {
   return true;
 };
 
-const createDirectoryContents = (
-  templatePath: string,
-  projectName: string,
-  config: TemplateConfig
-) => {
+interface ICreateDirectoryContents {
+  templatePath: string;
+  projectName: string;
+  templateData: TemplateData;
+  config: TemplateConfig;
+}
+
+const createDirectoryContents = ({
+  templatePath,
+  projectName,
+  templateData,
+  config,
+}: ICreateDirectoryContents) => {
   const filesToCreate = fs.readdirSync(templatePath);
 
   filesToCreate.forEach((file) => {
@@ -145,7 +186,7 @@ const createDirectoryContents = (
     if (stats.isFile()) {
       let contents = fs.readFileSync(origFilePath, 'utf8');
 
-      contents = template.render(contents, { projectName });
+      contents = template.render(contents, templateData);
 
       const writePath = path.join(CURR_DIR, projectName, file);
       fs.writeFileSync(writePath, contents, 'utf8');
@@ -153,49 +194,90 @@ const createDirectoryContents = (
       fs.mkdirSync(path.join(CURR_DIR, projectName, file));
 
       // recursive call
-      createDirectoryContents(
-        path.join(templatePath, file),
-        path.join(projectName, file),
-        config
-      );
+      createDirectoryContents({
+        templatePath: path.join(templatePath, file),
+        projectName: path.join(projectName, file),
+        templateData,
+        config,
+      });
     }
   });
 };
 
 const handler = async () => {
   try {
+    const apiKeys = await RequestBase<IApiKey[]>({
+      method: 'GET',
+      endpoint: 'api-keys',
+    });
+
+    if (Array.isArray(apiKeys) && apiKeys?.length) {
+      const activeKeys = apiKeys.filter(
+        ({ status }) => status !== 'DEPRECATED'
+      );
+
+      API_KEYS.unshift(...activeKeys);
+      API_KEY_CHOICES.unshift(...activeKeys.map(({ name }) => name));
+    }
+
     const answers = await inquirer.prompt(QUESTIONS);
 
-    let ans = answers as { [key: string]: string };
-    ans = Object.assign({}, ans, yargs.argv);
+    const ans = Object.assign({}, answers, yargs(process.argv).argv) as {
+      [key: string]: string;
+    };
 
-    if (ans instanceof Object) {
-      const projectChoice = ans['template'];
-      const projectName = ans['name'];
-      const templatePath = path.join(__dirname, templateDirPath, projectChoice);
-      const tartgetPath = path.join(CURR_DIR, projectName);
-      const templateConfig = getTemplateConfig(templatePath);
+    const projectChoice = ans['template'];
+    const projectName = ans['name'];
+    const apiKey = ans['api-key'];
+    const apiKeyName = ans['new-api-key-name'];
 
-      const options: CliOptions = {
-        projectName,
-        templateName: projectChoice,
-        templatePath,
-        tartgetPath,
-        config: templateConfig,
-      };
+    let apiKeyValue = '';
 
-      if (!createProject(tartgetPath)) {
-        return;
-      }
+    if (apiKey === 'Create a new API Key') {
+      const command = isProd
+        ? `salable create api-key --name="${apiKeyName}"`
+        : `npm run start create api-key -- --name="${apiKeyName}"`;
 
-      createDirectoryContents(templatePath, projectName, templateConfig);
+      const { stdout } = await execPromise(command);
 
-      if (!postProcess(options)) {
-        return;
-      }
+      apiKeyValue = stdout.split(':')[1].trim();
+    } else {
+      const chosenApiKey = API_KEYS.find(({ name }) => name === apiKey);
 
-      showMessage(options);
+      apiKeyValue = chosenApiKey ? chosenApiKey?.value : '';
     }
+
+    const templatePath = path.join(__dirname, templateDirPath, projectChoice);
+    const tartgetPath = path.join(CURR_DIR, projectName);
+    const templateConfig = getTemplateConfig(templatePath);
+
+    const options: CliOptions = {
+      projectName,
+      templateName: projectChoice,
+      templatePath,
+      tartgetPath,
+      config: templateConfig,
+    };
+
+    if (!createProject(tartgetPath)) {
+      return;
+    }
+
+    createDirectoryContents({
+      templatePath,
+      projectName,
+      templateData: {
+        projectName,
+        apiKey: apiKeyValue,
+      },
+      config: templateConfig,
+    });
+
+    if (!(await postProcess(options))) {
+      return;
+    }
+
+    showMessage(options);
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
@@ -205,6 +287,7 @@ const handler = async () => {
 
 export const createApp: ICommand = {
   command: 'app',
-  describe: 'Create an example application using Salable',
+  describe: 'Create an example project using Salable',
+  builder,
   handler,
 };

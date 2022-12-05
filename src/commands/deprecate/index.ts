@@ -1,4 +1,5 @@
 import { Argv } from 'yargs';
+import { deprecateApiKey } from './api-key';
 import { deprecateProduct } from './product';
 
 export const deprecateCommands = (cli: Argv) => {
@@ -7,16 +8,26 @@ export const deprecateCommands = (cli: Argv) => {
     'Deprecate an existing [product|api key] in your Salable Account';
 
   const builder = (yargs: Argv) => {
-    return yargs
-      .usage('usage: $0 deprecate <item> [options]')
-      .command({
-        command: deprecateProduct.command,
-        describe: deprecateProduct.describe,
-        builder: deprecateProduct.builder,
-        handler: deprecateProduct.handler,
-      })
-      .wrap(null)
-      .showHelpOnFail(true);
+    return (
+      yargs
+        .usage('usage: $0 deprecate <item> [options]')
+        // Deprecate Product
+        .command({
+          command: deprecateProduct.command,
+          describe: deprecateProduct.describe,
+          builder: deprecateProduct.builder,
+          handler: deprecateProduct.handler,
+        })
+        // Deprecate API Key
+        .command({
+          command: deprecateApiKey.command,
+          describe: deprecateApiKey.describe,
+          builder: deprecateApiKey.builder,
+          handler: deprecateApiKey.handler,
+        })
+        .wrap(null)
+        .showHelpOnFail(true)
+    );
   };
 
   cli.command({
