@@ -1,3 +1,11 @@
+# [1.6.0](https://github.com/Salable/cli/compare/v1.5.1...v1.6.0) (2022-12-05)
+
+
+### Features
+
+* added create, list, deprecate api-key commands ([88e75fb](https://github.com/Salable/cli/commit/88e75fb00346d7b2c79bfab1f735c5d2cc4e7aed))
+* added logic to install packages in generated apps ([a788418](https://github.com/Salable/cli/commit/a78841846d8f8fbe794a8516ceb53e09090234c6))
+
 ## [1.5.1](https://github.com/Salable/cli/compare/v1.5.0...v1.5.1) (2022-11-30)
 
 
