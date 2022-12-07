@@ -5,7 +5,7 @@ import ErrorResponse from '../../error-response';
 import { IApiKey, ICommand, ICreateApiKeyQuestionAnswers } from '../../types';
 import { RequestBase } from '../../utils/request-base';
 import { CREATE_API_KEY_QUESTIONS } from '../../questions';
-import { processAnswers } from '../../utils/processAnswers';
+import { processAnswers } from '../../utils/process-answers';
 
 const builder = {
   name: {

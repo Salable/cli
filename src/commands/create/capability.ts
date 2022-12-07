@@ -19,9 +19,9 @@ import {
   ICreateProductQuestionAnswers,
   IProduct,
 } from '../../types';
-import { execPromise } from '../../utils/execPromise';
+import { execPromise } from '../../utils/exec-promise';
 import { fetchData } from '../../utils/fetch-data';
-import { processAnswers } from '../../utils/processAnswers';
+import { processAnswers } from '../../utils/process-answers';
 import { RequestBase } from '../../utils/request-base';
 
 const PRODUCT_NAME_CHOICES = [CREATE_PRODUCT_NAME_QUESTION_OPTION];

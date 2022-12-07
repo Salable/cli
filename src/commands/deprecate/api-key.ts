@@ -7,7 +7,7 @@ import {
   ICommand,
   IDeprecateApiKeyQuestionAnswers,
 } from '../../types';
-import { processAnswers } from '../../utils/processAnswers';
+import { processAnswers } from '../../utils/process-answers';
 import { RequestBase } from '../../utils/request-base';
 
 const builder = {

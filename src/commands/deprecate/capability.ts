@@ -4,7 +4,7 @@ import inquirer, { Answers } from 'inquirer';
 import ErrorResponse from '../../error-response';
 import { ICommand, IDeprecateCapabilityQuestionAnswers } from '../../types';
 import { DEPRECATE_CAPABILITY_QUESTIONS } from '../../questions';
-import { processAnswers } from '../../utils/processAnswers';
+import { processAnswers } from '../../utils/process-answers';
 
 const builder = {
   uuid: {

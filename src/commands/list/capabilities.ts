@@ -6,7 +6,7 @@ import {
 } from '../../types';
 import { RequestBase } from '../../utils/request-base';
 import chalk from 'chalk';
-import { processAnswers } from '../../utils/processAnswers';
+import { processAnswers } from '../../utils/process-answers';
 import inquirer, { Answers } from 'inquirer';
 import { LIST_CAPABILITY_QUESTIONS } from '../../questions';
 

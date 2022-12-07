@@ -2,7 +2,7 @@ import ErrorResponse from '../../error-response';
 import { ICommand, IListProductsQuestionAnswers, IProduct } from '../../types';
 import chalk from 'chalk';
 import { RequestBase } from '../../utils/request-base';
-import { processAnswers } from '../../utils/processAnswers';
+import { processAnswers } from '../../utils/process-answers';
 
 const builder = {
   showDeprecated: {

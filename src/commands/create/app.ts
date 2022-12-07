@@ -13,7 +13,7 @@ import {
   ICreateAppQuestionAnswers,
   TemplateData,
 } from '../../types';
-import { execPromise } from '../../utils/execPromise';
+import { execPromise } from '../../utils/exec-promise';
 import {
   ARGUMENT_SEPARATOR,
   COMMAND_BASE,
@@ -24,7 +24,7 @@ import {
   CREATE_APP_API_KEY_QUESTION,
   CREATE_APP_QUESTIONS,
 } from '../../questions';
-import { processAnswers } from '../../utils/processAnswers';
+import { processAnswers } from '../../utils/process-answers';
 import { fetchData } from '../../utils/fetch-data';
 
 export interface TemplateConfig {
