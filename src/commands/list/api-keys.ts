@@ -1,8 +1,8 @@
-import yargs from 'yargs';
 import ErrorResponse from '../../error-response';
-import { IApiKey, ICommand } from '../../types';
+import { IApiKey, ICommand, IListApiKeysQuestionAnswers } from '../../types';
 import { RequestBase } from '../../utils/request-base';
 import chalk from 'chalk';
+import { processAnswers } from '../../utils/processAnswers';
 
 const builder = {
   showDeprecated: {
@@ -13,11 +13,7 @@ const builder = {
 
 const handler = async () => {
   try {
-    const ans = Object.assign({}, yargs(process.argv).argv) as {
-      [key: string]: string;
-    };
-
-    const showDeprecated = ans['showDeprecated'];
+    const { showDeprecated } = processAnswers<IListApiKeysQuestionAnswers>();
 
     const apiKeys = await RequestBase<IApiKey[]>({
       method: 'GET',

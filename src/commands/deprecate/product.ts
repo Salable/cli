@@ -1,18 +1,10 @@
 import { RequestBase } from '../../utils/request-base';
 import chalk from 'chalk';
-import inquirer from 'inquirer';
-import yargs from 'yargs';
+import inquirer, { Answers } from 'inquirer';
 import ErrorResponse from '../../error-response';
-import { ICommand } from '../../types';
-
-const QUESTIONS = [
-  {
-    name: 'uuid',
-    type: 'input',
-    message: 'Product UUID to deprecate: ',
-    when: () => !Object.keys(yargs(process.argv).argv).includes('uuid'),
-  },
-];
+import { ICommand, IDeprecateProductQuestionAnswers } from '../../types';
+import { DEPRECATE_PRODUCT_QUESTIONS } from '../../questions';
+import { processAnswers } from '../../utils/processAnswers';
 
 const builder = {
   uuid: {
@@ -23,13 +15,9 @@ const builder = {
 
 const handler = async () => {
   try {
-    const answers = await inquirer.prompt(QUESTIONS);
+    const answers: Answers = await inquirer.prompt(DEPRECATE_PRODUCT_QUESTIONS);
 
-    const ans = Object.assign({}, answers, yargs(process.argv).argv) as {
-      [key: string]: string;
-    };
-
-    const uuid = ans['uuid'];
+    const { uuid } = processAnswers<IDeprecateProductQuestionAnswers>(answers);
 
     await RequestBase({
       method: 'DELETE',

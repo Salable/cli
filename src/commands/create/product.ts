@@ -1,31 +1,10 @@
 import { RequestBase } from '../../utils/request-base';
 import chalk from 'chalk';
-import inquirer from 'inquirer';
-import yargs from 'yargs';
+import inquirer, { Answers } from 'inquirer';
 import ErrorResponse from '../../error-response';
-import { ICommand } from '../../types';
-
-const QUESTIONS = [
-  {
-    name: 'name',
-    type: 'input',
-    message: 'Product name to use in Salable Backend: ',
-    when: () => !Object.keys(yargs(process.argv).argv).includes('name'),
-  },
-  {
-    name: 'displayName',
-    type: 'input',
-    message: 'Product name to show in Pricing Tables: ',
-    when: () => !Object.keys(yargs(process.argv).argv).includes('displayName'),
-  },
-  {
-    name: 'productDescription',
-    type: 'input',
-    message: 'Description of your product: ',
-    when: () =>
-      !Object.keys(yargs(process.argv).argv).includes('productDescription'),
-  },
-];
+import { ICommand, ICreateProductQuestionAnswers, IProduct } from '../../types';
+import { CREATE_PRODUCT_QUESTIONS } from '../../questions';
+import { processAnswers } from '../../utils/processAnswers';
 
 const builder = {
   name: {
@@ -47,17 +26,15 @@ const builder = {
 
 const handler = async () => {
   try {
-    const answers = await inquirer.prompt(QUESTIONS);
+    const answers: Answers = await inquirer.prompt(CREATE_PRODUCT_QUESTIONS);
 
-    const ans = Object.assign({}, answers, yargs(process.argv).argv) as {
-      [key: string]: string;
-    };
+    const {
+      name,
+      displayName,
+      productDescription: description,
+    } = processAnswers<ICreateProductQuestionAnswers>(answers);
 
-    const name = ans['name'];
-    const displayName = ans['displayName'];
-    const description = ans['productDescription'];
-
-    await RequestBase({
+    await RequestBase<IProduct>({
       method: 'POST',
       endpoint: 'products',
       body: {

@@ -1,18 +1,14 @@
 import chalk from 'chalk';
-import inquirer from 'inquirer';
-import yargs from 'yargs';
+import inquirer, { Answers } from 'inquirer';
 import ErrorResponse from '../../error-response';
-import { ICommand } from '../../types';
+import { DEPRECATE_API_KEY_QUESTIONS } from '../../questions';
+import {
+  IApiKey,
+  ICommand,
+  IDeprecateApiKeyQuestionAnswers,
+} from '../../types';
+import { processAnswers } from '../../utils/processAnswers';
 import { RequestBase } from '../../utils/request-base';
-
-const QUESTIONS = [
-  {
-    name: 'value',
-    type: 'input',
-    message: 'API key value to deprecate: ',
-    when: () => !Object.keys(yargs(process.argv).argv).includes('value'),
-  },
-];
 
 const builder = {
   value: {
@@ -24,15 +20,11 @@ const builder = {
 
 const handler = async () => {
   try {
-    const answers = await inquirer.prompt(QUESTIONS);
+    const answers: Answers = await inquirer.prompt(DEPRECATE_API_KEY_QUESTIONS);
 
-    const ans = Object.assign({}, answers, yargs(process.argv).argv) as {
-      [key: string]: string;
-    };
+    const { value } = processAnswers<IDeprecateApiKeyQuestionAnswers>(answers);
 
-    const value = ans['value'];
-
-    await RequestBase({
+    await RequestBase<IApiKey>({
       method: 'DELETE',
       endpoint: `api-keys/${value}`,
     });
