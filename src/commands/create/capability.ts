@@ -8,8 +8,7 @@ import {
 } from '../../constants';
 import ErrorResponse from '../../error-response';
 import {
-  CREATE_CAPABILITY_CAPABILITY_NAME_QUESTION,
-  CREATE_CAPABILITY_PRODUCT_NAME_QUESTION,
+  CREATE_CAPABILITY_QUESTIONS,
   CREATE_PRODUCT_QUESTIONS,
 } from '../../questions';
 import {
@@ -26,7 +25,7 @@ import { RequestBase } from '../../utils/request-base';
 
 const PRODUCT_NAME_CHOICES = [CREATE_PRODUCT_NAME_QUESTION_OPTION];
 const PRODUCT_NAME_QUESTION =
-  CREATE_CAPABILITY_PRODUCT_NAME_QUESTION(PRODUCT_NAME_CHOICES);
+  CREATE_CAPABILITY_QUESTIONS.PRODUCT_NAME(PRODUCT_NAME_CHOICES);
 
 const builder = {
   productName: {
@@ -89,7 +88,7 @@ const handler = async () => {
     }
 
     const capabilityNameAnswer: Answers = await inquirer.prompt(
-      CREATE_CAPABILITY_CAPABILITY_NAME_QUESTION
+      CREATE_CAPABILITY_QUESTIONS.CAPABILITY_NAME
     );
 
     const { name: capabilityName } =

@@ -21,7 +21,6 @@ import {
 } from '../../constants';
 import {
   CREATE_API_KEY_QUESTIONS,
-  CREATE_APP_API_KEY_QUESTION,
   CREATE_APP_QUESTIONS,
 } from '../../questions';
 import { processAnswers } from '../../utils/process-answers';
@@ -47,7 +46,7 @@ const templateDirPath = isProd ? './templates/' : '../../templates/';
 const TEMPLATE_CHOICES = fs.readdirSync(path.join(__dirname, templateDirPath));
 
 const API_KEY_CHOICES = [CREATE_API_KEY_QUESTION_OPTION];
-const API_KEYS_NAME_QUESTION = CREATE_APP_API_KEY_QUESTION([
+const API_KEYS_NAME_QUESTION = CREATE_APP_QUESTIONS.API_KEY([
   CREATE_API_KEY_QUESTION_OPTION,
 ]);
 
@@ -231,9 +230,10 @@ const handler = async () => {
       }
     }
 
-    const answers: Answers = await inquirer.prompt(
-      CREATE_APP_QUESTIONS(TEMPLATE_CHOICES)
-    );
+    const answers: Answers = await inquirer.prompt([
+      CREATE_APP_QUESTIONS.TEMPLATE_NAME(TEMPLATE_CHOICES),
+      CREATE_APP_QUESTIONS.PROJECT_NAME,
+    ]);
 
     const { template, name } =
       processAnswers<ICreateAppQuestionAnswers>(answers);
