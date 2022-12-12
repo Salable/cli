@@ -3,11 +3,12 @@ import { createProduct } from './product';
 import { createApp } from './app';
 import { createApiKey } from './api-key';
 import { createCapability } from './capability';
+import { createFeature } from './feature';
 
 export const createCommands = (cli: Argv) => {
   const COMMAND_NAME = 'create';
   const COMMAND_DESCRIPTION =
-    'Create a new [product|api key|app] in your Salable Account';
+    'Create a new [product|api key|app|capability|feature] in your Salable Account';
 
   const builder = (yargs: Argv) => {
     return (
@@ -40,6 +41,13 @@ export const createCommands = (cli: Argv) => {
           describe: createCapability.describe,
           builder: createCapability.builder,
           handler: createCapability.handler,
+        })
+        // create feature
+        .command({
+          command: createFeature.command,
+          describe: createFeature.describe,
+          builder: createFeature.builder,
+          handler: createFeature.handler,
         })
         .wrap(null)
         .showHelpOnFail(true)

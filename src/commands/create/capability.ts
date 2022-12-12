@@ -88,7 +88,7 @@ const handler = async () => {
     }
 
     const capabilityNameAnswer: Answers = await inquirer.prompt(
-      CREATE_CAPABILITY_QUESTIONS.CAPABILITY_NAME
+      CREATE_CAPABILITY_QUESTIONS.NAME
     );
 
     const { name: capabilityName } =

@@ -22,21 +22,23 @@ type IGetRequest = {
   body?: never;
 };
 
+export type IRequestBody = {
+  [key: string]:
+    | string
+    | boolean
+    | number
+    | string[]
+    | {
+        [key: string]: string | boolean;
+      }
+    | {
+        [key: string]: string | boolean;
+      }[];
+};
+
 type IRequest = {
   method: 'POST' | 'PUT' | 'DELETE';
-  body?: {
-    [key: string]:
-      | string
-      | boolean
-      | number
-      | string[]
-      | {
-          [key: string]: string | boolean;
-        }
-      | {
-          [key: string]: string | boolean;
-        }[];
-  };
+  body?: IRequestBody;
 };
 
 export type IRequestBase = (IGetRequest | IRequest) & {
@@ -221,6 +223,27 @@ export interface ICreateProductQuestionAnswers {
 export interface ICreateCapabilityQuestionAnswers {
   name: string;
   productName: string;
+}
+
+export interface ICreateFeatureQuestionAnswers {
+  name: string;
+  displayName: string;
+  productName: string;
+  variableName: string;
+  description: string;
+  valueType: 'true/false' | 'numerical' | 'text';
+  trueFalseDefault: boolean;
+  visibility: string;
+  showUnlimited: boolean;
+  unlimitedNumberDefault: 'Unlimited' | 'Number';
+  numberDefault: number;
+  createTextOption: string;
+  createTextMenuOption:
+    | 'Create a new text option'
+    | 'Delete a text option'
+    | 'Continue';
+  deleteTextOption: string;
+  textOptionsDefault: string;
 }
 
 export interface ICreateAppQuestionAnswers {
