@@ -280,3 +280,8 @@ export interface IListCapabilitiesQuestionAnswers {
   showDeprecated: string;
   productUuid: string;
 }
+
+export interface IListPlansQuestionAnswers {
+  showDeprecated: string;
+  productUuid: string;
+}

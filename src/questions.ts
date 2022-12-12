@@ -221,3 +221,12 @@ export const LIST_CAPABILITY_QUESTIONS = [
     when: isOptionNotPassed('productUuid'),
   },
 ];
+
+export const LIST_PLANS_QUESTIONS = [
+  {
+    name: 'productUuid',
+    type: 'input',
+    message: 'Product UUID to show plans for: ',
+    when: isOptionNotPassed('productUuid'),
+  },
+];
