@@ -5,8 +5,9 @@ import ErrorResponse from '../../error-response';
 import { ICommand, ICreateProductQuestionAnswers, IProduct } from '../../types';
 import { CREATE_PRODUCT_QUESTIONS } from '../../questions';
 import { processAnswers } from '../../utils/process-answers';
+import { CommandBuilder } from 'yargs';
 
-const builder = {
+const builder: CommandBuilder = {
   name: {
     type: 'string',
     description: 'The name of the product for the Salable Backend',

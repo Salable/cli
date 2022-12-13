@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import inquirer, { Answers } from 'inquirer';
+import { CommandBuilder } from 'yargs';
 import { isProd } from '../../config';
 import {
   ARGUMENT_SEPARATOR,
@@ -27,7 +28,7 @@ const PRODUCT_NAME_CHOICES = [CREATE_PRODUCT_NAME_QUESTION_OPTION];
 const PRODUCT_NAME_QUESTION =
   CREATE_CAPABILITY_QUESTIONS.PRODUCT_NAME(PRODUCT_NAME_CHOICES);
 
-const builder = {
+const builder: CommandBuilder = {
   productName: {
     type: 'string',
     description: 'The product to create the capability on',

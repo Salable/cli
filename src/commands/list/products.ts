@@ -3,8 +3,9 @@ import { ICommand, IListProductsQuestionAnswers, IProduct } from '../../types';
 import chalk from 'chalk';
 import { RequestBase } from '../../utils/request-base';
 import { processAnswers } from '../../utils/process-answers';
+import { CommandBuilder } from 'yargs';
 
-const builder = {
+const builder: CommandBuilder = {
   showDeprecated: {
     type: 'boolean',
     description: 'Show depcrecated products as well as active ones',

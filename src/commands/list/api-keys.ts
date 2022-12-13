@@ -3,8 +3,9 @@ import { IApiKey, ICommand, IListApiKeysQuestionAnswers } from '../../types';
 import { RequestBase } from '../../utils/request-base';
 import chalk from 'chalk';
 import { processAnswers } from '../../utils/process-answers';
+import { CommandBuilder } from 'yargs';
 
-const builder = {
+const builder: CommandBuilder = {
   showDeprecated: {
     type: 'boolean',
     description: 'Show depcrecated API keys as well as active ones',

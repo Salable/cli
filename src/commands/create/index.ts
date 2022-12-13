@@ -1,4 +1,4 @@
-import { Argv } from 'yargs';
+import { Argv, CommandBuilder } from 'yargs';
 import { createProduct } from './product';
 import { createApp } from './app';
 import { createApiKey } from './api-key';
@@ -10,7 +10,7 @@ export const createCommands = (cli: Argv) => {
   const COMMAND_DESCRIPTION =
     'Create a new [product|api key|app|capability|feature] in your Salable Account';
 
-  const builder = (yargs: Argv) => {
+  const builder: CommandBuilder = (yargs: Argv) => {
     return (
       yargs
         .usage('usage: $0 create <item> [options]')

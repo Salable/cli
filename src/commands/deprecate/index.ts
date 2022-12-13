@@ -1,4 +1,4 @@
-import { Argv } from 'yargs';
+import { Argv, CommandBuilder } from 'yargs';
 import { deprecateApiKey } from './api-key';
 import { deprecateCapability } from './capability';
 import { deprecateProduct } from './product';
@@ -8,7 +8,7 @@ export const deprecateCommands = (cli: Argv) => {
   const COMMAND_DESCRIPTION =
     'Deprecate an existing [product|api key] in your Salable Account';
 
-  const builder = (yargs: Argv) => {
+  const builder: CommandBuilder = (yargs: Argv) => {
     return (
       yargs
         .usage('usage: $0 deprecate <item> [options]')

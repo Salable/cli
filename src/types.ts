@@ -1,3 +1,5 @@
+import { CommandBuilder } from 'yargs';
+
 export interface IAuth0Tokens {
   access_token: string;
   refresh_token: string;
@@ -10,11 +12,7 @@ export interface ICommand {
   command: string;
   describe: string;
   handler: () => Promise<void>;
-  builder?: {
-    [key: string]: {
-      [key: string]: string;
-    };
-  };
+  builder?: CommandBuilder;
 }
 
 type IGetRequest = {

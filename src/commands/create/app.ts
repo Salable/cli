@@ -25,6 +25,7 @@ import {
 } from '../../questions';
 import { processAnswers } from '../../utils/process-answers';
 import { fetchData } from '../../utils/fetch-data';
+import { CommandBuilder } from 'yargs';
 
 export interface TemplateConfig {
   files?: string[];
@@ -50,7 +51,7 @@ const API_KEYS_NAME_QUESTION = CREATE_APP_QUESTIONS.API_KEY([
   CREATE_API_KEY_QUESTION_OPTION,
 ]);
 
-const builder = {
+const builder: CommandBuilder = {
   template: {
     type: 'string',
     description: 'What project template would you like to generate?',

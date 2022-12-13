@@ -5,8 +5,9 @@ import ErrorResponse from '../../error-response';
 import { ICommand, IDeprecateProductQuestionAnswers } from '../../types';
 import { DEPRECATE_PRODUCT_QUESTIONS } from '../../questions';
 import { processAnswers } from '../../utils/process-answers';
+import { CommandBuilder } from 'yargs';
 
-const builder = {
+const builder: CommandBuilder = {
   uuid: {
     type: 'string',
     description: 'The UUID of the product you want to deprecate',

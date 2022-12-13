@@ -6,8 +6,9 @@ import { IApiKey, ICommand, ICreateApiKeyQuestionAnswers } from '../../types';
 import { RequestBase } from '../../utils/request-base';
 import { CREATE_API_KEY_QUESTIONS } from '../../questions';
 import { processAnswers } from '../../utils/process-answers';
+import { CommandBuilder } from 'yargs';
 
-const builder = {
+const builder: CommandBuilder = {
   name: {
     type: 'string',
     description: 'The name of the API key',
