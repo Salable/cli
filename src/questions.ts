@@ -109,10 +109,37 @@ export const CREATE_FEATURES_QUESTIONS = {
     name: 'numberDefault',
     type: 'number',
     message: 'Which number should be the default?',
-    when: (answers: Answers) =>
-      isOptionNotPassed('numberDefault') &&
-      (!answers.showUnlimited || answers.unlimitedNumberDefault === 'Number'),
+    when: (answers: Answers) => {
+      return (
+        isOptionNotPassed('numberDefault') &&
+        (!answers.showUnlimited || answers.unlimitedNumberDefault === 'Number')
+      );
+    },
   },
+  PLAN_NUMERICAL_UNLIMITED_NUMBER_DEFAULT: (
+    answers: Answers,
+    planName: string
+  ) => ({
+    name: 'planUnlimitedNumberDefault',
+    type: 'list',
+    choices: ['Unlimited', 'Number'],
+    message: `Which field is the deafult option for plan: ${planName}?`,
+    when: () =>
+      isOptionNotPassed('planUnlimitedNumberDefault') &&
+      (answers.showUnlimited as boolean),
+  }),
+  PLAN_NUMERICAL_NUMBER_DEFAULT: (planAnswers: Answers, planName: string) => ({
+    name: 'planNumberDefault',
+    type: 'number',
+    message: `Which number should be the default for the plan: ${planName}?`,
+    when: (answers: Answers) => {
+      return (
+        isOptionNotPassed('planNumberDefault') &&
+        (!planAnswers.showUnlimited ||
+          answers.planUnlimitedNumberDefault === 'Number')
+      );
+    },
+  }),
   TEXT_CREATE_OPTION: {
     name: 'createTextOption',
     type: 'input',
@@ -139,6 +166,21 @@ export const CREATE_FEATURES_QUESTIONS = {
     choices,
     message: 'Which option should be the default?',
     when: () => isOptionNotPassed('textOptionsDefault'),
+  }),
+  PLAN_FEATURE_VALUE: ({
+    planName,
+    type,
+    choices,
+  }: {
+    planName: string;
+    type: string;
+    choices?: string[];
+  }) => ({
+    name: 'planFeatureValue',
+    type,
+    ...(choices?.length && { choices }),
+    message: `What value should be given to this feature for the existing plan ${planName}?`,
+    when: () => isOptionNotPassed('planFeatureValue'),
   }),
   VISIBILITY: {
     name: 'visibility',

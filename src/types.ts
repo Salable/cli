@@ -29,10 +29,10 @@ export type IRequestBody = {
     | number
     | string[]
     | {
-        [key: string]: string | boolean;
+        [key: string]: string | boolean | { [key: string]: string | boolean };
       }
     | {
-        [key: string]: string | boolean;
+        [key: string]: string | boolean | { [key: string]: string | boolean };
       }[];
 };
 
@@ -244,6 +244,9 @@ export interface ICreateFeatureQuestionAnswers {
     | 'Continue';
   deleteTextOption: string;
   textOptionsDefault: string;
+  planFeatureValue: string;
+  planNumberDefault: number;
+  planUnlimitedNumberDefault: 'Unlimited' | 'Number';
 }
 
 export interface ICreateAppQuestionAnswers {

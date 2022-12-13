@@ -17,6 +17,7 @@ import {
   ICreateFeatureQuestionAnswers,
   ICreateProductQuestionAnswers,
   IFeature,
+  IPlan,
   IProduct,
   IRequestBody,
 } from '../../types';
@@ -40,6 +41,113 @@ const builder = {
     description: 'The name of the capability',
     default: '',
   },
+};
+
+const choosePlanFeatureValue = async ({
+  plans,
+  type,
+  planType,
+  defaults,
+  choices,
+  planAnswers = {},
+}: {
+  plans: IPlan[];
+  type: string;
+  planType?: 'true/false' | 'numerical' | 'text';
+  defaults?: {
+    defaultValue?: string;
+    isUnlimited?: boolean;
+    value?: string;
+  };
+  choices?: string[];
+  planAnswers?: Answers;
+}) => {
+  const output = await Promise.all(
+    plans.map(async (plan) => {
+      if (planType === 'numerical' && planAnswers?.showUnlimited) {
+        const numericalAnswers: Answers = await inquirer.prompt([
+          CREATE_FEATURES_QUESTIONS.PLAN_NUMERICAL_UNLIMITED_NUMBER_DEFAULT(
+            planAnswers,
+            plan.name
+          ),
+          CREATE_FEATURES_QUESTIONS.PLAN_NUMERICAL_NUMBER_DEFAULT(
+            planAnswers,
+            plan.name
+          ),
+        ]);
+
+        const { planUnlimitedNumberDefault, planNumberDefault } =
+          processAnswers<
+            Pick<
+              ICreateFeatureQuestionAnswers,
+              'planUnlimitedNumberDefault' | 'planNumberDefault'
+            >
+          >(numericalAnswers);
+
+        const value =
+          planUnlimitedNumberDefault === 'Unlimited'
+            ? '-1'
+            : planNumberDefault.toString();
+
+        return {
+          [plan.uuid]: {
+            defaultValue: defaults?.defaultValue || '',
+            isUnlimited: planUnlimitedNumberDefault === 'Unlimited',
+            value: defaults?.value || value,
+          },
+        };
+      }
+
+      if (planType === 'numerical' && !planAnswers?.showUnlimited) {
+        const numericalAnswers: Answers = await inquirer.prompt([
+          CREATE_FEATURES_QUESTIONS.PLAN_NUMERICAL_NUMBER_DEFAULT(
+            planAnswers,
+            plan.name
+          ),
+        ]);
+
+        const { planNumberDefault } =
+          processAnswers<
+            Pick<ICreateFeatureQuestionAnswers, 'planNumberDefault'>
+          >(numericalAnswers);
+
+        return {
+          [plan.uuid]: {
+            defaultValue: defaults?.defaultValue || '',
+            isUnlimited: false,
+            value: defaults?.value || planNumberDefault.toString(),
+          },
+        };
+      }
+
+      const planFeatureValueAnswers: Answers = await inquirer.prompt(
+        CREATE_FEATURES_QUESTIONS.PLAN_FEATURE_VALUE({
+          planName: plan.name,
+          type,
+          choices,
+        })
+      );
+
+      const { planFeatureValue } =
+        processAnswers<ICreateFeatureQuestionAnswers>(planFeatureValueAnswers);
+
+      return {
+        [plan.uuid]: {
+          defaultValue: defaults?.defaultValue || '',
+          isUnlimited: defaults?.isUnlimited || false,
+          value: defaults?.value || planFeatureValue,
+        },
+      };
+    })
+  );
+
+  return output.reduce((acc, cur) => {
+    acc = {
+      ...cur,
+    };
+
+    return acc;
+  }, {});
 };
 
 const textOptionMenu = async () => {
@@ -110,6 +218,15 @@ const handler = async () => {
       }
     }
 
+    const selectedProduct = products?.find(({ name }) => name === productName);
+
+    // 2. Get all plans for the selected product
+    const productPlans = await RequestBase<IPlan[]>({
+      method: 'GET',
+      endpoint: `products/${selectedProduct?.uuid || ''}/plans`,
+    });
+    let planValues;
+
     // 2. Get NAME, DISPLAY_NAME, VARIABLE_NAME, and DESCRIPTION for feature
     const featureDetailAnswers: Answers = await inquirer.prompt([
       CREATE_FEATURES_QUESTIONS.NAME,
@@ -129,19 +246,30 @@ const handler = async () => {
       visibility,
     } = processAnswers<ICreateFeatureQuestionAnswers>(featureDetailAnswers);
 
-    // 3. Depending on the valueType selected, ask further questions and perform POST request
+    // 4. Depending on the valueType selected, ask further questions and perform POST request
     switch (valueType) {
       case 'true/false':
         const trueFalseDefaultAnswer: Answers = await inquirer.prompt(
           CREATE_FEATURES_QUESTIONS.TRUE_FALSE_DEFAULT(featureDetailAnswers)
         );
+
         const { trueFalseDefault } = processAnswers<
           Pick<ICreateFeatureQuestionAnswers, 'trueFalseDefault'>
         >(trueFalseDefaultAnswer);
 
+        if (productPlans?.length) {
+          planValues = await choosePlanFeatureValue({
+            plans: productPlans,
+            type: 'list',
+            choices: ['true', 'false'],
+            defaults: {
+              isUnlimited: false,
+            },
+          });
+        }
+
         await createFeatureRequestHandler({
-          productUuid:
-            products?.find(({ name }) => name === productName)?.uuid || '',
+          productUuid: selectedProduct?.uuid || '',
           name: featureName,
           displayName,
           variableName,
@@ -150,7 +278,7 @@ const handler = async () => {
           valueType: 'boolean',
           defaultValue: trueFalseDefault.toString(),
           showUnlimited: false,
-          featureOnPlans: {},
+          featureOnPlans: planValues || {},
           featureEnumOptions: [],
         });
         break;
@@ -174,12 +302,27 @@ const handler = async () => {
         const defaultValue = showUnlimited
           ? unlimitedNumberDefault === 'Unlimited'
             ? '-1'
-            : numberDefault
-          : numberDefault;
+            : numberDefault.toString()
+          : numberDefault.toString();
+
+        if (productPlans?.length) {
+          planValues = await choosePlanFeatureValue({
+            plans: productPlans,
+            type: 'list',
+            planType: 'numerical',
+            defaults: {
+              isUnlimited: false,
+            },
+            planAnswers: {
+              showUnlimited,
+              unlimitedNumberDefault,
+              numberDefault,
+            },
+          });
+        }
 
         await createFeatureRequestHandler({
-          productUuid:
-            products?.find(({ name }) => name === productName)?.uuid || '',
+          productUuid: selectedProduct?.uuid || '',
           name: featureName,
           displayName,
           variableName,
@@ -188,7 +331,7 @@ const handler = async () => {
           valueType,
           defaultValue,
           showUnlimited,
-          featureOnPlans: {},
+          featureOnPlans: planValues || {},
           featureEnumOptions: [],
         });
         break;
@@ -257,9 +400,19 @@ const handler = async () => {
           Pick<ICreateFeatureQuestionAnswers, 'textOptionsDefault'>
         >(textOptionsDefaultAnswer);
 
+        if (productPlans?.length) {
+          planValues = await choosePlanFeatureValue({
+            plans: productPlans,
+            type: 'list',
+            choices: textOptions,
+            defaults: {
+              isUnlimited: false,
+            },
+          });
+        }
+
         await createFeatureRequestHandler({
-          productUuid:
-            products?.find(({ name }) => name === productName)?.uuid || '',
+          productUuid: selectedProduct?.uuid || '',
           name: featureName,
           displayName,
           variableName,
@@ -268,7 +421,7 @@ const handler = async () => {
           valueType: 'enum',
           defaultValue: textOptionsDefault,
           showUnlimited: false,
-          featureOnPlans: {},
+          featureOnPlans: planValues || {},
           featureEnumOptions: textOptions.map((option) => ({ name: option })),
         });
         break;
