@@ -10,12 +10,20 @@ export const CREATE_PRODUCT_QUESTIONS = [
     type: 'input',
     message: 'Product name to use in Salable Backend: ',
     when: () => isOptionNotPassed('name'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Project name cannot be empty';
+    },
   },
   {
     name: 'displayName',
     type: 'input',
     message: 'Product name to show in Pricing Tables: ',
     when: () => isOptionNotPassed('displayName'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Project display name cannot be empty';
+    },
   },
   {
     name: 'productDescription',
@@ -31,6 +39,10 @@ export const CREATE_CAPABILITY_QUESTIONS = {
     type: 'input',
     message: 'What would you like to call the capability: ',
     when: () => isOptionNotPassed('name'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Capability name cannot be empty';
+    },
   },
   PRODUCT_NAME: (PRODUCT_NAME_CHOICES: string[]) => ({
     name: 'productName',
@@ -54,12 +66,20 @@ export const CREATE_FEATURES_QUESTIONS = {
     type: 'input',
     message: 'What would you like to name the feature: ',
     when: () => isOptionNotPassed('name'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Feature name cannot be empty';
+    },
   },
   DISPLAY_NAME: {
     name: 'displayName',
     type: 'input',
     message: 'What is the display name of the feature: ',
     when: () => isOptionNotPassed('displayName'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Feature display name cannot be empty';
+    },
   },
   VARIABLE_NAME: {
     name: 'variableName',
@@ -67,6 +87,10 @@ export const CREATE_FEATURES_QUESTIONS = {
     message: 'What is the variable name of the feature: ',
     default: (answers: Answers) => answers?.name as string,
     when: () => isOptionNotPassed('variableName'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Feature variable name cannot be empty';
+    },
   },
   DESCRIPTION: {
     name: 'description',
@@ -92,14 +116,14 @@ export const CREATE_FEATURES_QUESTIONS = {
   NUMERICAL_SHOW_UNLIMITED: {
     name: 'showUnlimited',
     type: 'confirm',
-    message: 'Should an unlimited option be added?',
+    message: 'Should an unlimited option be added? ',
     when: () => isOptionNotPassed('showUnlimited'),
   },
   NUMERICAL_UNLIMITED_NUMBER_DEFAULT: {
     name: 'unlimitedNumberDefault',
     type: 'list',
     choices: ['Unlimited', 'Number'],
-    message: 'Which field is the deafult option?',
+    message: 'Which field is the deafult option? ',
     when: (answers: Answers) =>
       isOptionNotPassed('unlimitedNumberDefault') &&
       (answers.showUnlimited as boolean),
@@ -107,12 +131,16 @@ export const CREATE_FEATURES_QUESTIONS = {
   NUMERICAL_NUMBER_DEFAULT: {
     name: 'numberDefault',
     type: 'number',
-    message: 'Which number should be the default?',
+    message: 'Which number should be the default? ',
     when: (answers: Answers) => {
       return (
         isOptionNotPassed('numberDefault') &&
         (!answers.showUnlimited || answers.unlimitedNumberDefault === 'Number')
       );
+    },
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'A default numerical value is required';
     },
   },
   PLAN_NUMERICAL_UNLIMITED_NUMBER_DEFAULT: (
@@ -138,12 +166,20 @@ export const CREATE_FEATURES_QUESTIONS = {
           answers.planUnlimitedNumberDefault === 'Number')
       );
     },
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'A default numerical value for the plan is required';
+    },
   }),
   TEXT_CREATE_OPTION: {
     name: 'createTextOption',
     type: 'input',
-    message: 'Which would you like to call the text option?',
+    message: 'Which would you like to name the text option?',
     when: () => isOptionNotPassed('createTextOption'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Text option name cannot be empty';
+    },
   },
   TEXT_CREATE_OPTION_MENU: {
     name: 'createTextMenuOption',
@@ -180,6 +216,10 @@ export const CREATE_FEATURES_QUESTIONS = {
     ...(choices?.length && { choices }),
     message: `What value should be given to this feature for the existing plan ${planName}?`,
     when: () => isOptionNotPassed('planFeatureValue'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Feature value cannot be empty';
+    },
   }),
   VISIBILITY: {
     name: 'visibility',
@@ -194,8 +234,12 @@ export const CREATE_API_KEY_QUESTIONS = [
   {
     name: 'name',
     type: 'input',
-    message: 'What would you like to name the API key: ',
+    message: 'What would you like to name the API Key: ',
     when: () => isOptionNotPassed('name'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'API Key name cannot be empty';
+    },
   },
 ];
 
@@ -231,8 +275,12 @@ export const DEPRECATE_API_KEY_QUESTIONS = [
   {
     name: 'value',
     type: 'input',
-    message: 'API key value to deprecate: ',
+    message: 'API Key value to deprecate: ',
     when: () => isOptionNotPassed('value'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'API Key value cannot be empty';
+    },
   },
 ];
 
@@ -242,6 +290,10 @@ export const DEPRECATE_PRODUCT_QUESTIONS = [
     type: 'input',
     message: 'Product UUID to deprecate: ',
     when: () => isOptionNotPassed('uuid'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Product UUID cannot be empty';
+    },
   },
 ];
 
@@ -251,6 +303,10 @@ export const DEPRECATE_CAPABILITY_QUESTIONS = [
     type: 'input',
     message: 'Capability UUID to deprecate: ',
     when: () => isOptionNotPassed('uuid'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Capability UUID cannot be empty';
+    },
   },
 ];
 
@@ -260,6 +316,10 @@ export const LIST_CAPABILITY_QUESTIONS = [
     type: 'input',
     message: 'Product UUID to show capabilities for: ',
     when: () => isOptionNotPassed('productUuid'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Product UUID cannot be empty';
+    },
   },
 ];
 
@@ -269,5 +329,9 @@ export const LIST_PLANS_QUESTIONS = [
     type: 'input',
     message: 'Product UUID to show plans for: ',
     when: () => isOptionNotPassed('productUuid'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Product UUID cannot be empty';
+    },
   },
 ];
