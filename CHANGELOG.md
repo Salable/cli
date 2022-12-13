@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/Salable/cli/compare/v1.6.0...v1.7.0) (2022-12-13)
+
+
+### Features
+
+* **#14:** added capability commands and refactor ([802a32c](https://github.com/Salable/cli/commit/802a32c5a1089d05534d447ae96c625dc9ae2fdf)), closes [#14](https://github.com/Salable/cli/issues/14)
+
 # [1.6.0](https://github.com/Salable/cli/compare/v1.5.1...v1.6.0) (2022-12-05)
 
 
