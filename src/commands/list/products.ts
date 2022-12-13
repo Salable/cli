@@ -1,8 +1,8 @@
-import yargs from 'yargs';
 import ErrorResponse from '../../error-response';
-import { ICommand, IProduct } from '../../types';
+import { ICommand, IListProductsQuestionAnswers, IProduct } from '../../types';
 import chalk from 'chalk';
 import { RequestBase } from '../../utils/request-base';
+import { processAnswers } from '../../utils/process-answers';
 
 const builder = {
   showDeprecated: {
@@ -13,11 +13,7 @@ const builder = {
 
 const handler = async () => {
   try {
-    const ans = Object.assign({}, yargs(process.argv).argv) as {
-      [key: string]: string;
-    };
-
-    const showDeprecated = ans['showDeprecated'];
+    const { showDeprecated } = processAnswers<IListProductsQuestionAnswers>();
 
     const products = await RequestBase<IProduct[]>({
       method: 'GET',

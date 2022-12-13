@@ -1,19 +1,11 @@
 import { decodeToken } from '../../utils/decode-token';
 import chalk from 'chalk';
-import inquirer from 'inquirer';
-import yargs from 'yargs';
+import inquirer, { Answers } from 'inquirer';
 import ErrorResponse from '../../error-response';
-import { IApiKey, ICommand } from '../../types';
+import { IApiKey, ICommand, ICreateApiKeyQuestionAnswers } from '../../types';
 import { RequestBase } from '../../utils/request-base';
-
-const QUESTIONS = [
-  {
-    name: 'name',
-    type: 'input',
-    message: 'What would you like to name the API key: ',
-    when: () => !Object.keys(yargs(process.argv).argv).includes('name'),
-  },
-];
+import { CREATE_API_KEY_QUESTIONS } from '../../questions';
+import { processAnswers } from '../../utils/process-answers';
 
 const builder = {
   name: {
@@ -25,13 +17,9 @@ const builder = {
 
 const handler = async () => {
   try {
-    const answers = await inquirer.prompt(QUESTIONS);
+    const answers: Answers = await inquirer.prompt(CREATE_API_KEY_QUESTIONS);
 
-    const ans = Object.assign({}, answers, yargs(process.argv).argv) as {
-      [key: string]: string;
-    };
-
-    const name = ans['name'];
+    const { name } = processAnswers<ICreateApiKeyQuestionAnswers>(answers);
 
     const tokenValues = await decodeToken();
 

@@ -2,14 +2,29 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as template from '../../utils/template';
 import chalk from 'chalk';
-import yargs from 'yargs';
-import { exec } from 'child_process';
+
 import { isProd } from '../../config';
 import inquirer, { Answers } from 'inquirer';
 import ErrorResponse from '../../error-response';
-import { IApiKey, ICommand, TemplateData } from '../../types';
-import { RequestBase } from '../../utils/request-base';
-import util from 'util';
+import {
+  IApiKey,
+  ICommand,
+  ICreateApiKeyQuestionAnswers,
+  ICreateAppQuestionAnswers,
+  TemplateData,
+} from '../../types';
+import { execPromise } from '../../utils/exec-promise';
+import {
+  ARGUMENT_SEPARATOR,
+  COMMAND_BASE,
+  CREATE_API_KEY_QUESTION_OPTION,
+} from '../../constants';
+import {
+  CREATE_API_KEY_QUESTIONS,
+  CREATE_APP_QUESTIONS,
+} from '../../questions';
+import { processAnswers } from '../../utils/process-answers';
+import { fetchData } from '../../utils/fetch-data';
 
 export interface TemplateConfig {
   files?: string[];
@@ -24,50 +39,16 @@ export interface CliOptions {
   config: TemplateConfig;
 }
 
-const execPromise = util.promisify(exec);
-
 const SKIP_FILES = ['node_modules', '.template.json'];
 
 const templateDirPath = isProd ? './templates/' : '../../templates/';
 
-const API_KEYS: IApiKey[] = [];
-
 const TEMPLATE_CHOICES = fs.readdirSync(path.join(__dirname, templateDirPath));
-const API_KEY_CHOICES = ['Create a new API Key'];
 
-const QUESTIONS = [
-  {
-    name: 'template',
-    type: 'list',
-    message: 'What project template would you like to generate?',
-    choices: TEMPLATE_CHOICES,
-    when: () => !Object.keys(yargs(process.argv).argv).includes('template'),
-  },
-  {
-    name: 'name',
-    type: 'input',
-    message: 'Project name:',
-    when: () => !Object.keys(yargs(process.argv).argv).includes('name'),
-    validate: (input: string) => {
-      if (/^([A-Za-z\-\_\d])+$/.test(input)) return true;
-      else
-        return 'Project name may only include letters, numbers, underscores and hashes.';
-    },
-  },
-  {
-    name: 'api-key',
-    type: 'list',
-    message: 'What api-key would you like to uset to generate the project?',
-    choices: API_KEY_CHOICES,
-    when: () => !Object.keys(yargs(process.argv).argv).includes('api-key'),
-  },
-  {
-    name: 'new-api-key-name',
-    type: 'input',
-    message: 'What would you like to name the new API Key?',
-    when: (answers: Answers) => answers['api-key'] === 'Create a new API Key',
-  },
-];
+const API_KEY_CHOICES = [CREATE_API_KEY_QUESTION_OPTION];
+const API_KEYS_NAME_QUESTION = CREATE_APP_QUESTIONS.API_KEY([
+  CREATE_API_KEY_QUESTION_OPTION,
+]);
 
 const builder = {
   template: {
@@ -78,7 +59,7 @@ const builder = {
     type: 'string',
     description: 'What would you like to name your project?',
   },
-  'api-key': {
+  apiKey: {
     type: 'string',
     description: 'What API key would you like to use to generate the project?',
   },
@@ -206,54 +187,70 @@ const createDirectoryContents = ({
 
 const handler = async () => {
   try {
-    const apiKeys = await RequestBase<IApiKey[]>({
-      method: 'GET',
-      endpoint: 'api-keys',
-    });
+    let loopCreate = false;
+    let apiKeyName = '';
+    let apiKeys: IApiKey[] = [];
 
-    if (Array.isArray(apiKeys) && apiKeys?.length) {
-      const activeKeys = apiKeys.filter(
-        ({ status }) => status !== 'DEPRECATED'
+    while (!loopCreate) {
+      const { data, choices } = await fetchData<IApiKey>({
+        choices: API_KEY_CHOICES,
+        endpoint: 'api-keys',
+      });
+
+      apiKeys = data;
+      API_KEYS_NAME_QUESTION.choices = choices;
+
+      const apiKeyNameAnswer: Answers = await inquirer.prompt(
+        API_KEYS_NAME_QUESTION
       );
 
-      API_KEYS.unshift(...activeKeys);
-      API_KEY_CHOICES.unshift(...activeKeys.map(({ name }) => name));
+      apiKeyName =
+        processAnswers<ICreateAppQuestionAnswers>(apiKeyNameAnswer)['apiKey'];
+
+      if (apiKeyName === CREATE_API_KEY_QUESTION_OPTION) {
+        const createApiKeyAnswers: Answers = await inquirer.prompt(
+          CREATE_API_KEY_QUESTIONS
+        );
+
+        const { name } =
+          processAnswers<ICreateApiKeyQuestionAnswers>(createApiKeyAnswers);
+
+        const CREATE_PRODUCT_COMMAND = `${COMMAND_BASE} create api-key ${ARGUMENT_SEPARATOR} --name="${name}"`;
+
+        const { stdout, stderr } = await execPromise(CREATE_PRODUCT_COMMAND);
+
+        console.log(chalk.green(stdout));
+
+        if (stderr && isProd) {
+          console.log(chalk.red(stderr));
+          process.exit(1);
+        }
+      } else {
+        loopCreate = true;
+      }
     }
 
-    const answers = await inquirer.prompt(QUESTIONS);
+    const answers: Answers = await inquirer.prompt([
+      CREATE_APP_QUESTIONS.TEMPLATE_NAME(TEMPLATE_CHOICES),
+      CREATE_APP_QUESTIONS.PROJECT_NAME,
+    ]);
 
-    const ans = Object.assign({}, answers, yargs(process.argv).argv) as {
-      [key: string]: string;
-    };
-
-    const projectChoice = ans['template'];
-    const projectName = ans['name'];
-    const apiKey = ans['api-key'];
-    const apiKeyName = ans['new-api-key-name'];
+    const { template, name } =
+      processAnswers<ICreateAppQuestionAnswers>(answers);
 
     let apiKeyValue = '';
 
-    if (apiKey === 'Create a new API Key') {
-      const command = isProd
-        ? `salable create api-key --name="${apiKeyName}"`
-        : `npm run start create api-key -- --name="${apiKeyName}"`;
+    const chosenApiKey = apiKeys.find(({ name }) => name === apiKeyName);
 
-      const { stdout } = await execPromise(command);
+    apiKeyValue = chosenApiKey ? chosenApiKey?.value : '';
 
-      apiKeyValue = stdout.split(':')[1].trim();
-    } else {
-      const chosenApiKey = API_KEYS.find(({ name }) => name === apiKey);
-
-      apiKeyValue = chosenApiKey ? chosenApiKey?.value : '';
-    }
-
-    const templatePath = path.join(__dirname, templateDirPath, projectChoice);
-    const tartgetPath = path.join(CURR_DIR, projectName);
+    const templatePath = path.join(__dirname, templateDirPath, template);
+    const tartgetPath = path.join(CURR_DIR, name);
     const templateConfig = getTemplateConfig(templatePath);
 
     const options: CliOptions = {
-      projectName,
-      templateName: projectChoice,
+      projectName: name,
+      templateName: template,
       templatePath,
       tartgetPath,
       config: templateConfig,
@@ -265,9 +262,9 @@ const handler = async () => {
 
     createDirectoryContents({
       templatePath,
-      projectName,
+      projectName: name,
       templateData: {
-        projectName,
+        projectName: name,
         apiKey: apiKeyValue,
       },
       config: templateConfig,

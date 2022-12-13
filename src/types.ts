@@ -210,3 +210,50 @@ export interface TemplateData {
   projectName: string;
   apiKey: string;
 }
+
+// Question Answers
+export interface ICreateProductQuestionAnswers {
+  name: string;
+  displayName: string;
+  productDescription: string;
+}
+
+export interface ICreateCapabilityQuestionAnswers {
+  name: string;
+  productName: string;
+}
+
+export interface ICreateAppQuestionAnswers {
+  name: string;
+  template: string;
+  apiKey: string;
+}
+
+export interface ICreateApiKeyQuestionAnswers {
+  name: string;
+}
+
+export interface IDeprecateApiKeyQuestionAnswers {
+  value: string;
+}
+
+export interface IDeprecateProductQuestionAnswers {
+  uuid: string;
+}
+
+export interface IDeprecateCapabilityQuestionAnswers {
+  uuid: string;
+}
+
+export interface IListApiKeysQuestionAnswers {
+  showDeprecated: string;
+}
+
+export interface IListProductsQuestionAnswers {
+  showDeprecated: string;
+}
+
+export interface IListCapabilitiesQuestionAnswers {
+  showDeprecated: string;
+  productUuid: string;
+}
