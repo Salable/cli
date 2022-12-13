@@ -253,6 +253,26 @@ export interface ICreateAppQuestionAnswers {
   apiKey: string;
 }
 
+export interface ICreateAppTemplateConfig {
+  files?: string[];
+  postMessage?: string;
+}
+
+export interface ICreateAppCliOptions {
+  projectName: string;
+  templateName: string;
+  templatePath: string;
+  tartgetPath: string;
+  config: ICreateAppTemplateConfig;
+}
+
+export interface ICreateAppCreateDirectoryContents {
+  templatePath: string;
+  projectName: string;
+  templateData: TemplateData;
+  config: ICreateAppTemplateConfig;
+}
+
 export interface ICreateApiKeyQuestionAnswers {
   name: string;
 }

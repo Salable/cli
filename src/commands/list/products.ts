@@ -14,7 +14,8 @@ const builder: CommandBuilder = {
 
 const handler = async () => {
   try {
-    const { showDeprecated } = processAnswers<IListProductsQuestionAnswers>();
+    const { showDeprecated } =
+      await processAnswers<IListProductsQuestionAnswers>();
 
     const products = await RequestBase<IProduct[]>({
       method: 'GET',

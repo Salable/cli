@@ -1,6 +1,5 @@
 import { RequestBase } from '../../utils/request-base';
 import chalk from 'chalk';
-import inquirer, { Answers } from 'inquirer';
 import ErrorResponse from '../../error-response';
 import { ICommand, IDeprecateProductQuestionAnswers } from '../../types';
 import { DEPRECATE_PRODUCT_QUESTIONS } from '../../questions';
@@ -16,9 +15,9 @@ const builder: CommandBuilder = {
 
 const handler = async () => {
   try {
-    const answers: Answers = await inquirer.prompt(DEPRECATE_PRODUCT_QUESTIONS);
-
-    const { uuid } = processAnswers<IDeprecateProductQuestionAnswers>(answers);
+    const { uuid } = await processAnswers<IDeprecateProductQuestionAnswers>(
+      DEPRECATE_PRODUCT_QUESTIONS
+    );
 
     await RequestBase({
       method: 'DELETE',

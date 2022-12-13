@@ -1,32 +1,19 @@
 import chalk from 'chalk';
-import inquirer, { Answers } from 'inquirer';
 import { CommandBuilder } from 'yargs';
-import { isProd } from '../../config';
-import {
-  ARGUMENT_SEPARATOR,
-  COMMAND_BASE,
-  CREATE_PRODUCT_NAME_QUESTION_OPTION,
-} from '../../constants';
+import { CREATE_PRODUCT_NAME_QUESTION_OPTION } from '../../constants';
 import ErrorResponse from '../../error-response';
-import {
-  CREATE_CAPABILITY_QUESTIONS,
-  CREATE_PRODUCT_QUESTIONS,
-} from '../../questions';
+import { CREATE_CAPABILITY_QUESTIONS } from '../../questions';
 import {
   ICapability,
   ICommand,
   ICreateCapabilityQuestionAnswers,
+  ICreateFeatureQuestionAnswers,
   ICreateProductQuestionAnswers,
   IProduct,
 } from '../../types';
-import { execPromise } from '../../utils/exec-promise';
-import { fetchData } from '../../utils/fetch-data';
+import { dataChooser } from '../../utils/data-chooser';
 import { processAnswers } from '../../utils/process-answers';
 import { RequestBase } from '../../utils/request-base';
-
-const PRODUCT_NAME_CHOICES = [CREATE_PRODUCT_NAME_QUESTION_OPTION];
-const PRODUCT_NAME_QUESTION =
-  CREATE_CAPABILITY_QUESTIONS.PRODUCT_NAME(PRODUCT_NAME_CHOICES);
 
 const builder: CommandBuilder = {
   productName: {
@@ -43,71 +30,38 @@ const builder: CommandBuilder = {
 
 const handler = async () => {
   try {
-    let loopCreate = false;
-    let productName = '';
-    let products: IProduct[] = [];
+    const PRODUCT_NAME_CHOICES = [CREATE_PRODUCT_NAME_QUESTION_OPTION];
 
-    while (!loopCreate) {
-      const { data, choices } = await fetchData<IProduct>({
-        choices: PRODUCT_NAME_CHOICES,
-        endpoint: 'products',
-      });
-
-      products = data;
-      PRODUCT_NAME_QUESTION.choices = choices;
-
-      const productNameAnswers: Answers = await inquirer.prompt(
-        PRODUCT_NAME_QUESTION
-      );
-
-      productName =
-        processAnswers<ICreateCapabilityQuestionAnswers>(productNameAnswers)[
-          'productName'
-        ];
-
-      if (productName === CREATE_PRODUCT_NAME_QUESTION_OPTION) {
-        const createProductAnswers: Answers = await inquirer.prompt(
-          CREATE_PRODUCT_QUESTIONS
-        );
-
-        const { name, displayName, productDescription } =
-          processAnswers<ICreateProductQuestionAnswers>(createProductAnswers);
-
-        const CREATE_PRODUCT_COMMAND = `${COMMAND_BASE} create product ${ARGUMENT_SEPARATOR} --name="${name}" --displayName="${displayName}" --productDescription="${productDescription}"`;
-
-        const { stdout, stderr } = await execPromise(CREATE_PRODUCT_COMMAND);
-
-        console.log(chalk.green(stdout));
-
-        if (stderr && isProd) {
-          console.log(chalk.red(stderr));
-          process.exit(1);
-        }
-      } else {
-        loopCreate = true;
-      }
-    }
-
-    const capabilityNameAnswer: Answers = await inquirer.prompt(
-      CREATE_CAPABILITY_QUESTIONS.NAME
-    );
+    const selectedProduct = await dataChooser<
+      IProduct,
+      ICreateFeatureQuestionAnswers,
+      ICreateProductQuestionAnswers
+    >({
+      question: CREATE_CAPABILITY_QUESTIONS.PRODUCT_NAME(PRODUCT_NAME_CHOICES),
+      startingChoices: PRODUCT_NAME_CHOICES,
+      endpoint: 'products',
+      targetField: 'productName',
+    });
 
     const { name: capabilityName } =
-      processAnswers<ICreateCapabilityQuestionAnswers>(capabilityNameAnswer);
+      await processAnswers<ICreateCapabilityQuestionAnswers>(
+        CREATE_CAPABILITY_QUESTIONS.NAME
+      );
 
     await RequestBase<ICapability>({
       method: 'POST',
       endpoint: 'capabilities',
       body: {
-        productUuid:
-          products?.find(({ name }) => name === productName)?.uuid || '',
+        productUuid: selectedProduct?.uuid || '',
         name: capabilityName,
       },
     });
 
     console.log(
       chalk.green(
-        `Capability: ${capabilityName} created succesfully on ${productName}`
+        `Capability: ${capabilityName} created succesfully on ${
+          selectedProduct?.name || ''
+        }`
       )
     );
   } catch (e) {

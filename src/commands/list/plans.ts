@@ -3,7 +3,6 @@ import { ICommand, IListPlansQuestionAnswers, IPlan } from '../../types';
 import { RequestBase } from '../../utils/request-base';
 import chalk from 'chalk';
 import { processAnswers } from '../../utils/process-answers';
-import inquirer, { Answers } from 'inquirer';
 import { LIST_PLANS_QUESTIONS } from '../../questions';
 import { CommandBuilder } from 'yargs';
 
@@ -20,10 +19,8 @@ const builder: CommandBuilder = {
 
 const handler = async () => {
   try {
-    const answers: Answers = await inquirer.prompt(LIST_PLANS_QUESTIONS);
-
     const { showDeprecated, productUuid } =
-      processAnswers<IListPlansQuestionAnswers>(answers);
+      await processAnswers<IListPlansQuestionAnswers>(LIST_PLANS_QUESTIONS);
 
     const productPlans = await RequestBase<IPlan[]>({
       method: 'GET',

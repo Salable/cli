@@ -14,7 +14,8 @@ const builder: CommandBuilder = {
 
 const handler = async () => {
   try {
-    const { showDeprecated } = processAnswers<IListApiKeysQuestionAnswers>();
+    const { showDeprecated } =
+      await processAnswers<IListApiKeysQuestionAnswers>();
 
     const apiKeys = await RequestBase<IApiKey[]>({
       method: 'GET',

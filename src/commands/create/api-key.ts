@@ -1,6 +1,5 @@
 import { decodeToken } from '../../utils/decode-token';
 import chalk from 'chalk';
-import inquirer, { Answers } from 'inquirer';
 import ErrorResponse from '../../error-response';
 import { IApiKey, ICommand, ICreateApiKeyQuestionAnswers } from '../../types';
 import { RequestBase } from '../../utils/request-base';
@@ -18,9 +17,9 @@ const builder: CommandBuilder = {
 
 const handler = async () => {
   try {
-    const answers: Answers = await inquirer.prompt(CREATE_API_KEY_QUESTIONS);
-
-    const { name } = processAnswers<ICreateApiKeyQuestionAnswers>(answers);
+    const { name } = await processAnswers<ICreateApiKeyQuestionAnswers>(
+      CREATE_API_KEY_QUESTIONS
+    );
 
     const tokenValues = await decodeToken();
 

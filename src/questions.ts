@@ -81,14 +81,13 @@ export const CREATE_FEATURES_QUESTIONS = {
     message: 'What is the value type of the feature: ',
     when: () => isOptionNotPassed('valueType'),
   },
-  TRUE_FALSE_DEFAULT: (answers: Answers) => ({
+  TRUE_FALSE_DEFAULT: (valueType: string) => ({
     name: 'trueFalseDefault',
     type: 'list',
     choices: ['true', 'false'],
     message: 'What is the default value: ',
     when: () =>
-      isOptionNotPassed('trueFalseDefault') &&
-      answers.valueType === 'true/false',
+      isOptionNotPassed('trueFalseDefault') && valueType === 'true/false',
   }),
   NUMERICAL_SHOW_UNLIMITED: {
     name: 'showUnlimited',
