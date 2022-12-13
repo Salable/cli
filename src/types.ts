@@ -306,3 +306,8 @@ export interface IListPlansQuestionAnswers {
   showDeprecated: string;
   productUuid: string;
 }
+
+export interface IListFeaturesQuestionAnswers {
+  showDeprecated: string;
+  productUuid: string;
+}

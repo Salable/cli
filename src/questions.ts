@@ -335,3 +335,16 @@ export const LIST_PLANS_QUESTIONS = [
     },
   },
 ];
+
+export const LIST_FEATURES_QUESTIONS = [
+  {
+    name: 'productUuid',
+    type: 'input',
+    message: 'Product UUID to show features for: ',
+    when: () => isOptionNotPassed('productUuid'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Product UUID cannot be empty';
+    },
+  },
+];
