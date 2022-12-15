@@ -5,3 +5,4 @@ export { auth } from './auth';
 export { createCommands } from './create';
 export { listCommands } from './list';
 export { deprecateCommands } from './deprecate';
+export { updateCommands } from './update';

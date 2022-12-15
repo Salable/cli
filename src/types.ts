@@ -72,6 +72,14 @@ export type ICurrency = {
   defaultCurrency: boolean;
 };
 
+export type IFeatureEnumOption = {
+  uuid: string;
+  name: string;
+  featureUuid: string;
+  updatedAt: string;
+  safeDelete: boolean;
+};
+
 export type IFeature = {
   uuid: string;
   name: string;
@@ -85,6 +93,7 @@ export type IFeature = {
   showUnlimited: boolean;
   productUuid: string;
   updatedAt: string;
+  featureEnumOptions: IFeatureEnumOption[];
 };
 
 export type IPlan = {
@@ -245,6 +254,32 @@ export interface ICreateFeatureQuestionAnswers {
   planFeatureValue: string;
   planNumberDefault: number;
   planUnlimitedNumberDefault: 'Unlimited' | 'Number';
+}
+
+export interface IUpdateFeatureQuestionAnswers {
+  name: string;
+  displayName: string;
+  productName: string;
+  variableName: string;
+  description: string;
+  valueType: 'true/false' | 'numerical' | 'text';
+  trueFalseDefault: boolean;
+  visibility: string;
+  showUnlimited: boolean;
+  unlimitedNumberDefault: 'Unlimited' | 'Number';
+  numberDefault: number;
+  createTextOption: string;
+  createTextMenuOption:
+    | 'Create a new text option'
+    | 'Delete a text option'
+    | 'Continue';
+  deleteTextOption: string;
+  textOptionsDefault: string;
+  planFeatureValue: string;
+  planNumberDefault: number;
+  planUnlimitedNumberDefault: 'Unlimited' | 'Number';
+  updateTextMenuOption: string;
+  updateTextOption: string;
 }
 
 export interface ICreateAppQuestionAnswers {

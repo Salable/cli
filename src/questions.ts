@@ -1,5 +1,6 @@
 import { Answers } from 'inquirer';
 import yargs from 'yargs';
+import { IFeature } from './types';
 
 const isOptionNotPassed = (option: string) =>
   !Object.keys(yargs(process.argv).argv).includes(option);
@@ -113,13 +114,14 @@ export const CREATE_FEATURES_QUESTIONS = {
     when: () =>
       isOptionNotPassed('trueFalseDefault') && valueType === 'true/false',
   }),
-  NUMERICAL_SHOW_UNLIMITED: {
+  NUMERICAL_SHOW_UNLIMITED: (prevValue?: boolean) => ({
     name: 'showUnlimited',
     type: 'confirm',
     message: 'Should an unlimited option be added? ',
     when: () => isOptionNotPassed('showUnlimited'),
-  },
-  NUMERICAL_UNLIMITED_NUMBER_DEFAULT: {
+    ...(prevValue !== undefined && { default: prevValue }),
+  }),
+  NUMERICAL_UNLIMITED_NUMBER_DEFAULT: (prevValue?: string) => ({
     name: 'unlimitedNumberDefault',
     type: 'list',
     choices: ['Unlimited', 'Number'],
@@ -127,10 +129,11 @@ export const CREATE_FEATURES_QUESTIONS = {
     when: (answers: Answers) =>
       isOptionNotPassed('unlimitedNumberDefault') &&
       (answers.showUnlimited as boolean),
-  },
-  NUMERICAL_NUMBER_DEFAULT: {
+    ...(prevValue !== undefined && { default: prevValue }),
+  }),
+  NUMERICAL_NUMBER_DEFAULT: (prevValue?: number) => ({
     name: 'numberDefault',
-    type: 'number',
+    type: 'input',
     message: 'Which number should be the default? ',
     when: (answers: Answers) => {
       return (
@@ -142,7 +145,8 @@ export const CREATE_FEATURES_QUESTIONS = {
       if (input?.length) return true;
       else return 'A default numerical value is required';
     },
-  },
+    ...(prevValue !== undefined && { default: prevValue }),
+  }),
   PLAN_NUMERICAL_UNLIMITED_NUMBER_DEFAULT: (
     answers: Answers,
     planName: string
@@ -348,3 +352,80 @@ export const LIST_FEATURES_QUESTIONS = [
     },
   },
 ];
+
+export const UPDATE_FEATURE_QUESTIONS = {
+  PRODUCT_NAME: (PRODUCT_NAME_CHOICES: string[]) => ({
+    name: 'productName',
+    type: 'list',
+    message: 'What product would you like to update a feature on: ',
+    choices: PRODUCT_NAME_CHOICES,
+    when: () => isOptionNotPassed('productName'),
+  }),
+  FEATURE_NAME: (FEATURE_NAME_CHOICES?: IFeature[]) => ({
+    name: 'featureName',
+    type: 'list',
+    message: 'What feature would you like to update? ',
+    choices: FEATURE_NAME_CHOICES,
+    when: () => isOptionNotPassed('name'),
+  }),
+  NAME: (prevValue: string) => ({
+    name: 'name',
+    type: 'input',
+    message: 'What would you like to name the feature? ',
+    when: () => isOptionNotPassed('name'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Feature name cannot be empty';
+    },
+    default: prevValue,
+  }),
+  DISPLAY_NAME: (prevValue: string) => ({
+    name: 'displayName',
+    type: 'input',
+    message: 'What is the display name of the feature: ',
+    when: () => isOptionNotPassed('displayName'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Feature display name cannot be empty';
+    },
+    default: prevValue,
+  }),
+  DESCRIPTION: (prevValue: string) => ({
+    name: 'description',
+    type: 'input',
+    message: 'What is the new description of the feature: ',
+    when: () => isOptionNotPassed('description'),
+    default: prevValue,
+  }),
+  VISIBILITY: (prevValue: string) => ({
+    name: 'visibility',
+    type: 'list',
+    choices: ['public', 'private'],
+    message: 'What is the visbibility of the feature: ',
+    when: () => isOptionNotPassed('visibility'),
+    default: prevValue,
+  }),
+  TRUE_FALSE_DEFAULT: (valueType: string, prevValue: string) => ({
+    name: 'trueFalseDefault',
+    type: 'list',
+    choices: ['true', 'false'],
+    message: 'What is the default value: ',
+    when: () =>
+      isOptionNotPassed('trueFalseDefault') && valueType === 'boolean',
+    default: prevValue,
+  }),
+  TEXT_UPDATE_OPTIONS: (prevValues: string[]) => ({
+    name: 'updateTextMenuOption',
+    type: 'list',
+    choices: [...prevValues, 'Continue'],
+    message: 'Select a text option to update or press "Continue".',
+    when: () => isOptionNotPassed('updateTextMenuOption'),
+  }),
+  TEXT_UPDATE: (prevValue: string) => ({
+    name: 'updateTextOption',
+    type: 'input',
+    message: 'What would you like to rename the option to?',
+    when: () => isOptionNotPassed('updateTextMenuOption'),
+    default: prevValue,
+  }),
+};

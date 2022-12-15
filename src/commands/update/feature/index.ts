@@ -1,22 +1,23 @@
 import chalk from 'chalk';
 import { CommandBuilder } from 'yargs';
-import { CREATE_PRODUCT_NAME_QUESTION_OPTION } from '../../../constants';
 import ErrorResponse from '../../../error-response';
-import { CREATE_FEATURES_QUESTIONS } from '../../../questions';
+import {
+  CREATE_FEATURES_QUESTIONS,
+  UPDATE_FEATURE_QUESTIONS,
+} from '../../../questions';
 import {
   ICommand,
   ICreateFeatureQuestionAnswers,
   ICreateProductQuestionAnswers,
   IFeature,
-  IPlan,
   IProduct,
   IRequestBody,
+  IUpdateFeatureQuestionAnswers,
 } from '../../../types';
 import { dataChooser } from '../../../utils/data-chooser';
 import { processAnswers } from '../../../utils/process-answers';
 import { RequestBase } from '../../../utils/request-base';
-import { choosePlanFeatureValue } from './choose-plan-feature-value';
-import { planTextMenu } from './plan-text-menu';
+import { updatePlanTextMenu } from './update-plan-text-menu';
 
 const builder: CommandBuilder = {
   productName: {
@@ -58,88 +59,88 @@ const builder: CommandBuilder = {
   },
 };
 
-const createFeatureRequestHandler = async (body: IRequestBody) => {
+const updateFeatureRequestHandler = async (
+  uuid: string,
+  body: IRequestBody
+) => {
   return await RequestBase<IFeature>({
-    method: 'POST',
-    endpoint: 'features',
+    method: 'PUT',
+    endpoint: `features/${uuid}`,
     body,
   });
 };
 
 const handler = async () => {
   try {
-    const PRODUCT_NAME_CHOICES = [CREATE_PRODUCT_NAME_QUESTION_OPTION];
-
-    // 1. Prompt the user to choose the product they want to create the feature on
+    // 1. Prompt the user to choose the product they want to update the feature on
     const selectedProduct = await dataChooser<
       IProduct,
-      ICreateFeatureQuestionAnswers,
+      IUpdateFeatureQuestionAnswers,
       ICreateProductQuestionAnswers
     >({
-      question: CREATE_FEATURES_QUESTIONS.PRODUCT_NAME(PRODUCT_NAME_CHOICES),
-      startingChoices: PRODUCT_NAME_CHOICES,
+      question: UPDATE_FEATURE_QUESTIONS.PRODUCT_NAME(['']),
+      startingChoices: [],
       endpoint: 'products',
       targetField: 'productName',
     });
 
-    // 2. Get all plans for the product selected
-    const productPlans = await RequestBase<IPlan[]>({
-      method: 'GET',
-      endpoint: `products/${selectedProduct?.uuid || ''}/plans`,
+    // 2. Prompt the user for the feature they want to update on the selected product
+    const featureToUpdate = await dataChooser<
+      IFeature,
+      IUpdateFeatureQuestionAnswers,
+      ICreateFeatureQuestionAnswers
+    >({
+      question: UPDATE_FEATURE_QUESTIONS.FEATURE_NAME(
+        selectedProduct?.features
+      ),
+      startingChoices: [],
+      endpoint: `products/${selectedProduct?.uuid || ''}/features`,
+      targetField: 'featureName',
     });
 
-    let planValues;
+    if (!featureToUpdate) {
+      throw new ErrorResponse(400, 'No feature to update found');
+    }
 
-    // 3. Get NAME, DISPLAY_NAME, VARIABLE_NAME, and DESCRIPTION for the new feature
+    // 3. Get updated NAME, DISPLAY_NAME, VARIABLE_NAME, and DESCRIPTION for the feature
     const {
       name: featureName,
       displayName,
-      variableName,
       description,
-      valueType,
       visibility,
-    } = await processAnswers<ICreateFeatureQuestionAnswers>([
-      CREATE_FEATURES_QUESTIONS.NAME,
-      CREATE_FEATURES_QUESTIONS.DISPLAY_NAME,
-      CREATE_FEATURES_QUESTIONS.VARIABLE_NAME,
-      CREATE_FEATURES_QUESTIONS.DESCRIPTION,
-      CREATE_FEATURES_QUESTIONS.VALUE_TYPE,
-      CREATE_FEATURES_QUESTIONS.VISIBILITY,
+    } = await processAnswers<IUpdateFeatureQuestionAnswers>([
+      UPDATE_FEATURE_QUESTIONS.NAME(featureToUpdate.name),
+      UPDATE_FEATURE_QUESTIONS.DISPLAY_NAME(featureToUpdate.displayName),
+      UPDATE_FEATURE_QUESTIONS.DESCRIPTION(featureToUpdate.description),
+      UPDATE_FEATURE_QUESTIONS.VISIBILITY(featureToUpdate.visibility),
     ]);
 
-    // 4. Depending on the valueType selected, ask further questions and perform POST request
+    const { variableName, valueType, uuid: featureUuid } = featureToUpdate;
+
+    // 4. Depending on the valueType of the feature, ask further questions before performing request
     switch (valueType) {
-      case 'true/false':
+      case 'boolean':
         // 4a1. Prompt the user if the default is true or false for the feature
         const { trueFalseDefault } = await processAnswers<
-          Pick<ICreateFeatureQuestionAnswers, 'trueFalseDefault'>
-        >(CREATE_FEATURES_QUESTIONS.TRUE_FALSE_DEFAULT(valueType));
+          Pick<IUpdateFeatureQuestionAnswers, 'trueFalseDefault'>
+        >(
+          UPDATE_FEATURE_QUESTIONS.TRUE_FALSE_DEFAULT(
+            valueType,
+            featureToUpdate.defaultValue
+          )
+        );
 
-        // 4a2. If there are existing plans then prompt the user to select the value for each plan for this feature
-        if (productPlans?.length) {
-          planValues = await choosePlanFeatureValue({
-            plans: productPlans,
-            type: 'list',
-            choices: ['true', 'false'],
-            defaults: {
-              isUnlimited: false,
-            },
-          });
-        }
-
-        // 4a3. Perform the POST request to the API to create the feature
-        await createFeatureRequestHandler({
+        // 4a2. Perform the PUT request to the API to update the feature
+        await updateFeatureRequestHandler(featureUuid, {
           productUuid: selectedProduct?.uuid || '',
           name: featureName,
           displayName,
           variableName,
           description,
           visibility,
-          valueType: 'boolean',
+          valueType,
           defaultValue: trueFalseDefault.toString(),
           showUnlimited: false,
-          featureOnPlans: planValues || {},
-          featureEnumOptions: [],
         });
         break;
 
@@ -157,9 +158,15 @@ const handler = async () => {
               'showUnlimited' | 'unlimitedNumberDefault' | 'numberDefault'
             >
           >([
-            CREATE_FEATURES_QUESTIONS.NUMERICAL_SHOW_UNLIMITED(),
-            CREATE_FEATURES_QUESTIONS.NUMERICAL_UNLIMITED_NUMBER_DEFAULT(),
-            CREATE_FEATURES_QUESTIONS.NUMERICAL_NUMBER_DEFAULT(),
+            CREATE_FEATURES_QUESTIONS.NUMERICAL_SHOW_UNLIMITED(
+              featureToUpdate.showUnlimited
+            ),
+            CREATE_FEATURES_QUESTIONS.NUMERICAL_UNLIMITED_NUMBER_DEFAULT(
+              featureToUpdate.defaultValue === '-1' ? 'Unlimited' : 'Number'
+            ),
+            CREATE_FEATURES_QUESTIONS.NUMERICAL_NUMBER_DEFAULT(
+              parseInt(featureToUpdate.defaultValue)
+            ),
           ]);
 
         // 4b2. If showUnlimited, check if unlimited is default (-1), if not use `numberDefault` value
@@ -169,25 +176,8 @@ const handler = async () => {
             : numberDefault.toString()
           : numberDefault.toString();
 
-        // 4b3. If there are existing plans then prompt the user to choose the defaults for each plan based on the answers above in 4b1.
-        if (productPlans?.length) {
-          planValues = await choosePlanFeatureValue({
-            plans: productPlans,
-            type: 'list',
-            featureType: 'numerical',
-            defaults: {
-              isUnlimited: false,
-            },
-            planAnswers: {
-              showUnlimited,
-              unlimitedNumberDefault,
-              numberDefault,
-            },
-          });
-        }
-
-        // 4b4. Perform the POST request to the API to create the feature
-        await createFeatureRequestHandler({
+        // 4b3. Perform the PUT request to the API to update the feature
+        await updateFeatureRequestHandler(featureUuid, {
           productUuid: selectedProduct?.uuid || '',
           name: featureName,
           displayName,
@@ -197,45 +187,40 @@ const handler = async () => {
           valueType,
           defaultValue,
           showUnlimited,
-          featureOnPlans: planValues || {},
           featureEnumOptions: [],
         });
         break;
 
-      case 'text':
-        // 4c1. Prompt the user with a recursive menu for creating the list of text options to be used in the feature
-        const textOptions = await planTextMenu();
+      case 'enum':
+        // 4c21 Prompt the user with a recursive menu to edit the list of text options for the feature
+        const textOptions = await updatePlanTextMenu(
+          featureToUpdate.featureEnumOptions
+        );
+
+        const enumNames = textOptions.map(({ name }) => name);
 
         // 4c2. Based on the options chosen in 4c1, prompt the user to choose a default
         const { textOptionsDefault } = await processAnswers<
           Pick<ICreateFeatureQuestionAnswers, 'textOptionsDefault'>
-        >(CREATE_FEATURES_QUESTIONS.TEXT_OPTIONS_DEFAULT(textOptions));
+        >(CREATE_FEATURES_QUESTIONS.TEXT_OPTIONS_DEFAULT(enumNames));
 
-        // 4c3. If there are existing plans then prompt the user to choose the default text option for each plan
-        if (productPlans?.length) {
-          planValues = await choosePlanFeatureValue({
-            plans: productPlans,
-            type: 'list',
-            choices: textOptions,
-            defaults: {
-              isUnlimited: false,
-            },
-          });
-        }
-
-        // 4c4. Perform the POST request to the API to create the feature
-        await createFeatureRequestHandler({
+        // 4c3. Perform the POST request to the API to create the feature
+        await updateFeatureRequestHandler(featureUuid, {
           productUuid: selectedProduct?.uuid || '',
           name: featureName,
           displayName,
           variableName,
           description,
           visibility,
-          valueType: 'enum',
+          valueType,
           defaultValue: textOptionsDefault,
           showUnlimited: false,
-          featureOnPlans: planValues || {},
-          featureEnumOptions: textOptions.map((option) => ({ name: option })),
+          featureEnumOptions: textOptions.map(({ name, updatedAt, uuid }) => ({
+            name,
+            featureUuid,
+            updatedAt,
+            uuid,
+          })),
         });
         break;
 
@@ -246,7 +231,7 @@ const handler = async () => {
     // 5. Log the output of the command
     console.log(
       chalk.green(
-        `Feature: ${featureName} created succesfully on ${
+        `Feature: ${featureName} updated succesfully on ${
           selectedProduct?.name || ''
         }`
       )
@@ -258,9 +243,9 @@ const handler = async () => {
   }
 };
 
-export const createFeature: ICommand = {
+export const updateFeature: ICommand = {
   command: 'feature',
-  describe: 'Create a new feature for a product',
+  describe: 'Update an existing feature on a product',
   builder,
   handler,
 };
