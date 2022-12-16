@@ -1,7 +1,11 @@
 import { RequestBase } from '../../utils/request-base';
 import chalk from 'chalk';
 import ErrorResponse from '../../error-response';
-import { ICommand, IDeprecateCapabilityQuestionAnswers } from '../../types';
+import {
+  ICapability,
+  ICommand,
+  IDeprecateCapabilityQuestionAnswers,
+} from '../../types';
 import { DEPRECATE_CAPABILITY_QUESTIONS } from '../../questions';
 import { processAnswers } from '../../utils/process-answers';
 import { CommandBuilder } from 'yargs';
@@ -19,7 +23,7 @@ const handler = async () => {
       DEPRECATE_CAPABILITY_QUESTIONS
     );
 
-    await RequestBase({
+    await RequestBase<ICapability>({
       method: 'DELETE',
       endpoint: `capabilities/${uuid}`,
     });
