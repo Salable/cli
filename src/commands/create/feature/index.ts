@@ -88,7 +88,14 @@ const handler = async () => {
       endpoint: `products/${selectedProduct?.uuid || ''}/plans`,
     });
 
-    let planValues;
+    const planValues: {
+      [x: string]: {
+        defaultValue: string;
+        isUnlimited: boolean;
+        value: string;
+      };
+    }[] = [];
+    let featureOnPlans;
 
     // 3. Get NAME, DISPLAY_NAME, VARIABLE_NAME, and DESCRIPTION for the new feature
     const {
@@ -116,16 +123,27 @@ const handler = async () => {
         >(CREATE_FEATURES_QUESTIONS.TRUE_FALSE_DEFAULT(valueType));
 
         // 4a2. If there are existing plans then prompt the user to select the value for each plan for this feature
-        if (productPlans?.length) {
-          planValues = await choosePlanFeatureValue({
-            plans: productPlans,
-            type: 'list',
-            choices: ['true', 'false'],
-            defaults: {
-              isUnlimited: false,
-            },
-          });
+        if (productPlans) {
+          for (let i = 0; i < productPlans?.length; i++) {
+            const output = await choosePlanFeatureValue({
+              plan: productPlans[i],
+              type: 'list',
+              defaults: {
+                isUnlimited: false,
+              },
+              choices: ['true', 'false'],
+            });
+
+            planValues.push(output);
+          }
         }
+
+        featureOnPlans = planValues.reduce((acc, cur) => {
+          acc = {
+            ...cur,
+          };
+          return acc;
+        }, {});
 
         // 4a3. Perform the POST request to the API to create the feature
         await createFeatureRequestHandler({
@@ -138,7 +156,7 @@ const handler = async () => {
           valueType: 'boolean',
           defaultValue: trueFalseDefault.toString(),
           showUnlimited: false,
-          featureOnPlans: planValues || {},
+          featureOnPlans,
           featureEnumOptions: [],
         });
         break;
@@ -170,21 +188,32 @@ const handler = async () => {
           : numberDefault.toString();
 
         // 4b3. If there are existing plans then prompt the user to choose the defaults for each plan based on the answers above in 4b1.
-        if (productPlans?.length) {
-          planValues = await choosePlanFeatureValue({
-            plans: productPlans,
-            type: 'list',
-            featureType: 'numerical',
-            defaults: {
-              isUnlimited: false,
-            },
-            planAnswers: {
-              showUnlimited,
-              unlimitedNumberDefault,
-              numberDefault,
-            },
-          });
+        if (productPlans) {
+          for (let i = 0; i < productPlans?.length; i++) {
+            const output = await choosePlanFeatureValue({
+              plan: productPlans[i],
+              type: 'list',
+              featureType: 'numerical',
+              defaults: {
+                isUnlimited: false,
+              },
+              planAnswers: {
+                showUnlimited,
+                unlimitedNumberDefault,
+                numberDefault,
+              },
+            });
+
+            planValues.push(output);
+          }
         }
+
+        featureOnPlans = planValues.reduce((acc, cur) => {
+          acc = {
+            ...cur,
+          };
+          return acc;
+        }, {});
 
         // 4b4. Perform the POST request to the API to create the feature
         await createFeatureRequestHandler({
@@ -197,7 +226,7 @@ const handler = async () => {
           valueType,
           defaultValue,
           showUnlimited,
-          featureOnPlans: planValues || {},
+          featureOnPlans,
           featureEnumOptions: [],
         });
         break;
@@ -212,16 +241,27 @@ const handler = async () => {
         >(CREATE_FEATURES_QUESTIONS.TEXT_OPTIONS_DEFAULT(textOptions));
 
         // 4c3. If there are existing plans then prompt the user to choose the default text option for each plan
-        if (productPlans?.length) {
-          planValues = await choosePlanFeatureValue({
-            plans: productPlans,
-            type: 'list',
-            choices: textOptions,
-            defaults: {
-              isUnlimited: false,
-            },
-          });
+        if (productPlans) {
+          for (let i = 0; i < productPlans?.length; i++) {
+            const output = await choosePlanFeatureValue({
+              plan: productPlans[i],
+              type: 'list',
+              choices: textOptions,
+              defaults: {
+                isUnlimited: false,
+              },
+            });
+
+            planValues.push(output);
+          }
         }
+
+        featureOnPlans = planValues.reduce((acc, cur) => {
+          acc = {
+            ...cur,
+          };
+          return acc;
+        }, {});
 
         // 4c4. Perform the POST request to the API to create the feature
         await createFeatureRequestHandler({
@@ -234,7 +274,7 @@ const handler = async () => {
           valueType: 'enum',
           defaultValue: textOptionsDefault,
           showUnlimited: false,
-          featureOnPlans: planValues || {},
+          featureOnPlans,
           featureEnumOptions: textOptions.map((option) => ({ name: option })),
         });
         break;
