@@ -234,6 +234,184 @@ export const CREATE_FEATURES_QUESTIONS = {
   },
 };
 
+export const CREATE_PLAN_QUESTIONS = {
+  PRODUCT_NAME: (PRODUCT_NAME_CHOICES: string[]) => ({
+    name: 'productName',
+    type: 'list',
+    message: 'What product would you like to create the plan on: ',
+    choices: PRODUCT_NAME_CHOICES,
+    when: () => isOptionNotPassed('productName'),
+  }),
+  NAME: {
+    name: 'name',
+    type: 'input',
+    message: 'What would you like to name the plan: ',
+    when: () => isOptionNotPassed('name'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Feature name cannot be empty';
+    },
+  },
+  DISPLAY_NAME: {
+    name: 'displayName',
+    type: 'input',
+    message: 'What is the display name of the plan: ',
+    when: () => isOptionNotPassed('displayName'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Plan display name cannot be empty';
+    },
+  },
+  DESCRIPTION: {
+    name: 'description',
+    type: 'input',
+    message: 'What is the description of the plan: ',
+    when: () => isOptionNotPassed('description'),
+  },
+  CAPABILITIES: (choices: string[]) => ({
+    name: 'capabilities',
+    type: 'checkbox',
+    message: 'What capabilities are on this plan? ',
+    when: () => isOptionNotPassed('capabilities'),
+    choices,
+    validate: (input: string[]) => {
+      if (input?.length) return true;
+      else return 'At least one capability must be selected';
+    },
+  }),
+  APP_TYPE: {
+    name: 'appType',
+    type: 'list',
+    choices: ['Trello', 'Miro', 'Custom'],
+    message: 'What is the app type of the plan? ',
+    when: () => isOptionNotPassed('appType'),
+  },
+  LICENSE_TYPE: {
+    name: 'licenseType',
+    type: 'list',
+    choices: ['User', 'Board'],
+    message: 'What is the license type of the plan? ',
+    when: (answers: Answers) =>
+      isOptionNotPassed('licenseType') && answers?.appType !== 'Custom',
+  },
+  PLAN_TYPE: {
+    name: 'planType',
+    type: 'list',
+    choices: ['Standard', 'Bespoke', 'Evaluation', 'Coming Soon'],
+    message: 'What is the plan type? ',
+    when: () => isOptionNotPassed('planType'),
+  },
+  PLAN_CYCLE_INTERVAL: (planAnswers: Answers) => ({
+    name: 'planCycleInterval',
+    type: 'list',
+    choices:
+      planAnswers?.planType === 'Bespoke'
+        ? ['Year', 'Month', 'Day']
+        : ['Year', 'Month'],
+    message: 'What is the plan cycle interval? ',
+    when: () =>
+      isOptionNotPassed('planCycleInterval') &&
+      planAnswers?.planType !== 'Evaluation',
+  }),
+  PLAN_INTERVAL_LENGTH: (planAnswers: Answers) => ({
+    name: 'planIntervalLength',
+    type: 'number',
+    message: 'What is the plan interval length? ',
+    when: () =>
+      isOptionNotPassed('planIntervalLength') &&
+      planAnswers?.planType !== 'Evaluation',
+  }),
+  EVALUATION_PERIOD: (planAnswers: Answers) => ({
+    name: 'evaluationPeriod',
+    type: 'confirm',
+    message: 'Does this plan have an evaluation period? ',
+    when: () =>
+      isOptionNotPassed('evaluationPeriod') &&
+      !['Evaluation', 'Coming Soon'].includes(planAnswers?.planType as string),
+  }),
+  EVALUATION_PERIOD_DAYS: (planAnswers: Answers) => ({
+    name: 'evaluationPeriodDays',
+    type: 'number',
+    message: 'How many days is the evaluation period? ',
+    when: (answers: Answers) =>
+      isOptionNotPassed('evaluationPeriodDays') &&
+      ((!['Coming Soon'].includes(planAnswers?.planType as string) &&
+        (answers.evaluationPeriod as boolean)) ||
+        planAnswers?.planType === 'Evaluation'),
+  }),
+  VISIBILITY: {
+    name: 'visibility',
+    type: 'list',
+    choices: ['public', 'private'],
+    message: 'What is the visbibility of the plan: ',
+    when: (answers: Answers) =>
+      isOptionNotPassed('visibility') &&
+      ['Standard', 'Coming Soon'].includes(answers?.planType as string),
+  },
+  PUBLISHED: {
+    name: 'published',
+    type: 'confirm',
+    message: 'Is the plan published?',
+    when: () => isOptionNotPassed('published'),
+  },
+  TRUE_FALSE_DEFAULT: (
+    valueType: string,
+    prevValue: string,
+    featureName: string
+  ) => ({
+    name: 'trueFalseDefault',
+    type: 'list',
+    choices: ['true', 'false'],
+    message: `What is the default value for ${featureName}: `,
+    when: () =>
+      isOptionNotPassed('trueFalseDefault') && valueType === 'boolean',
+    default: prevValue,
+  }),
+  NUMERICAL_SHOW_UNLIMITED: (prevValue: boolean, featureName: string) => ({
+    name: 'showUnlimited',
+    type: 'confirm',
+    message: `Add an unlimited option to the feature ${featureName}?`,
+    when: () => isOptionNotPassed('showUnlimited'),
+    ...(prevValue !== undefined && { default: prevValue }),
+  }),
+  NUMERICAL_UNLIMITED_NUMBER_DEFAULT: (
+    prevValue: string,
+    featureName: string
+  ) => ({
+    name: 'unlimitedNumberDefault',
+    type: 'list',
+    choices: ['Unlimited', 'Number'],
+    message: `Which field is the deafult option for the feature ${featureName}`,
+    when: (answers: Answers) =>
+      isOptionNotPassed('unlimitedNumberDefault') &&
+      (answers.showUnlimited as boolean),
+    ...(prevValue !== undefined && { default: prevValue }),
+  }),
+  NUMERICAL_NUMBER_DEFAULT: (prevValue: number, featureName: string) => ({
+    name: 'numberDefault',
+    type: 'input',
+    message: `Which number should be the default for the feature ${featureName}?`,
+    when: (answers: Answers) => {
+      return (
+        isOptionNotPassed('numberDefault') &&
+        (!answers.showUnlimited || answers.unlimitedNumberDefault === 'Number')
+      );
+    },
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'A default numerical value is required';
+    },
+    ...(prevValue !== undefined && { default: prevValue }),
+  }),
+  TEXT_OPTIONS_DEFAULT: (choices: string[], featureName: string) => ({
+    name: 'textOptionsDefault',
+    type: 'list',
+    choices,
+    message: `Which option should be the default for the feature ${featureName}?`,
+    when: () => isOptionNotPassed('textOptionsDefault'),
+  }),
+};
+
 export const CREATE_API_KEY_QUESTIONS = [
   {
     name: 'name',

@@ -4,6 +4,7 @@ import { createApp } from './app';
 import { createApiKey } from './api-key';
 import { createCapability } from './capability';
 import { createFeature } from './feature';
+import { createPlan } from './plan';
 
 export const createCommands = (cli: Argv) => {
   const COMMAND_NAME = 'create';
@@ -48,6 +49,13 @@ export const createCommands = (cli: Argv) => {
           describe: createFeature.describe,
           builder: createFeature.builder,
           handler: createFeature.handler,
+        })
+        // create plan
+        .command({
+          command: createPlan.command,
+          describe: createPlan.describe,
+          builder: createPlan.builder,
+          handler: createPlan.handler,
         })
         .wrap(null)
         .showHelpOnFail(true)

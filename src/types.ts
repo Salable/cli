@@ -30,7 +30,11 @@ export type IRequestBody = {
         [key: string]: string | boolean | { [key: string]: string | boolean };
       }
     | {
-        [key: string]: string | boolean | { [key: string]: string | boolean };
+        [key: string]:
+          | string
+          | boolean
+          | undefined
+          | { [key: string]: string | boolean };
       }[];
 };
 
@@ -254,6 +258,23 @@ export interface ICreateFeatureQuestionAnswers {
   planFeatureValue: string;
   planNumberDefault: number;
   planUnlimitedNumberDefault: 'Unlimited' | 'Number';
+}
+
+export interface ICreatePlanQuestionAnswers {
+  name: string;
+  displayName: string;
+  productName: string;
+  description: string;
+  capabilities: string[];
+  appType: 'Miro' | 'Trello' | 'Custom';
+  licenseType?: 'User' | 'Board';
+  planType: 'Standard' | 'Bespoke' | 'Evaluation' | 'Coming Soon';
+  published: boolean;
+  visibility: string;
+  planCycleInterval: 'Year' | 'Month';
+  planIntervalLength: number;
+  evaluationPeriod: boolean;
+  evaluationPeriodDays: number;
 }
 
 export interface IUpdateFeatureQuestionAnswers {
