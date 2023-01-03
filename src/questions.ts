@@ -479,6 +479,19 @@ export const DEPRECATE_PRODUCT_QUESTIONS = [
   },
 ];
 
+export const DEPRECATE_PLAN_QUESTIONS = [
+  {
+    name: 'uuid',
+    type: 'input',
+    message: 'Plan UUID to deprecate: ',
+    when: () => isOptionNotPassed('uuid'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Plan UUID cannot be empty';
+    },
+  },
+];
+
 export const DEPRECATE_CAPABILITY_QUESTIONS = [
   {
     name: 'uuid',

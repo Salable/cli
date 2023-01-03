@@ -341,6 +341,10 @@ export interface IDeprecateProductQuestionAnswers {
   uuid: string;
 }
 
+export interface IDeprecatePlanQuestionAnswers {
+  uuid: string;
+}
+
 export interface IDeprecateCapabilityQuestionAnswers {
   uuid: string;
 }

@@ -1,6 +1,7 @@
 import { Argv, CommandBuilder } from 'yargs';
 import { deprecateApiKey } from './api-key';
 import { deprecateCapability } from './capability';
+import { deprecatePlan } from './plan';
 import { deprecateProduct } from './product';
 
 export const deprecateCommands = (cli: Argv) => {
@@ -32,6 +33,13 @@ export const deprecateCommands = (cli: Argv) => {
           describe: deprecateCapability.describe,
           builder: deprecateCapability.builder,
           handler: deprecateCapability.handler,
+        })
+        // Deprecate Plan
+        .command({
+          command: deprecatePlan.command,
+          describe: deprecatePlan.describe,
+          builder: deprecatePlan.builder,
+          handler: deprecatePlan.handler,
         })
         .wrap(null)
         .showHelpOnFail(true)
