@@ -1,3 +1,23 @@
+# [1.8.0](https://github.com/Salable/cli/compare/v1.7.0...v1.8.0) (2023-01-03)
+
+
+### Bug Fixes
+
+* **#14:** fixed help menu not displaying ([4b07523](https://github.com/Salable/cli/commit/4b07523be8698aa16961c780cbeb9c0cc9c8b44d))
+* **#14:** fixed looping plan skips commands issue ([209d046](https://github.com/Salable/cli/commit/209d04606920b9e92ea5d3e7ded4fcc6aaf4cf40))
+* **#14:** updated refresh token logic ([dcaa652](https://github.com/Salable/cli/commit/dcaa65274887fd74fffaaa3595e58a27b2c26d45)), closes [#14](https://github.com/Salable/cli/issues/14)
+
+
+### Features
+
+* **#14:** added ability to add features to existing plans ([8af2b19](https://github.com/Salable/cli/commit/8af2b19739b4ddeeaca32641c135bd7ce75f84aa)), closes [#14](https://github.com/Salable/cli/issues/14)
+* **#14:** added create feature command ([28bd4e9](https://github.com/Salable/cli/commit/28bd4e9e7c00a399bfd98febe5a4d08a3155d1e4)), closes [#14](https://github.com/Salable/cli/issues/14)
+* **#14:** added list plans command ([2894119](https://github.com/Salable/cli/commit/2894119b80a96a6376852756676a646c42e28b5a)), closes [#14](https://github.com/Salable/cli/issues/14)
+* **#14:** added list/features command ([346682f](https://github.com/Salable/cli/commit/346682f9009ab7da389d2d238efeb9c66539bb6c)), closes [#14](https://github.com/Salable/cli/issues/14)
+* **#14:** added update feature command ([a70a9ce](https://github.com/Salable/cli/commit/a70a9cebb7bc0c990e16bd163dccbdfdcaf716c1)), closes [#14](https://github.com/Salable/cli/issues/14)
+* **#14:** added validation to questions where appropriate ([b8cf6fd](https://github.com/Salable/cli/commit/b8cf6fd95520d4083dff67cc0939d1013d27e811)), closes [#14](https://github.com/Salable/cli/issues/14)
+* **#14:** updated builder for create feature ([4c0a271](https://github.com/Salable/cli/commit/4c0a27127fde041fb3a6d5be4549aa4e9ebc6da6)), closes [#14](https://github.com/Salable/cli/issues/14)
+
 # [1.7.0](https://github.com/Salable/cli/compare/v1.6.0...v1.7.0) (2022-12-13)
 
 
