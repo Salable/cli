@@ -12,7 +12,6 @@ export const RequestBase = async <T>({
   body,
 }: IRequestBase): Promise<T | undefined | void> => {
   try {
-    let data;
     const token = await getToken('ACCESS_TOKEN');
 
     if (!token) {
@@ -35,15 +34,17 @@ export const RequestBase = async <T>({
         }),
     });
 
-    const { status, statusText } = res;
+    const { status } = res;
 
-    // If the request is successful, get the data to be returned
-    if (status === HttpStatusCodes.ok || status === HttpStatusCodes.created) {
-      data = (await res.json()) as Promise<T> | string;
-    }
+    // Get the data from the response
+    const data = (await res.json()) as Promise<T> | string;
 
-    // If the request fails with an invalid token, refresh the tokens and try the request again
-    if (status === HttpStatusCodes.badRequest && statusText !== 'Bad Request') {
+    // If the request fails with a bad request, refresh the tokens and try the request again
+    if (
+      status === HttpStatusCodes.badRequest &&
+      typeof data === 'string' &&
+      data?.length > 0
+    ) {
       await refreshTokens();
 
       return await RequestBase({
@@ -70,7 +71,9 @@ export const RequestBase = async <T>({
       if (status === HttpStatusCodes.badRequest) {
         throw new ErrorResponse(
           status,
-          `Request to Salable API failed. Error Message: ${statusText}`
+          `Request to Salable API failed. Error Message: ${
+            (await res.json()) as string
+          }`
         );
       }
 
