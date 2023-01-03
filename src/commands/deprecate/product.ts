@@ -1,12 +1,16 @@
 import { RequestBase } from '../../utils/request-base';
 import chalk from 'chalk';
-import inquirer, { Answers } from 'inquirer';
 import ErrorResponse from '../../error-response';
-import { ICommand, IDeprecateProductQuestionAnswers } from '../../types';
+import {
+  ICommand,
+  IDeprecateProductQuestionAnswers,
+  IProduct,
+} from '../../types';
 import { DEPRECATE_PRODUCT_QUESTIONS } from '../../questions';
 import { processAnswers } from '../../utils/process-answers';
+import { CommandBuilder } from 'yargs';
 
-const builder = {
+const builder: CommandBuilder = {
   uuid: {
     type: 'string',
     description: 'The UUID of the product you want to deprecate',
@@ -15,11 +19,11 @@ const builder = {
 
 const handler = async () => {
   try {
-    const answers: Answers = await inquirer.prompt(DEPRECATE_PRODUCT_QUESTIONS);
+    const { uuid } = await processAnswers<IDeprecateProductQuestionAnswers>(
+      DEPRECATE_PRODUCT_QUESTIONS
+    );
 
-    const { uuid } = processAnswers<IDeprecateProductQuestionAnswers>(answers);
-
-    await RequestBase({
+    await RequestBase<IProduct>({
       method: 'DELETE',
       endpoint: `products/${uuid}`,
     });

@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import inquirer, { Answers } from 'inquirer';
+import { CommandBuilder } from 'yargs';
 import ErrorResponse from '../../error-response';
 import { DEPRECATE_API_KEY_QUESTIONS } from '../../questions';
 import {
@@ -10,7 +10,7 @@ import {
 import { processAnswers } from '../../utils/process-answers';
 import { RequestBase } from '../../utils/request-base';
 
-const builder = {
+const builder: CommandBuilder = {
   value: {
     type: 'string',
     description: 'The value of the API key to be deprecated',
@@ -20,9 +20,9 @@ const builder = {
 
 const handler = async () => {
   try {
-    const answers: Answers = await inquirer.prompt(DEPRECATE_API_KEY_QUESTIONS);
-
-    const { value } = processAnswers<IDeprecateApiKeyQuestionAnswers>(answers);
+    const { value } = await processAnswers<IDeprecateApiKeyQuestionAnswers>(
+      DEPRECATE_API_KEY_QUESTIONS
+    );
 
     await RequestBase<IApiKey>({
       method: 'DELETE',

@@ -7,6 +7,7 @@ import {
   createCommands,
   deprecateCommands,
   listCommands,
+  updateCommands,
 } from './commands';
 import { validateAuth } from './middleware/validate-auth';
 
@@ -29,6 +30,7 @@ import { validateAuth } from './middleware/validate-auth';
   listCommands(cli);
   createCommands(cli);
   deprecateCommands(cli);
+  updateCommands(cli);
 
   await cli.wrap(null).argv;
 })().catch((e) => {

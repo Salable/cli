@@ -1,49 +1,249 @@
+import { Answers } from 'inquirer';
 import yargs from 'yargs';
+import { IFeature } from './types';
+
+const isOptionNotPassed = (option: string) =>
+  !Object.keys(yargs(process.argv).argv).includes(option);
 
 export const CREATE_PRODUCT_QUESTIONS = [
   {
     name: 'name',
     type: 'input',
     message: 'Product name to use in Salable Backend: ',
-    when: () => !Object.keys(yargs(process.argv).argv).includes('name'),
+    when: () => isOptionNotPassed('name'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Project name cannot be empty';
+    },
   },
   {
     name: 'displayName',
     type: 'input',
     message: 'Product name to show in Pricing Tables: ',
-    when: () => !Object.keys(yargs(process.argv).argv).includes('displayName'),
+    when: () => isOptionNotPassed('displayName'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Project display name cannot be empty';
+    },
   },
   {
     name: 'productDescription',
     type: 'input',
     message: 'Description of your product: ',
-    when: () =>
-      !Object.keys(yargs(process.argv).argv).includes('productDescription'),
+    when: () => isOptionNotPassed('productDescription'),
   },
 ];
 
 export const CREATE_CAPABILITY_QUESTIONS = {
-  CAPABILITY_NAME: {
+  NAME: {
     name: 'name',
     type: 'input',
     message: 'What would you like to call the capability: ',
-    when: () => !Object.keys(yargs(process.argv).argv).includes('name'),
+    when: () => isOptionNotPassed('name'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Capability name cannot be empty';
+    },
   },
   PRODUCT_NAME: (PRODUCT_NAME_CHOICES: string[]) => ({
     name: 'productName',
     type: 'list',
     message: 'What product would you like to create the capability on: ',
     choices: PRODUCT_NAME_CHOICES,
-    when: () => !Object.keys(yargs(process.argv).argv).includes('productName'),
+    when: () => isOptionNotPassed('productName'),
   }),
+};
+
+export const CREATE_FEATURES_QUESTIONS = {
+  PRODUCT_NAME: (PRODUCT_NAME_CHOICES: string[]) => ({
+    name: 'productName',
+    type: 'list',
+    message: 'What product would you like to create the feature on: ',
+    choices: PRODUCT_NAME_CHOICES,
+    when: () => isOptionNotPassed('productName'),
+  }),
+  NAME: {
+    name: 'name',
+    type: 'input',
+    message: 'What would you like to name the feature: ',
+    when: () => isOptionNotPassed('name'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Feature name cannot be empty';
+    },
+  },
+  DISPLAY_NAME: {
+    name: 'displayName',
+    type: 'input',
+    message: 'What is the display name of the feature: ',
+    when: () => isOptionNotPassed('displayName'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Feature display name cannot be empty';
+    },
+  },
+  VARIABLE_NAME: {
+    name: 'variableName',
+    type: 'input',
+    message: 'What is the variable name of the feature: ',
+    default: (answers: Answers) => answers?.name as string,
+    when: () => isOptionNotPassed('variableName'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Feature variable name cannot be empty';
+    },
+  },
+  DESCRIPTION: {
+    name: 'description',
+    type: 'input',
+    message: 'What is the description of the feature: ',
+    when: () => isOptionNotPassed('description'),
+  },
+  VALUE_TYPE: {
+    name: 'valueType',
+    type: 'list',
+    choices: ['true/false', 'numerical', 'text'],
+    message: 'What is the value type of the feature: ',
+    when: () => isOptionNotPassed('valueType'),
+  },
+  TRUE_FALSE_DEFAULT: (valueType: string) => ({
+    name: 'trueFalseDefault',
+    type: 'list',
+    choices: ['true', 'false'],
+    message: 'What is the default value: ',
+    when: () =>
+      isOptionNotPassed('trueFalseDefault') && valueType === 'true/false',
+  }),
+  NUMERICAL_SHOW_UNLIMITED: (prevValue?: boolean) => ({
+    name: 'showUnlimited',
+    type: 'confirm',
+    message: 'Should an unlimited option be added? ',
+    when: () => isOptionNotPassed('showUnlimited'),
+    ...(prevValue !== undefined && { default: prevValue }),
+  }),
+  NUMERICAL_UNLIMITED_NUMBER_DEFAULT: (prevValue?: string) => ({
+    name: 'unlimitedNumberDefault',
+    type: 'list',
+    choices: ['Unlimited', 'Number'],
+    message: 'Which field is the deafult option? ',
+    when: (answers: Answers) =>
+      isOptionNotPassed('unlimitedNumberDefault') &&
+      (answers.showUnlimited as boolean),
+    ...(prevValue !== undefined && { default: prevValue }),
+  }),
+  NUMERICAL_NUMBER_DEFAULT: (prevValue?: number) => ({
+    name: 'numberDefault',
+    type: 'input',
+    message: 'Which number should be the default? ',
+    when: (answers: Answers) => {
+      return (
+        isOptionNotPassed('numberDefault') &&
+        (!answers.showUnlimited || answers.unlimitedNumberDefault === 'Number')
+      );
+    },
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'A default numerical value is required';
+    },
+    ...(prevValue !== undefined && { default: prevValue }),
+  }),
+  PLAN_NUMERICAL_UNLIMITED_NUMBER_DEFAULT: (
+    answers: Answers,
+    planName: string
+  ) => ({
+    name: 'planUnlimitedNumberDefault',
+    type: 'list',
+    choices: ['Unlimited', 'Number'],
+    message: `Which field is the deafult option for plan: ${planName}?`,
+    when: () =>
+      isOptionNotPassed('planUnlimitedNumberDefault') &&
+      (answers.showUnlimited as boolean),
+  }),
+  PLAN_NUMERICAL_NUMBER_DEFAULT: (planAnswers: Answers, planName: string) => ({
+    name: 'planNumberDefault',
+    type: 'number',
+    message: `Which number should be the default for the plan: ${planName}?`,
+    when: (answers: Answers) => {
+      return (
+        isOptionNotPassed('planNumberDefault') &&
+        (!planAnswers.showUnlimited ||
+          answers.planUnlimitedNumberDefault === 'Number')
+      );
+    },
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'A default numerical value for the plan is required';
+    },
+  }),
+  TEXT_CREATE_OPTION: {
+    name: 'createTextOption',
+    type: 'input',
+    message: 'Which would you like to name the text option?',
+    when: () => isOptionNotPassed('createTextOption'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Text option name cannot be empty';
+    },
+  },
+  TEXT_CREATE_OPTION_MENU: {
+    name: 'createTextMenuOption',
+    type: 'list',
+    choices: ['Create a new text option', 'Delete a text option', 'Continue'],
+    message: 'Which would you like to do now?',
+    when: () => isOptionNotPassed('createTextMenuOption'),
+  },
+  TEXT_DELETE_OPTION: (choices: string[]) => ({
+    name: 'deleteTextOption',
+    type: 'list',
+    choices,
+    message: 'Which option would you like to delete?',
+    when: () => isOptionNotPassed('deleteTextOption'),
+  }),
+  TEXT_OPTIONS_DEFAULT: (choices: string[]) => ({
+    name: 'textOptionsDefault',
+    type: 'list',
+    choices,
+    message: 'Which option should be the default?',
+    when: () => isOptionNotPassed('textOptionsDefault'),
+  }),
+  PLAN_FEATURE_VALUE: ({
+    planName,
+    type,
+    choices,
+  }: {
+    planName: string;
+    type: string;
+    choices?: string[];
+  }) => ({
+    name: 'planFeatureValue',
+    type,
+    ...(choices?.length && { choices }),
+    message: `What value should be given to this feature for the existing plan ${planName}?`,
+    when: () => isOptionNotPassed('planFeatureValue'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Feature value cannot be empty';
+    },
+  }),
+  VISIBILITY: {
+    name: 'visibility',
+    type: 'list',
+    choices: ['public', 'private'],
+    message: 'What is the visbibility of the feature: ',
+    when: () => isOptionNotPassed('visibility'),
+  },
 };
 
 export const CREATE_API_KEY_QUESTIONS = [
   {
     name: 'name',
     type: 'input',
-    message: 'What would you like to name the API key: ',
-    when: () => !Object.keys(yargs(process.argv).argv).includes('name'),
+    message: 'What would you like to name the API Key: ',
+    when: () => isOptionNotPassed('name'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'API Key name cannot be empty';
+    },
   },
 ];
 
@@ -53,13 +253,13 @@ export const CREATE_APP_QUESTIONS = {
     type: 'list',
     message: 'What project template would you like to generate?',
     choices: TEMPLATE_CHOICES,
-    when: () => !Object.keys(yargs(process.argv).argv).includes('template'),
+    when: () => isOptionNotPassed('template'),
   }),
   PROJECT_NAME: {
     name: 'name',
     type: 'input',
     message: 'Project name:',
-    when: () => !Object.keys(yargs(process.argv).argv).includes('name'),
+    when: () => isOptionNotPassed('name'),
     validate: (input: string) => {
       if (/^([A-Za-z\-\_\d])+$/.test(input)) return true;
       else
@@ -71,7 +271,7 @@ export const CREATE_APP_QUESTIONS = {
     type: 'list',
     message: 'What api-key would you like to uset to generate the project?',
     choices: API_KEY_CHOICES,
-    when: () => !Object.keys(yargs(process.argv).argv).includes('apiKey'),
+    when: () => isOptionNotPassed('apiKey'),
   }),
 };
 
@@ -79,8 +279,12 @@ export const DEPRECATE_API_KEY_QUESTIONS = [
   {
     name: 'value',
     type: 'input',
-    message: 'API key value to deprecate: ',
-    when: () => !Object.keys(yargs(process.argv).argv).includes('value'),
+    message: 'API Key value to deprecate: ',
+    when: () => isOptionNotPassed('value'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'API Key value cannot be empty';
+    },
   },
 ];
 
@@ -89,7 +293,11 @@ export const DEPRECATE_PRODUCT_QUESTIONS = [
     name: 'uuid',
     type: 'input',
     message: 'Product UUID to deprecate: ',
-    when: () => !Object.keys(yargs(process.argv).argv).includes('uuid'),
+    when: () => isOptionNotPassed('uuid'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Product UUID cannot be empty';
+    },
   },
 ];
 
@@ -98,7 +306,11 @@ export const DEPRECATE_CAPABILITY_QUESTIONS = [
     name: 'uuid',
     type: 'input',
     message: 'Capability UUID to deprecate: ',
-    when: () => !Object.keys(yargs(process.argv).argv).includes('uuid'),
+    when: () => isOptionNotPassed('uuid'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Capability UUID cannot be empty';
+    },
   },
 ];
 
@@ -107,6 +319,113 @@ export const LIST_CAPABILITY_QUESTIONS = [
     name: 'productUuid',
     type: 'input',
     message: 'Product UUID to show capabilities for: ',
-    when: () => !Object.keys(yargs(process.argv).argv).includes('productUuid'),
+    when: () => isOptionNotPassed('productUuid'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Product UUID cannot be empty';
+    },
   },
 ];
+
+export const LIST_PLANS_QUESTIONS = [
+  {
+    name: 'productUuid',
+    type: 'input',
+    message: 'Product UUID to show plans for: ',
+    when: () => isOptionNotPassed('productUuid'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Product UUID cannot be empty';
+    },
+  },
+];
+
+export const LIST_FEATURES_QUESTIONS = [
+  {
+    name: 'productUuid',
+    type: 'input',
+    message: 'Product UUID to show features for: ',
+    when: () => isOptionNotPassed('productUuid'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Product UUID cannot be empty';
+    },
+  },
+];
+
+export const UPDATE_FEATURE_QUESTIONS = {
+  PRODUCT_NAME: (PRODUCT_NAME_CHOICES: string[]) => ({
+    name: 'productName',
+    type: 'list',
+    message: 'What product would you like to update a feature on: ',
+    choices: PRODUCT_NAME_CHOICES,
+    when: () => isOptionNotPassed('productName'),
+  }),
+  FEATURE_NAME: (FEATURE_NAME_CHOICES?: IFeature[]) => ({
+    name: 'featureName',
+    type: 'list',
+    message: 'What feature would you like to update? ',
+    choices: FEATURE_NAME_CHOICES,
+    when: () => isOptionNotPassed('name'),
+  }),
+  NAME: (prevValue: string) => ({
+    name: 'name',
+    type: 'input',
+    message: 'What would you like to name the feature? ',
+    when: () => isOptionNotPassed('name'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Feature name cannot be empty';
+    },
+    default: prevValue,
+  }),
+  DISPLAY_NAME: (prevValue: string) => ({
+    name: 'displayName',
+    type: 'input',
+    message: 'What is the display name of the feature: ',
+    when: () => isOptionNotPassed('displayName'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Feature display name cannot be empty';
+    },
+    default: prevValue,
+  }),
+  DESCRIPTION: (prevValue: string) => ({
+    name: 'description',
+    type: 'input',
+    message: 'What is the new description of the feature: ',
+    when: () => isOptionNotPassed('description'),
+    default: prevValue,
+  }),
+  VISIBILITY: (prevValue: string) => ({
+    name: 'visibility',
+    type: 'list',
+    choices: ['public', 'private'],
+    message: 'What is the visbibility of the feature: ',
+    when: () => isOptionNotPassed('visibility'),
+    default: prevValue,
+  }),
+  TRUE_FALSE_DEFAULT: (valueType: string, prevValue: string) => ({
+    name: 'trueFalseDefault',
+    type: 'list',
+    choices: ['true', 'false'],
+    message: 'What is the default value: ',
+    when: () =>
+      isOptionNotPassed('trueFalseDefault') && valueType === 'boolean',
+    default: prevValue,
+  }),
+  TEXT_UPDATE_OPTIONS: (prevValues: string[]) => ({
+    name: 'updateTextMenuOption',
+    type: 'list',
+    choices: [...prevValues, 'Continue'],
+    message: 'Select a text option to update or press "Continue".',
+    when: () => isOptionNotPassed('updateTextMenuOption'),
+  }),
+  TEXT_UPDATE: (prevValue: string) => ({
+    name: 'updateTextOption',
+    type: 'input',
+    message: 'What would you like to rename the option to?',
+    when: () => isOptionNotPassed('updateTextMenuOption'),
+    default: prevValue,
+  }),
+};

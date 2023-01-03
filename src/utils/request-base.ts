@@ -39,10 +39,7 @@ export const RequestBase = async <T>({
       data = (await res.json()) as Promise<T> | string;
     }
 
-    if (
-      res.status === HttpStatusCodes.badRequest &&
-      data === 'Access token is invalid'
-    ) {
+    if (res.status === HttpStatusCodes.badRequest) {
       // If the request fails with an invalid token, refresh the tokens and try the request again
       await refreshTokens();
 

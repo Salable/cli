@@ -1,3 +1,5 @@
+import { CommandBuilder } from 'yargs';
+
 export interface IAuth0Tokens {
   access_token: string;
   refresh_token: string;
@@ -10,11 +12,7 @@ export interface ICommand {
   command: string;
   describe: string;
   handler: () => Promise<void>;
-  builder?: {
-    [key: string]: {
-      [key: string]: string;
-    };
-  };
+  builder?: CommandBuilder;
 }
 
 type IGetRequest = {
@@ -22,21 +20,23 @@ type IGetRequest = {
   body?: never;
 };
 
+export type IRequestBody = {
+  [key: string]:
+    | string
+    | boolean
+    | number
+    | string[]
+    | {
+        [key: string]: string | boolean | { [key: string]: string | boolean };
+      }
+    | {
+        [key: string]: string | boolean | { [key: string]: string | boolean };
+      }[];
+};
+
 type IRequest = {
   method: 'POST' | 'PUT' | 'DELETE';
-  body?: {
-    [key: string]:
-      | string
-      | boolean
-      | number
-      | string[]
-      | {
-          [key: string]: string | boolean;
-        }
-      | {
-          [key: string]: string | boolean;
-        }[];
-  };
+  body?: IRequestBody;
 };
 
 export type IRequestBase = (IGetRequest | IRequest) & {
@@ -72,6 +72,14 @@ export type ICurrency = {
   defaultCurrency: boolean;
 };
 
+export type IFeatureEnumOption = {
+  uuid: string;
+  name: string;
+  featureUuid: string;
+  updatedAt: string;
+  safeDelete: boolean;
+};
+
 export type IFeature = {
   uuid: string;
   name: string;
@@ -85,6 +93,7 @@ export type IFeature = {
   showUnlimited: boolean;
   productUuid: string;
   updatedAt: string;
+  featureEnumOptions: IFeatureEnumOption[];
 };
 
 export type IPlan = {
@@ -223,10 +232,80 @@ export interface ICreateCapabilityQuestionAnswers {
   productName: string;
 }
 
+export interface ICreateFeatureQuestionAnswers {
+  name: string;
+  displayName: string;
+  productName: string;
+  variableName: string;
+  description: string;
+  valueType: 'true/false' | 'numerical' | 'text';
+  trueFalseDefault: boolean;
+  visibility: string;
+  showUnlimited: boolean;
+  unlimitedNumberDefault: 'Unlimited' | 'Number';
+  numberDefault: number;
+  createTextOption: string;
+  createTextMenuOption:
+    | 'Create a new text option'
+    | 'Delete a text option'
+    | 'Continue';
+  deleteTextOption: string;
+  textOptionsDefault: string;
+  planFeatureValue: string;
+  planNumberDefault: number;
+  planUnlimitedNumberDefault: 'Unlimited' | 'Number';
+}
+
+export interface IUpdateFeatureQuestionAnswers {
+  name: string;
+  displayName: string;
+  productName: string;
+  variableName: string;
+  description: string;
+  valueType: 'true/false' | 'numerical' | 'text';
+  trueFalseDefault: boolean;
+  visibility: string;
+  showUnlimited: boolean;
+  unlimitedNumberDefault: 'Unlimited' | 'Number';
+  numberDefault: number;
+  createTextOption: string;
+  createTextMenuOption:
+    | 'Create a new text option'
+    | 'Delete a text option'
+    | 'Continue';
+  deleteTextOption: string;
+  textOptionsDefault: string;
+  planFeatureValue: string;
+  planNumberDefault: number;
+  planUnlimitedNumberDefault: 'Unlimited' | 'Number';
+  updateTextMenuOption: string;
+  updateTextOption: string;
+}
+
 export interface ICreateAppQuestionAnswers {
   name: string;
   template: string;
   apiKey: string;
+}
+
+export interface ICreateAppTemplateConfig {
+  files?: string[];
+  postMessage?: string;
+}
+
+export interface ICreateAppCliOptions {
+  projectName: string;
+  templateName: string;
+  templatePath: string;
+  tartgetPath: string;
+  config: ICreateAppTemplateConfig;
+}
+
+export interface ICreateAppCreateDirectoryContents {
+  templatePath: string;
+  projectName: string;
+  templateData: TemplateData;
+  config: ICreateAppTemplateConfig;
 }
 
 export interface ICreateApiKeyQuestionAnswers {
@@ -254,6 +333,16 @@ export interface IListProductsQuestionAnswers {
 }
 
 export interface IListCapabilitiesQuestionAnswers {
+  showDeprecated: string;
+  productUuid: string;
+}
+
+export interface IListPlansQuestionAnswers {
+  showDeprecated: string;
+  productUuid: string;
+}
+
+export interface IListFeaturesQuestionAnswers {
   showDeprecated: string;
   productUuid: string;
 }

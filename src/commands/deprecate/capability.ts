@@ -1,12 +1,16 @@
 import { RequestBase } from '../../utils/request-base';
 import chalk from 'chalk';
-import inquirer, { Answers } from 'inquirer';
 import ErrorResponse from '../../error-response';
-import { ICommand, IDeprecateCapabilityQuestionAnswers } from '../../types';
+import {
+  ICapability,
+  ICommand,
+  IDeprecateCapabilityQuestionAnswers,
+} from '../../types';
 import { DEPRECATE_CAPABILITY_QUESTIONS } from '../../questions';
 import { processAnswers } from '../../utils/process-answers';
+import { CommandBuilder } from 'yargs';
 
-const builder = {
+const builder: CommandBuilder = {
   uuid: {
     type: 'string',
     description: 'The UUID of the capability you want to deprecate',
@@ -15,14 +19,11 @@ const builder = {
 
 const handler = async () => {
   try {
-    const answers: Answers = await inquirer.prompt(
+    const { uuid } = await processAnswers<IDeprecateCapabilityQuestionAnswers>(
       DEPRECATE_CAPABILITY_QUESTIONS
     );
 
-    const { uuid } =
-      processAnswers<IDeprecateCapabilityQuestionAnswers>(answers);
-
-    await RequestBase({
+    await RequestBase<ICapability>({
       method: 'DELETE',
       endpoint: `capabilities/${uuid}`,
     });

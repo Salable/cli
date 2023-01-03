@@ -1,6 +1,8 @@
-import { Argv } from 'yargs';
+import { Argv, CommandBuilder } from 'yargs';
 import { listApiKeys } from './api-keys';
 import { listCapabilities } from './capabilities';
+import { listFeatures } from './features';
+import { listPlans } from './plans';
 import { listProducts } from './products';
 
 export const listCommands = (cli: Argv) => {
@@ -8,7 +10,7 @@ export const listCommands = (cli: Argv) => {
   const COMMAND_DESCRIPTION =
     'List your existing [products|api keys] in your Salable Account';
 
-  const builder = (yargs: Argv) => {
+  const builder: CommandBuilder = (yargs: Argv) => {
     return (
       yargs
         .usage('usage: $0 list <item> [options]')
@@ -32,6 +34,20 @@ export const listCommands = (cli: Argv) => {
           describe: listCapabilities.describe,
           builder: listCapabilities.builder,
           handler: listCapabilities.handler,
+        })
+        // list plans
+        .command({
+          command: listPlans.command,
+          describe: listPlans.describe,
+          builder: listPlans.builder,
+          handler: listPlans.handler,
+        })
+        // list features
+        .command({
+          command: listFeatures.command,
+          describe: listFeatures.describe,
+          builder: listFeatures.builder,
+          handler: listFeatures.handler,
         })
         .wrap(null)
         .showHelpOnFail(true)

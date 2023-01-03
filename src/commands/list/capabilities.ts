@@ -7,10 +7,10 @@ import {
 import { RequestBase } from '../../utils/request-base';
 import chalk from 'chalk';
 import { processAnswers } from '../../utils/process-answers';
-import inquirer, { Answers } from 'inquirer';
 import { LIST_CAPABILITY_QUESTIONS } from '../../questions';
+import { CommandBuilder } from 'yargs';
 
-const builder = {
+const builder: CommandBuilder = {
   showDeprecated: {
     type: 'boolean',
     description: 'Show depcrecated capabilities as well as active ones',
@@ -23,10 +23,10 @@ const builder = {
 
 const handler = async () => {
   try {
-    const answers: Answers = await inquirer.prompt(LIST_CAPABILITY_QUESTIONS);
-
     const { showDeprecated, productUuid } =
-      processAnswers<IListCapabilitiesQuestionAnswers>(answers);
+      await processAnswers<IListCapabilitiesQuestionAnswers>(
+        LIST_CAPABILITY_QUESTIONS
+      );
 
     const productCapabilities = await RequestBase<ICapability[]>({
       method: 'GET',
