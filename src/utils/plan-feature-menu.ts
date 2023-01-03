@@ -1,12 +1,16 @@
-import { CREATE_PLAN_QUESTIONS } from '../../../questions';
+import { CREATE_PLAN_QUESTIONS } from '../questions';
 import {
   ICreateFeatureQuestionAnswers,
   IFeature,
   IUpdateFeatureQuestionAnswers,
-} from '../../../types';
-import { processAnswers } from '../../../utils/process-answers';
+} from '../types';
+import { processAnswers } from './process-answers';
 
-export const featureMenu = async ({ valueType, uuid, ...feat }: IFeature) => {
+export const planFeatureMenu = async ({
+  valueType,
+  uuid,
+  ...feat
+}: IFeature) => {
   // 1. Loop through all the features and ask for values for them
   switch (valueType) {
     // 1a. If a boolean feature, ask for default

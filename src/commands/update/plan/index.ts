@@ -1,16 +1,15 @@
 import chalk from 'chalk';
 import { CommandBuilder } from 'yargs';
-import { CREATE_PRODUCT_NAME_QUESTION_OPTION } from '../../../constants';
 import ErrorResponse from '../../../error-response';
-import { CREATE_PLAN_QUESTIONS } from '../../../questions';
+import { UPDATE_PLAN_QUESTIONS } from '../../../questions';
 import {
-  ICapability,
   ICommand,
   ICreatePlanQuestionAnswers,
   ICreateProductQuestionAnswers,
   IPlan,
   IProduct,
   IRequestBody,
+  IUpdatePlanQuestionAnswers,
 } from '../../../types';
 import { dataChooser } from '../../../utils/data-chooser';
 import { planFeatureMenu } from '../../../utils/plan-feature-menu';
@@ -20,7 +19,7 @@ import { RequestBase } from '../../../utils/request-base';
 const builder: CommandBuilder = {
   productName: {
     type: 'string',
-    description: 'The product to create the plan on',
+    description: 'The product to update the plan on',
     default: '',
   },
   name: {
@@ -57,68 +56,60 @@ const builder: CommandBuilder = {
   },
 };
 
-const createPlanRequestHandler = async (body: IRequestBody) => {
+const updatePlanRequestHandler = async (uuid: string, body: IRequestBody) => {
   return await RequestBase<IPlan>({
-    method: 'POST',
-    endpoint: 'plans',
+    method: 'PUT',
+    endpoint: `plans/${uuid}`,
     body,
   });
 };
 
 const handler = async () => {
   try {
-    const PRODUCT_NAME_CHOICES = [CREATE_PRODUCT_NAME_QUESTION_OPTION];
-
-    // 1. Prompt the user to choose the product they want to create the feature on
+    // 1. Prompt the user to choose the product they want to update the feature on
     const selectedProduct = await dataChooser<
       IProduct,
-      ICreatePlanQuestionAnswers,
+      IUpdatePlanQuestionAnswers,
       ICreateProductQuestionAnswers
     >({
-      question: CREATE_PLAN_QUESTIONS.PRODUCT_NAME(PRODUCT_NAME_CHOICES),
-      startingChoices: PRODUCT_NAME_CHOICES,
+      question: UPDATE_PLAN_QUESTIONS.PRODUCT_NAME(['']),
+      startingChoices: [],
       endpoint: 'products',
       targetField: 'productName',
     });
 
-    // 2. Get all capabilities and featues for the product selected
-    const productCapabilities = await RequestBase<ICapability[]>({
-      method: 'GET',
-      endpoint: `products/${selectedProduct?.uuid || ''}/capabilities`,
+    // 2. Prompt the user for the plan they want to update on the selected product
+    const planToUpdate = await dataChooser<
+      IPlan,
+      IUpdatePlanQuestionAnswers,
+      ICreatePlanQuestionAnswers
+    >({
+      question: UPDATE_PLAN_QUESTIONS.PLAN_NAME(selectedProduct?.plans),
+      startingChoices: [],
+      endpoint: `products/${selectedProduct?.uuid || ''}/plans`,
+      targetField: 'planName',
     });
 
-    const capNames = productCapabilities?.reduce((acc: string[], cur) => {
-      if (cur.status === 'ACTIVE') {
-        acc.push(cur.name);
-      }
-      return acc;
-    }, []);
-
-    if (!capNames) {
-      throw new ErrorResponse(
-        400,
-        'No active capabilities found, please create atleast one capability before creating a plan'
-      );
+    if (!planToUpdate) {
+      throw new ErrorResponse(400, 'No plan to update found');
     }
 
-    // 3. Get NAME, DISPLAY_NAME, DESCRIPTION, CAPABILITIES, APP_TYPE, LICENSE_TYPE, and PUBLISHED for the new plan
+    // 3. Get NAME, DISPLAY_NAME, DESCRIPTION, APP_TYPE, LICENSE_TYPE, and PUBLISHED for the new plan
     const planAnswers = await processAnswers<ICreatePlanQuestionAnswers>([
-      CREATE_PLAN_QUESTIONS.NAME,
-      CREATE_PLAN_QUESTIONS.DISPLAY_NAME,
-      CREATE_PLAN_QUESTIONS.DESCRIPTION,
-      CREATE_PLAN_QUESTIONS.CAPABILITIES(capNames),
-      CREATE_PLAN_QUESTIONS.APP_TYPE,
-      CREATE_PLAN_QUESTIONS.LICENSE_TYPE,
-      CREATE_PLAN_QUESTIONS.PLAN_TYPE,
-      CREATE_PLAN_QUESTIONS.PUBLISHED,
-      CREATE_PLAN_QUESTIONS.VISIBILITY,
+      UPDATE_PLAN_QUESTIONS.NAME,
+      UPDATE_PLAN_QUESTIONS.DISPLAY_NAME,
+      UPDATE_PLAN_QUESTIONS.DESCRIPTION,
+      UPDATE_PLAN_QUESTIONS.APP_TYPE,
+      UPDATE_PLAN_QUESTIONS.LICENSE_TYPE,
+      UPDATE_PLAN_QUESTIONS.PLAN_TYPE,
+      UPDATE_PLAN_QUESTIONS.PUBLISHED,
+      UPDATE_PLAN_QUESTIONS.VISIBILITY,
     ]);
 
     const {
       name: planName,
       displayName,
       description,
-      capabilities,
       appType,
       licenseType = 'customId',
       planType,
@@ -126,54 +117,34 @@ const handler = async () => {
       visibility,
     } = planAnswers;
 
-    const selectedCapabilites = productCapabilities?.reduce(
-      (acc: string[], cur) => {
-        if (capabilities.includes(cur.name)) {
-          acc.push(cur.uuid);
-        }
-
-        return acc;
-      },
-      []
-    );
-
-    if (!selectedCapabilites) {
-      throw new ErrorResponse(
-        400,
-        'No capabilities selected, please select one to continue'
-      );
-    }
-
-    // 6x. Populate the sub questions based on the type selected
+    // 4x. Populate the sub questions based on the type selected
     const {
       planCycleInterval,
       planIntervalLength,
       evaluationPeriod,
       evaluationPeriodDays,
     } = await processAnswers<ICreatePlanQuestionAnswers>([
-      CREATE_PLAN_QUESTIONS.PLAN_CYCLE_INTERVAL(planAnswers),
-      CREATE_PLAN_QUESTIONS.PLAN_INTERVAL_LENGTH(planAnswers),
-      CREATE_PLAN_QUESTIONS.EVALUATION_PERIOD(planAnswers),
-      CREATE_PLAN_QUESTIONS.EVALUATION_PERIOD_DAYS(planAnswers),
+      UPDATE_PLAN_QUESTIONS.PLAN_CYCLE_INTERVAL(planAnswers),
+      UPDATE_PLAN_QUESTIONS.PLAN_INTERVAL_LENGTH(planAnswers),
+      UPDATE_PLAN_QUESTIONS.EVALUATION_PERIOD(planAnswers),
+      UPDATE_PLAN_QUESTIONS.EVALUATION_PERIOD_DAYS(planAnswers),
     ]);
 
-    // 8. Get all the active features on the product
+    // 5. Get all the active features on the product
     const activeFeatures = selectedProduct?.features?.filter(
       ({ status }) => status === 'ACTIVE'
     );
 
-    // 8a. If no features exist, create the new plan
+    // 5a. If no active features exist, update the new plan
     if (!activeFeatures?.length) {
-      await createPlanRequestHandler({
+      await updatePlanRequestHandler(planToUpdate.uuid, {
         active: published,
-        capabilities: selectedCapabilites,
+        description,
         displayName,
         name: planName,
-        description,
         visibility: visibility || 'private',
         type: appType.toLowerCase(),
         features: [],
-        productUuid: selectedProduct?.uuid || '',
         evaluation: evaluationPeriod || false,
         planType,
         licenseType:
@@ -185,25 +156,23 @@ const handler = async () => {
       });
     }
 
-    // 8b. If features exist, prompt the user for a default on each one
+    // 5b. If features exist, prompt the user for a default on each one
     if (activeFeatures && activeFeatures?.length) {
       const features = [];
 
-      // 8b1. Loop through the features asking for each's value
+      // 5b1. Loop through the features asking for each's value
       for (let i = 0; i < activeFeatures?.length; i++) {
         const output = await planFeatureMenu(activeFeatures[i]);
         features.push(output);
       }
 
-      await createPlanRequestHandler({
+      await updatePlanRequestHandler(planToUpdate.uuid, {
         active: published,
-        capabilities: selectedCapabilites,
         displayName,
         name: planName,
         description,
         visibility: visibility || 'private',
         type: appType.toLowerCase(),
-        productUuid: selectedProduct?.uuid || '',
         evaluation: evaluationPeriod || false,
         planType,
         licenseType:
@@ -216,10 +185,10 @@ const handler = async () => {
       });
     }
 
-    // 5. Log the output of the command
+    // 6. Log the output of the command
     console.log(
       chalk.green(
-        `Plan: ${planName} created succesfully on ${
+        `Plan: ${planName} updated succesfully on ${
           selectedProduct?.name || ''
         }`
       )
@@ -231,9 +200,9 @@ const handler = async () => {
   }
 };
 
-export const createPlan: ICommand = {
+export const updatePlan: ICommand = {
   command: 'plan',
-  describe: 'Create a new plan for a product',
+  describe: 'Update a plan on a product',
   builder,
   handler,
 };

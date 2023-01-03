@@ -17,12 +17,12 @@ import {
 import { dataChooser } from '../../../utils/data-chooser';
 import { processAnswers } from '../../../utils/process-answers';
 import { RequestBase } from '../../../utils/request-base';
-import { updatePlanTextMenu } from './update-plan-text-menu';
+import { updateFeatureTextMenu } from './update-feature-text-menu';
 
 const builder: CommandBuilder = {
   productName: {
     type: 'string',
-    description: 'The product to create the feature on',
+    description: 'The product to update the feature on',
     default: '',
   },
   name: {
@@ -193,7 +193,7 @@ const handler = async () => {
 
       case 'enum':
         // 4c21 Prompt the user with a recursive menu to edit the list of text options for the feature
-        const textOptions = await updatePlanTextMenu(
+        const textOptions = await updateFeatureTextMenu(
           featureToUpdate.featureEnumOptions
         );
 

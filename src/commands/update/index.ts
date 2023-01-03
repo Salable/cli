@@ -1,5 +1,6 @@
 import { Argv, CommandBuilder } from 'yargs';
 import { updateFeature } from './feature';
+import { updatePlan } from './plan';
 
 export const updateCommands = (cli: Argv) => {
   const COMMAND_NAME = 'update';
@@ -16,6 +17,13 @@ export const updateCommands = (cli: Argv) => {
           describe: updateFeature.describe,
           builder: updateFeature.builder,
           handler: updateFeature.handler,
+        })
+        // update plan
+        .command({
+          command: updatePlan.command,
+          describe: updatePlan.describe,
+          builder: updatePlan.builder,
+          handler: updatePlan.handler,
         })
         .wrap(null)
         .showHelpOnFail(true)
