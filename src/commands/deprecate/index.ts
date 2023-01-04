@@ -7,7 +7,7 @@ import { deprecateProduct } from './product';
 export const deprecateCommands = (cli: Argv) => {
   const COMMAND_NAME = 'deprecate';
   const COMMAND_DESCRIPTION =
-    'Deprecate an existing [product|api key] in your Salable Account';
+    'Deprecate an existing [product|api key|plan|capability] in your Salable Account';
 
   const builder: CommandBuilder = (yargs: Argv) => {
     return (

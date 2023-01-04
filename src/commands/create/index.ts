@@ -9,7 +9,7 @@ import { createPlan } from './plan';
 export const createCommands = (cli: Argv) => {
   const COMMAND_NAME = 'create';
   const COMMAND_DESCRIPTION =
-    'Create a new [product|api key|app|capability|feature] in your Salable Account';
+    'Create a new [product|api key|app|capability|feature|plan] in your Salable Account';
 
   const builder: CommandBuilder = (yargs: Argv) => {
     return (

@@ -9,7 +9,7 @@ import { listProducts } from './products';
 export const listCommands = (cli: Argv) => {
   const COMMAND_NAME = 'list';
   const COMMAND_DESCRIPTION =
-    'List your existing [products|api keys] in your Salable Account';
+    'List your existing [products|api keys|capabilities|plans|features|licenses] in your Salable Account';
 
   const builder: CommandBuilder = (yargs: Argv) => {
     return (

@@ -700,6 +700,19 @@ export const DEPRECATE_CAPABILITY_QUESTIONS = [
   },
 ];
 
+export const SUSPEND_LICENSE_QUESTIONS = [
+  {
+    name: 'uuid',
+    type: 'input',
+    message: 'License UUID to suspend: ',
+    when: () => isOptionNotPassed('uuid'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'License UUID cannot be empty';
+    },
+  },
+];
+
 export const LIST_CAPABILITY_QUESTIONS = [
   {
     name: 'productUuid',

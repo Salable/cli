@@ -366,6 +366,10 @@ export interface IDeprecateCapabilityQuestionAnswers {
   uuid: string;
 }
 
+export interface ISuspendLicenseQuestionAnswers {
+  uuid: string;
+}
+
 export interface IListApiKeysQuestionAnswers {
   showDeprecated: string;
 }
