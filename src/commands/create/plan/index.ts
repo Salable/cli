@@ -185,8 +185,8 @@ const handler = async () => {
       const features = [];
 
       // 8b1. Loop through the features asking for each's value
-      for (let i = 0; i < activeFeatures?.length; i++) {
-        const output = await planFeatureMenu(activeFeatures[i]);
+      for await (const feature of activeFeatures) {
+        const output = await planFeatureMenu(feature);
         features.push(output);
       }
 
