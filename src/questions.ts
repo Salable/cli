@@ -435,7 +435,7 @@ export const UPDATE_PLAN_QUESTIONS = {
     choices: PLAN_NAME_CHOICES,
     when: () => isOptionNotPassed('planName'),
   }),
-  NAME: {
+  NAME: (prevValue: string) => ({
     name: 'name',
     type: 'input',
     message: 'What would you like to name the plan: ',
@@ -444,8 +444,9 @@ export const UPDATE_PLAN_QUESTIONS = {
       if (input?.length) return true;
       else return 'Feature name cannot be empty';
     },
-  },
-  DISPLAY_NAME: {
+    default: prevValue,
+  }),
+  DISPLAY_NAME: (prevValue: string) => ({
     name: 'displayName',
     type: 'input',
     message: 'What is the display name of the plan: ',
@@ -454,13 +455,15 @@ export const UPDATE_PLAN_QUESTIONS = {
       if (input?.length) return true;
       else return 'Plan display name cannot be empty';
     },
-  },
-  DESCRIPTION: {
+    default: prevValue,
+  }),
+  DESCRIPTION: (prevValue: string) => ({
     name: 'description',
     type: 'input',
     message: 'What is the description of the plan: ',
     when: () => isOptionNotPassed('description'),
-  },
+    default: prevValue,
+  }),
   APP_TYPE: {
     name: 'appType',
     type: 'list',
@@ -529,7 +532,7 @@ export const UPDATE_PLAN_QUESTIONS = {
       else return 'A numerical value is required';
     },
   }),
-  VISIBILITY: {
+  VISIBILITY: (prevValue: string) => ({
     name: 'visibility',
     type: 'list',
     choices: ['public', 'private'],
@@ -537,13 +540,15 @@ export const UPDATE_PLAN_QUESTIONS = {
     when: (answers: Answers) =>
       isOptionNotPassed('visibility') &&
       ['Standard', 'Coming Soon'].includes(answers?.planType as string),
-  },
-  PUBLISHED: {
+    default: prevValue,
+  }),
+  PUBLISHED: (prevValue: boolean) => ({
     name: 'published',
     type: 'confirm',
     message: 'Is the plan published?',
     when: () => isOptionNotPassed('published'),
-  },
+    default: prevValue,
+  }),
   TRUE_FALSE_DEFAULT: (
     valueType: string,
     prevValue: string,

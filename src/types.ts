@@ -103,7 +103,7 @@ export type IFeature = {
 export type IPlan = {
   uuid: string;
   name: string;
-  description: null;
+  description: null | string;
   displayName: string;
   status: IStatus;
   trialDays: null | number;

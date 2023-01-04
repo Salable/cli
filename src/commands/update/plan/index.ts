@@ -91,14 +91,14 @@ const handler = async () => {
 
     // 3. Get NAME, DISPLAY_NAME, DESCRIPTION, APP_TYPE, LICENSE_TYPE, and PUBLISHED for the new plan
     const planAnswers = await processAnswers<ICreatePlanQuestionAnswers>([
-      UPDATE_PLAN_QUESTIONS.NAME,
-      UPDATE_PLAN_QUESTIONS.DISPLAY_NAME,
-      UPDATE_PLAN_QUESTIONS.DESCRIPTION,
+      UPDATE_PLAN_QUESTIONS.NAME(planToUpdate.name),
+      UPDATE_PLAN_QUESTIONS.DISPLAY_NAME(planToUpdate.displayName),
+      UPDATE_PLAN_QUESTIONS.DESCRIPTION(planToUpdate.description || ''),
       UPDATE_PLAN_QUESTIONS.APP_TYPE,
       UPDATE_PLAN_QUESTIONS.LICENSE_TYPE,
       UPDATE_PLAN_QUESTIONS.PLAN_TYPE,
-      UPDATE_PLAN_QUESTIONS.PUBLISHED,
-      UPDATE_PLAN_QUESTIONS.VISIBILITY,
+      UPDATE_PLAN_QUESTIONS.PUBLISHED(planToUpdate.active),
+      UPDATE_PLAN_QUESTIONS.VISIBILITY(planToUpdate.visibility),
     ]);
 
     const {
