@@ -260,6 +260,14 @@ export interface ICreateFeatureQuestionAnswers {
   planUnlimitedNumberDefault: 'Unlimited' | 'Number';
 }
 
+export interface ICreateLicenseQuestionAnswers {
+  productName: string;
+  planName: string;
+  granteeId: string;
+  licenseeEmail: string;
+  endDate: string;
+}
+
 export interface ICreatePlanQuestionAnswers {
   name: string;
   displayName: string;
