@@ -47,7 +47,7 @@ export type IRequestBase = (IGetRequest | IRequest) & {
   endpoint: string;
 };
 
-export type IStatus = 'ACTIVE' | 'DEPRECATED';
+export type IStatus = 'ACTIVE' | 'DEPRECATED' | 'CANCELED';
 
 export type IOrganisationPaymentIntegration = {
   uuid: string;
@@ -377,6 +377,10 @@ export interface IListProductsQuestionAnswers {
 export interface IListCapabilitiesQuestionAnswers {
   showDeprecated: string;
   productUuid: string;
+}
+
+export interface IListLicensesQuestionAnswers {
+  showCanceled: string;
 }
 
 export interface IListPlansQuestionAnswers {

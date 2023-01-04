@@ -2,6 +2,7 @@ import { Argv, CommandBuilder } from 'yargs';
 import { listApiKeys } from './api-keys';
 import { listCapabilities } from './capabilities';
 import { listFeatures } from './features';
+import { listLicenses } from './licenses';
 import { listPlans } from './plans';
 import { listProducts } from './products';
 
@@ -48,6 +49,13 @@ export const listCommands = (cli: Argv) => {
           describe: listFeatures.describe,
           builder: listFeatures.builder,
           handler: listFeatures.handler,
+        })
+        // list licenses
+        .command({
+          command: listLicenses.command,
+          describe: listLicenses.describe,
+          builder: listLicenses.builder,
+          handler: listLicenses.handler,
         })
         .wrap(null)
         .showHelpOnFail(true)
