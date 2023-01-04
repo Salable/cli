@@ -69,9 +69,10 @@ export const planFeatureMenu = async ({
       const enumNames = feat.featureEnumOptions.map(({ name }) => name);
 
       // 1c2. Based on the options on the feat, ask the user to select one.
-      const { textOptionsDefault } = await processAnswers<
-        Pick<ICreateFeatureQuestionAnswers, 'textOptionsDefault'>
-      >(CREATE_PLAN_QUESTIONS.TEXT_OPTIONS_DEFAULT(enumNames, feat.name));
+      const { textOptionsDefault } =
+        await processAnswers<ICreateFeatureQuestionAnswers>(
+          CREATE_PLAN_QUESTIONS.TEXT_OPTIONS_DEFAULT(enumNames, feat.name)
+        );
 
       return {
         enumValue:

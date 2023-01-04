@@ -6,6 +6,7 @@ import {
   ICommand,
   ICreatePlanQuestionAnswers,
   ICreateProductQuestionAnswers,
+  IFeature,
   IPlan,
   IProduct,
   IRequestBody,
@@ -22,6 +23,11 @@ const builder: CommandBuilder = {
     description: 'The product to update the plan on',
     default: '',
   },
+  planName: {
+    type: 'string',
+    description: 'The name of the plan to update',
+    default: '',
+  },
   name: {
     type: 'string',
     description: 'The name of the plan',
@@ -32,21 +38,10 @@ const builder: CommandBuilder = {
     description: 'The display name of the plan',
     default: '',
   },
-  variableName: {
-    type: 'string',
-    description: 'The variable name of the plan',
-    default: '',
-  },
   description: {
     type: 'string',
     description: 'The description of the plan',
     default: '',
-  },
-  valueType: {
-    type: 'string',
-    description: 'The value type of the plan',
-    default: 'true/false',
-    choices: ['true/false', 'numerical', 'text'],
   },
   visibility: {
     type: 'string',
@@ -131,7 +126,12 @@ const handler = async () => {
     ]);
 
     // 5. Get all the active features on the product
-    const activeFeatures = selectedProduct?.features?.filter(
+    const productFeatures = await RequestBase<IFeature[]>({
+      method: 'GET',
+      endpoint: `products/${selectedProduct?.uuid || ''}/features`,
+    });
+
+    const activeFeatures = productFeatures?.filter(
       ({ status }) => status === 'ACTIVE'
     );
 
@@ -152,7 +152,7 @@ const handler = async () => {
         interval: planCycleInterval.toLowerCase(),
         pricingType: 'free',
         length: planIntervalLength || 0,
-        ...(evaluationPeriod && { evalDays: evaluationPeriodDays }),
+        evalDays: evaluationPeriodDays,
       });
     }
 
@@ -161,8 +161,8 @@ const handler = async () => {
       const features = [];
 
       // 5b1. Loop through the features asking for each's value
-      for (let i = 0; i < activeFeatures?.length; i++) {
-        const output = await planFeatureMenu(activeFeatures[i]);
+      for await (const feature of activeFeatures) {
+        const output = await planFeatureMenu(feature);
         features.push(output);
       }
 
@@ -181,7 +181,7 @@ const handler = async () => {
         pricingType: 'free',
         features,
         length: planIntervalLength || 0,
-        ...(evaluationPeriod && { evalDays: evaluationPeriodDays }),
+        evalDays: evaluationPeriodDays,
       });
     }
 

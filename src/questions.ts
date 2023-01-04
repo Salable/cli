@@ -320,6 +320,10 @@ export const CREATE_PLAN_QUESTIONS = {
     when: () =>
       isOptionNotPassed('planIntervalLength') &&
       planAnswers?.planType !== 'Evaluation',
+    validate: (input: number) => {
+      if (!isNaN(input)) return true;
+      else return 'A numerical value is required';
+    },
   }),
   EVALUATION_PERIOD: (planAnswers: Answers) => ({
     name: 'evaluationPeriod',
@@ -338,6 +342,10 @@ export const CREATE_PLAN_QUESTIONS = {
       ((!['Coming Soon'].includes(planAnswers?.planType as string) &&
         (answers.evaluationPeriod as boolean)) ||
         planAnswers?.planType === 'Evaluation'),
+    validate: (input: number) => {
+      if (!isNaN(input)) return true;
+      else return 'A numerical value is required';
+    },
   }),
   VISIBILITY: {
     name: 'visibility',
@@ -425,7 +433,7 @@ export const UPDATE_PLAN_QUESTIONS = {
     type: 'list',
     message: 'What plan would you like to update? ',
     choices: PLAN_NAME_CHOICES,
-    when: () => isOptionNotPassed('name'),
+    when: () => isOptionNotPassed('planName'),
   }),
   NAME: {
     name: 'name',
@@ -494,6 +502,10 @@ export const UPDATE_PLAN_QUESTIONS = {
     when: () =>
       isOptionNotPassed('planIntervalLength') &&
       planAnswers?.planType !== 'Evaluation',
+    validate: (input: number) => {
+      if (!isNaN(input)) return true;
+      else return 'A numerical value is required';
+    },
   }),
   EVALUATION_PERIOD: (planAnswers: Answers) => ({
     name: 'evaluationPeriod',
@@ -512,6 +524,10 @@ export const UPDATE_PLAN_QUESTIONS = {
       ((!['Coming Soon'].includes(planAnswers?.planType as string) &&
         (answers.evaluationPeriod as boolean)) ||
         planAnswers?.planType === 'Evaluation'),
+    validate: (input: number) => {
+      if (!isNaN(input)) return true;
+      else return 'A numerical value is required';
+    },
   }),
   VISIBILITY: {
     name: 'visibility',
