@@ -37,11 +37,42 @@ Options:
 
 ### Current Commands
 
+####  **Misc.**
+
 - `salable auth`: Authenticate with your Salable Account
+
+#### **List**
+
 - `salable list products`: List all the products from your Salable account
 - `salable list api-keys`: List all the API keys from your Salable account
+- `salable list capabilities`: List all the capabilities on a product in your Salable account
+- `salable list features`: List all the features on a product in your Salable account
+- `salable list plans`: List all the plans on a product in your Salable account
+- `salable list licenses`: List all the licenses in your Salable account
+
+#### **Create**
+
 - `salable create app`: Create an example application using Salable
 - `salable create api-key`: Create a new API key for your Salable account
-- `salable create product`: Create a new product on your Salable account
+- `salable create product`: Create a new product in your Salable account
+- `salable create capability`: Create a new capability on a product in your Salable account
+- `salable create feature`: Create a new feature on a product in your Salable account
+- `salable create plan`: Create a new plan on a product in your Salable account
+- `salable create license`: Create a new license in your Salable account
+
+#### **Update**
+
+- `salable update feature`: Update a feature on a product in your Salable account
+- `salable update plan`: Update a plan on a product in your Salable account
+- `salable update license`: Update a license in your Salable account
+
+#### **Deprecate**
+
 - `salable deprecate product`: Deprecate a product from your Salable account
 - `salable deprecate api-key`: Deprecate an API key from your Salable account
+- `salable deprecate capability`: Deprecate a capability on a product in your Salable account
+- `salable deprecate plan`: Deprecate a plan on a product in your Salable account
+
+#### **Suspend**
+
+- `salable suspend license`: Suspend a license in your Salable account
