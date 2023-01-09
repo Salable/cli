@@ -107,6 +107,30 @@ export const CREATE_LICENSE_QUESTIONS = {
   },
 };
 
+export const UPDATE_LICENSE_QUESTIONS = {
+  LICENSE_ID: {
+    name: 'licenseId',
+    type: 'input',
+    message: 'What is the license ID to update: ',
+    when: () => isOptionNotPassed('licenseId'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'license id cannot be empty';
+    },
+  },
+  GRANTEE_ID: (prevValue: string) => ({
+    name: 'granteeId',
+    type: 'input',
+    message: 'What is the new grantee ID of the license: ',
+    when: () => isOptionNotPassed('granteeId'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'grantee id cannot be empty';
+    },
+    default: prevValue,
+  }),
+};
+
 export const CREATE_CAPABILITY_QUESTIONS = {
   NAME: {
     name: 'name',

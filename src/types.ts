@@ -268,6 +268,11 @@ export interface ICreateLicenseQuestionAnswers {
   endDate: string;
 }
 
+export interface IUpdateLicenseQuestionAnswers {
+  licenseId: string;
+  granteeId: string;
+}
+
 export interface ICreatePlanQuestionAnswers {
   name: string;
   displayName: string;
