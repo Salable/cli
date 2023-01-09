@@ -1,3 +1,18 @@
+# [1.9.0](https://github.com/Salable/cli/compare/v1.8.0...v1.9.0) (2023-01-09)
+
+
+### Bug Fixes
+
+* **#13:** fixed issues with refreshing token ([0477a24](https://github.com/Salable/cli/commit/0477a24bfd6f9fa22c225fe36b91515c5d879408))
+* **#13:** resolved issue with update plan command ([b315a17](https://github.com/Salable/cli/commit/b315a170d29d700849c4e741ce88aa1c48d725f9))
+
+
+### Features
+
+* **#13:** added create plan command ([efa43f3](https://github.com/Salable/cli/commit/efa43f344c969bf0277f28890685669f07d82797)), closes [#13](https://github.com/Salable/cli/issues/13)
+* **#13:** added deprecate plan command ([a7f3e44](https://github.com/Salable/cli/commit/a7f3e447a17e3012a9034d5dc3636640be4ff1fd)), closes [#13](https://github.com/Salable/cli/issues/13)
+* **#13:** added update plan command ([ceff187](https://github.com/Salable/cli/commit/ceff18710483cee3a589773d7af97cacc80ee542)), closes [#13](https://github.com/Salable/cli/issues/13)
+
 # [1.8.0](https://github.com/Salable/cli/compare/v1.7.0...v1.8.0) (2023-01-03)
 
 
