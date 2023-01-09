@@ -34,14 +34,14 @@ export const RequestBase = async <T>({
         }),
     });
 
-    const { status } = res;
+    const { status: httpStatus } = res;
 
     // Get the data from the response
     const data = (await res.json()) as Promise<T> | string;
 
     // If the request fails with a bad request, refresh the tokens and try the request again
     if (
-      status === HttpStatusCodes.badRequest &&
+      httpStatus === HttpStatusCodes.badRequest &&
       typeof data === 'string' &&
       data?.length > 0
     ) {
@@ -56,21 +56,21 @@ export const RequestBase = async <T>({
 
     // If response status is not successful, throw an error to retry
     if (
-      status < HttpStatusCodes.ok ||
-      status >= HttpStatusCodes.multipleChoices
+      httpStatus < HttpStatusCodes.ok ||
+      httpStatus >= HttpStatusCodes.multipleChoices
     ) {
       // 404 Error Message
-      if (status === HttpStatusCodes.notFound) {
+      if (httpStatus === HttpStatusCodes.notFound) {
         throw new ErrorResponse(
-          status,
+          httpStatus,
           `Request to Salable API failed. Error Message: ${endpoint} not found`
         );
       }
 
       // 400 Error Message
-      if (status === HttpStatusCodes.badRequest) {
+      if (httpStatus === HttpStatusCodes.badRequest) {
         throw new ErrorResponse(
-          status,
+          httpStatus,
           `Request to Salable API failed. Error Message: ${
             (await res.json()) as string
           }`
@@ -79,7 +79,7 @@ export const RequestBase = async <T>({
 
       // Other error codes messages
       throw new ErrorResponse(
-        status,
+        httpStatus,
         `Request to Salable API failed. Error Message: ${
           typeof data === 'string' ? data : JSON.stringify(data)
         }`

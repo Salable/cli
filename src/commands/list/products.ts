@@ -1,8 +1,7 @@
 import ErrorResponse from '../../error-response';
 import { ICommand, IListProductsQuestionAnswers, IProduct } from '../../types';
 import chalk from 'chalk';
-import { RequestBase } from '../../utils/request-base';
-import { processAnswers } from '../../utils/process-answers';
+import { RequestBase, processAnswers } from '../../utils';
 import { CommandBuilder } from 'yargs';
 
 const builder: CommandBuilder = {

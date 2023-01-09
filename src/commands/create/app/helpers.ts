@@ -6,8 +6,7 @@ import {
   ICreateAppCreateDirectoryContents,
   ICreateAppTemplateConfig,
 } from '../../../types';
-import { execPromise } from '../../../utils/exec-promise';
-import * as template from '../../../utils/template';
+import { execPromise, renderTemplate } from '../../../utils';
 
 export const CURR_DIR = process.cwd();
 const SKIP_FILES = ['node_modules', '.template.json'];
@@ -109,7 +108,7 @@ export const createDirectoryContents = ({
     if (stats.isFile()) {
       let contents = fs.readFileSync(origFilePath, 'utf8');
 
-      contents = template.render(contents, templateData);
+      contents = renderTemplate(contents, templateData);
 
       const writePath = path.join(CURR_DIR, projectName, file);
       fs.writeFileSync(writePath, contents, 'utf8');

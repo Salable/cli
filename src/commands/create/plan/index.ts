@@ -13,10 +13,12 @@ import {
   IProduct,
   IRequestBody,
 } from '../../../types';
-import { dataChooser } from '../../../utils/data-chooser';
-import { planFeatureMenu } from '../../../utils/plan-feature-menu';
-import { processAnswers } from '../../../utils/process-answers';
-import { RequestBase } from '../../../utils/request-base';
+import {
+  dataChooser,
+  planFeatureMenu,
+  processAnswers,
+  RequestBase,
+} from '../../../utils';
 
 const builder: CommandBuilder = {
   productName: {

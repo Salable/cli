@@ -4,7 +4,7 @@ import {
   IFeatureEnumOption,
   IUpdateFeatureQuestionAnswers,
 } from '../../../types';
-import { processAnswers } from '../../../utils/process-answers';
+import { processAnswers } from '../../../utils';
 
 export const updateFeatureTextMenu = async (
   defaultOptions?: IFeatureEnumOption[]

@@ -12,9 +12,7 @@ import {
   IProduct,
   IRequestBody,
 } from '../../../types';
-import { dataChooser } from '../../../utils/data-chooser';
-import { processAnswers } from '../../../utils/process-answers';
-import { RequestBase } from '../../../utils/request-base';
+import { dataChooser, processAnswers, RequestBase } from '../../../utils';
 import { choosePlanFeatureValue } from './choose-plan-feature-value';
 import { planTextMenu } from './plan-text-menu';
 
