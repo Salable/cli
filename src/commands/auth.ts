@@ -10,11 +10,7 @@ import {
   AUTH0_TOKEN_AUDIENCE,
 } from '../constants';
 import ErrorResponse from '../error-response';
-import {
-  createSalableRc,
-  salableRcExists,
-  updateSalableRc,
-} from '../utils/salable-rc-utils';
+import { createSalableRc, salableRcExists, updateSalableRc } from '../utils';
 import chalk from 'chalk';
 import { ICommand } from '../types';
 

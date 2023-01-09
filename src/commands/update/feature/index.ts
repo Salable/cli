@@ -14,9 +14,7 @@ import {
   IRequestBody,
   IUpdateFeatureQuestionAnswers,
 } from '../../../types';
-import { dataChooser } from '../../../utils/data-chooser';
-import { processAnswers } from '../../../utils/process-answers';
-import { RequestBase } from '../../../utils/request-base';
+import { dataChooser, processAnswers, RequestBase } from '../../../utils';
 import { updateFeatureTextMenu } from './update-feature-text-menu';
 
 const builder: CommandBuilder = {

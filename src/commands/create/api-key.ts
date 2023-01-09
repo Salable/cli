@@ -1,10 +1,8 @@
-import { decodeToken } from '../../utils/decode-token';
+import { decodeToken, RequestBase, processAnswers } from '../../utils';
 import chalk from 'chalk';
 import ErrorResponse from '../../error-response';
 import { IApiKey, ICommand, ICreateApiKeyQuestionAnswers } from '../../types';
-import { RequestBase } from '../../utils/request-base';
 import { CREATE_API_KEY_QUESTIONS } from '../../questions';
-import { processAnswers } from '../../utils/process-answers';
 import { CommandBuilder } from 'yargs';
 
 const builder: CommandBuilder = {

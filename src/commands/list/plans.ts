@@ -1,8 +1,7 @@
 import ErrorResponse from '../../error-response';
 import { ICommand, IListPlansQuestionAnswers, IPlan } from '../../types';
-import { RequestBase } from '../../utils/request-base';
+import { RequestBase, processAnswers } from '../../utils';
 import chalk from 'chalk';
-import { processAnswers } from '../../utils/process-answers';
 import { LIST_PLANS_QUESTIONS } from '../../questions';
 import { CommandBuilder } from 'yargs';
 

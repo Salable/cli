@@ -11,9 +11,7 @@ import {
   ICreateProductQuestionAnswers,
   IProduct,
 } from '../../types';
-import { dataChooser } from '../../utils/data-chooser';
-import { processAnswers } from '../../utils/process-answers';
-import { RequestBase } from '../../utils/request-base';
+import { dataChooser, processAnswers, RequestBase } from '../../utils';
 
 const builder: CommandBuilder = {
   productName: {
