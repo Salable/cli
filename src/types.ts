@@ -30,7 +30,11 @@ export type IRequestBody = {
         [key: string]: string | boolean | { [key: string]: string | boolean };
       }
     | {
-        [key: string]: string | boolean | { [key: string]: string | boolean };
+        [key: string]:
+          | string
+          | boolean
+          | undefined
+          | { [key: string]: string | boolean };
       }[];
 };
 
@@ -99,7 +103,7 @@ export type IFeature = {
 export type IPlan = {
   uuid: string;
   name: string;
-  description: null;
+  description: null | string;
   displayName: string;
   status: IStatus;
   trialDays: null | number;
@@ -256,6 +260,40 @@ export interface ICreateFeatureQuestionAnswers {
   planUnlimitedNumberDefault: 'Unlimited' | 'Number';
 }
 
+export interface ICreatePlanQuestionAnswers {
+  name: string;
+  displayName: string;
+  productName: string;
+  description: string;
+  capabilities: string[];
+  appType: 'Miro' | 'Trello' | 'Custom';
+  licenseType?: 'User' | 'Board';
+  planType: 'Standard' | 'Bespoke' | 'Evaluation' | 'Coming Soon';
+  published: boolean;
+  visibility: string;
+  planCycleInterval: 'Year' | 'Month';
+  planIntervalLength: number;
+  evaluationPeriod: boolean;
+  evaluationPeriodDays: number;
+}
+
+export interface IUpdatePlanQuestionAnswers {
+  name: string;
+  displayName: string;
+  productName: string;
+  description: string;
+  capabilities: string[];
+  appType: 'Miro' | 'Trello' | 'Custom';
+  licenseType?: 'User' | 'Board';
+  planType: 'Standard' | 'Bespoke' | 'Evaluation' | 'Coming Soon';
+  published: boolean;
+  visibility: string;
+  planCycleInterval: 'Year' | 'Month';
+  planIntervalLength: number;
+  evaluationPeriod: boolean;
+  evaluationPeriodDays: number;
+}
+
 export interface IUpdateFeatureQuestionAnswers {
   name: string;
   displayName: string;
@@ -317,6 +355,10 @@ export interface IDeprecateApiKeyQuestionAnswers {
 }
 
 export interface IDeprecateProductQuestionAnswers {
+  uuid: string;
+}
+
+export interface IDeprecatePlanQuestionAnswers {
   uuid: string;
 }
 

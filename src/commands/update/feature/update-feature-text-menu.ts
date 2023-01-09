@@ -4,9 +4,9 @@ import {
   IFeatureEnumOption,
   IUpdateFeatureQuestionAnswers,
 } from '../../../types';
-import { processAnswers } from '../../../utils/process-answers';
+import { processAnswers } from '../../../utils';
 
-export const updatePlanTextMenu = async (
+export const updateFeatureTextMenu = async (
   defaultOptions?: IFeatureEnumOption[]
 ) => {
   let loopTextCreate = true;

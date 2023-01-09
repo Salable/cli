@@ -12,9 +12,8 @@ import {
 } from '../../../types';
 import { CREATE_API_KEY_QUESTION_OPTION } from '../../../constants';
 import { CREATE_APP_QUESTIONS } from '../../../questions';
-import { processAnswers } from '../../../utils/process-answers';
+import { processAnswers, dataChooser } from '../../../utils';
 import { CommandBuilder } from 'yargs';
-import { dataChooser } from '../../../utils/data-chooser';
 import {
   createDirectoryContents,
   createProject,

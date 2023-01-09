@@ -1,9 +1,8 @@
-import { RequestBase } from '../../utils/request-base';
+import { RequestBase, processAnswers } from '../../utils';
 import chalk from 'chalk';
 import ErrorResponse from '../../error-response';
 import { ICommand, ICreateProductQuestionAnswers, IProduct } from '../../types';
 import { CREATE_PRODUCT_QUESTIONS } from '../../questions';
-import { processAnswers } from '../../utils/process-answers';
 import { CommandBuilder } from 'yargs';
 
 const builder: CommandBuilder = {

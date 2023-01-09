@@ -12,9 +12,7 @@ import {
   IProduct,
   IRequestBody,
 } from '../../../types';
-import { dataChooser } from '../../../utils/data-chooser';
-import { processAnswers } from '../../../utils/process-answers';
-import { RequestBase } from '../../../utils/request-base';
+import { dataChooser, processAnswers, RequestBase } from '../../../utils';
 import { choosePlanFeatureValue } from './choose-plan-feature-value';
 import { planTextMenu } from './plan-text-menu';
 
@@ -124,9 +122,9 @@ const handler = async () => {
 
         // 4a2. If there are existing plans then prompt the user to select the value for each plan for this feature
         if (productPlans) {
-          for (let i = 0; i < productPlans?.length; i++) {
+          for await (const plan of productPlans) {
             const output = await choosePlanFeatureValue({
-              plan: productPlans[i],
+              plan,
               type: 'list',
               defaults: {
                 isUnlimited: false,
@@ -189,9 +187,9 @@ const handler = async () => {
 
         // 4b3. If there are existing plans then prompt the user to choose the defaults for each plan based on the answers above in 4b1.
         if (productPlans) {
-          for (let i = 0; i < productPlans?.length; i++) {
+          for await (const plan of productPlans) {
             const output = await choosePlanFeatureValue({
-              plan: productPlans[i],
+              plan,
               type: 'list',
               featureType: 'numerical',
               defaults: {
@@ -242,9 +240,9 @@ const handler = async () => {
 
         // 4c3. If there are existing plans then prompt the user to choose the default text option for each plan
         if (productPlans) {
-          for (let i = 0; i < productPlans?.length; i++) {
+          for await (const plan of productPlans) {
             const output = await choosePlanFeatureValue({
-              plan: productPlans[i],
+              plan,
               type: 'list',
               choices: textOptions,
               defaults: {

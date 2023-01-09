@@ -1,7 +1,7 @@
 import { CREATE_FEATURE_QUESTIONS } from '../../../constants';
 import { CREATE_FEATURES_QUESTIONS } from '../../../questions';
 import { ICreateFeatureQuestionAnswers } from '../../../types';
-import { processAnswers } from '../../../utils/process-answers';
+import { processAnswers } from '../../../utils';
 
 export const planTextMenu = async (defaultOptions?: string[]) => {
   let loopTextCreate = true;

@@ -1,7 +1,7 @@
 import { Answers } from 'inquirer';
 import { CREATE_FEATURES_QUESTIONS } from '../../../questions';
 import { ICreateFeatureQuestionAnswers, IPlan } from '../../../types';
-import { processAnswers } from '../../../utils/process-answers';
+import { processAnswers } from '../../../utils';
 
 export const choosePlanFeatureValue = async ({
   plan,

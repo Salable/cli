@@ -12,7 +12,6 @@ export const RequestBase = async <T>({
   body,
 }: IRequestBase): Promise<T | undefined | void> => {
   try {
-    let data;
     const token = await getToken('ACCESS_TOKEN');
 
     if (!token) {
@@ -35,12 +34,17 @@ export const RequestBase = async <T>({
         }),
     });
 
-    if (res.status !== HttpStatusCodes.noContent) {
-      data = (await res.json()) as Promise<T> | string;
-    }
+    const { status: httpStatus } = res;
 
-    if (res.status === HttpStatusCodes.badRequest) {
-      // If the request fails with an invalid token, refresh the tokens and try the request again
+    // Get the data from the response
+    const data = (await res.json()) as Promise<T> | string;
+
+    // If the request fails with a bad request, refresh the tokens and try the request again
+    if (
+      httpStatus === HttpStatusCodes.badRequest &&
+      typeof data === 'string' &&
+      data?.length > 0
+    ) {
       await refreshTokens();
 
       return await RequestBase({
@@ -52,11 +56,30 @@ export const RequestBase = async <T>({
 
     // If response status is not successful, throw an error to retry
     if (
-      res.status < HttpStatusCodes.ok ||
-      res.status >= HttpStatusCodes.multipleChoices
+      httpStatus < HttpStatusCodes.ok ||
+      httpStatus >= HttpStatusCodes.multipleChoices
     ) {
+      // 404 Error Message
+      if (httpStatus === HttpStatusCodes.notFound) {
+        throw new ErrorResponse(
+          httpStatus,
+          `Request to Salable API failed. Error Message: ${endpoint} not found`
+        );
+      }
+
+      // 400 Error Message
+      if (httpStatus === HttpStatusCodes.badRequest) {
+        throw new ErrorResponse(
+          httpStatus,
+          `Request to Salable API failed. Error Message: ${
+            (await res.json()) as string
+          }`
+        );
+      }
+
+      // Other error codes messages
       throw new ErrorResponse(
-        res.status,
+        httpStatus,
         `Request to Salable API failed. Error Message: ${
           typeof data === 'string' ? data : JSON.stringify(data)
         }`

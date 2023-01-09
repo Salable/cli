@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { Arguments } from 'yargs';
-import { getToken, salableRcExists } from '../utils/salable-rc-utils';
+import { getToken, salableRcExists } from '../utils';
 
 const checkTokenExists = async (type: 'ACCESS_TOKEN' | 'REFRESH_TOKEN') => {
   if (!(await getToken(type))) {

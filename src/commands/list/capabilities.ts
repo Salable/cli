@@ -4,9 +4,8 @@ import {
   ICommand,
   IListCapabilitiesQuestionAnswers,
 } from '../../types';
-import { RequestBase } from '../../utils/request-base';
+import { RequestBase, processAnswers } from '../../utils';
 import chalk from 'chalk';
-import { processAnswers } from '../../utils/process-answers';
 import { LIST_CAPABILITY_QUESTIONS } from '../../questions';
 import { CommandBuilder } from 'yargs';
 
