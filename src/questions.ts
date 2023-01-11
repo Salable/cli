@@ -34,6 +34,103 @@ export const CREATE_PRODUCT_QUESTIONS = [
   },
 ];
 
+export const CREATE_LICENSE_QUESTIONS = {
+  PRODUCT_NAME: (PRODUCT_NAME_CHOICES: string[]) => ({
+    name: 'productName',
+    type: 'list',
+    message: 'What product would you like to create the license on: ',
+    choices: PRODUCT_NAME_CHOICES,
+    when: () => isOptionNotPassed('productName'),
+  }),
+  PLAN_NAME: (PLAN_NAME_CHOICES: string[]) => ({
+    name: 'planName',
+    type: 'list',
+    message: 'What plan would you like to create the license on: ',
+    choices: PLAN_NAME_CHOICES,
+    when: () => isOptionNotPassed('planName'),
+  }),
+  GRANTEE_ID: {
+    name: 'granteeId',
+    type: 'input',
+    message: 'What is the grantee ID of the license: ',
+    when: () => isOptionNotPassed('granteeId'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'grantee id cannot be empty';
+    },
+  },
+  LICENSEE_EMAIL: {
+    name: 'licenseeEmail',
+    type: 'input',
+    message: 'What is the email address of the licensee: ',
+    when: () => isOptionNotPassed('licenseeEmail'),
+    validate: (input: string) => {
+      const isEmail =
+        /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()\.,;\s@\"]+\.{0,1})+([^<>()\.,;:\s@\"]{2,}|[\d\.]+))$/.test(
+          input
+        );
+
+      if (!input.length) {
+        return 'licensee email cannot be empty';
+      }
+
+      if (!isEmail) {
+        return 'licensee email must be a valid email address';
+      }
+
+      return true;
+    },
+  },
+  END_DATE: {
+    name: 'endDate',
+    type: 'input',
+    message: 'What is the end date of the license: ',
+    default: () => {
+      const date = new Date();
+
+      date.setMonth(date.getMonth() + 1);
+
+      return date.toISOString().split('T')[0];
+    },
+    when: () => isOptionNotPassed('endDate'),
+    validate: (input: string) => {
+      if (!input?.length) {
+        return 'The end date cannot be empty';
+      }
+
+      if (isNaN(Date.parse(input))) {
+        return 'End date must be a valid date. E.g. 2023-01-31';
+      }
+
+      return true;
+    },
+  },
+};
+
+export const UPDATE_LICENSE_QUESTIONS = {
+  LICENSE_ID: {
+    name: 'licenseId',
+    type: 'input',
+    message: 'What is the license ID to update: ',
+    when: () => isOptionNotPassed('licenseId'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'license id cannot be empty';
+    },
+  },
+  GRANTEE_ID: (prevValue: string) => ({
+    name: 'granteeId',
+    type: 'input',
+    message: 'What is the new grantee ID of the license: ',
+    when: () => isOptionNotPassed('granteeId'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'grantee id cannot be empty';
+    },
+    default: prevValue,
+  }),
+};
+
 export const CREATE_CAPABILITY_QUESTIONS = {
   NAME: {
     name: 'name',
@@ -696,6 +793,19 @@ export const DEPRECATE_CAPABILITY_QUESTIONS = [
     validate: (input: string) => {
       if (input?.length) return true;
       else return 'Capability UUID cannot be empty';
+    },
+  },
+];
+
+export const SUSPEND_LICENSE_QUESTIONS = [
+  {
+    name: 'uuid',
+    type: 'input',
+    message: 'License UUID to suspend: ',
+    when: () => isOptionNotPassed('uuid'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'License UUID cannot be empty';
     },
   },
 ];

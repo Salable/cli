@@ -47,7 +47,7 @@ export type IRequestBase = (IGetRequest | IRequest) & {
   endpoint: string;
 };
 
-export type IStatus = 'ACTIVE' | 'DEPRECATED';
+export type IStatus = 'ACTIVE' | 'DEPRECATED' | 'CANCELED';
 
 export type IOrganisationPaymentIntegration = {
   uuid: string;
@@ -260,6 +260,19 @@ export interface ICreateFeatureQuestionAnswers {
   planUnlimitedNumberDefault: 'Unlimited' | 'Number';
 }
 
+export interface ICreateLicenseQuestionAnswers {
+  productName: string;
+  planName: string;
+  granteeId: string;
+  licenseeEmail: string;
+  endDate: string;
+}
+
+export interface IUpdateLicenseQuestionAnswers {
+  licenseId: string;
+  granteeId: string;
+}
+
 export interface ICreatePlanQuestionAnswers {
   name: string;
   displayName: string;
@@ -366,6 +379,10 @@ export interface IDeprecateCapabilityQuestionAnswers {
   uuid: string;
 }
 
+export interface ISuspendLicenseQuestionAnswers {
+  uuid: string;
+}
+
 export interface IListApiKeysQuestionAnswers {
   showDeprecated: string;
 }
@@ -377,6 +394,10 @@ export interface IListProductsQuestionAnswers {
 export interface IListCapabilitiesQuestionAnswers {
   showDeprecated: string;
   productUuid: string;
+}
+
+export interface IListLicensesQuestionAnswers {
+  showCanceled: string;
 }
 
 export interface IListPlansQuestionAnswers {
