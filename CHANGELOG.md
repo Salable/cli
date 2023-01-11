@@ -1,3 +1,13 @@
+# [1.10.0](https://github.com/Salable/cli/compare/v1.9.0...v1.10.0) (2023-01-11)
+
+
+### Features
+
+* **#12:** added create license command ([4ab3783](https://github.com/Salable/cli/commit/4ab378399cfea7809dd3064d32be5e230981a2a5)), closes [#12](https://github.com/Salable/cli/issues/12)
+* **#12:** added list licenses command ([918e0f4](https://github.com/Salable/cli/commit/918e0f4b5ce7312ee60c8cba304fa33e45c6f8be)), closes [#12](https://github.com/Salable/cli/issues/12)
+* **#12:** added suspend license command ([71962d5](https://github.com/Salable/cli/commit/71962d5e92c90c900636706be12c6dee5e81f0e8)), closes [#12](https://github.com/Salable/cli/issues/12)
+* **#12:** added update license command ([75d4200](https://github.com/Salable/cli/commit/75d4200be52b5ed119d6b39b58d35e0e3506bebd)), closes [#12](https://github.com/Salable/cli/issues/12)
+
 # [1.9.0](https://github.com/Salable/cli/compare/v1.8.0...v1.9.0) (2023-01-09)
 
 
