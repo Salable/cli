@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/Salable/cli/compare/v1.11.0...v1.12.0) (2023-02-21)
+
+
+### Features
+
+* sign in response page design updates ([d8379d5](https://github.com/Salable/cli/commit/d8379d55dbaea56a3604a1d0157ad126e1b0bd19))
+
 # [1.11.0](https://github.com/Salable/cli/compare/v1.10.0...v1.11.0) (2023-02-21)
 
 
