@@ -1,10 +1,11 @@
 import { Argv, CommandBuilder } from 'yargs';
 import { suspendLicense } from './license';
+import { suspendSubscription } from './subscription';
 
 export const suspendCommands = (cli: Argv) => {
   const COMMAND_NAME = 'suspend';
   const COMMAND_DESCRIPTION =
-    'Suspend an existing [license] in your Salable Account';
+    'Suspend an existing [license|subscription] in your Salable Account';
 
   const builder: CommandBuilder = (yargs: Argv) => {
     return (
@@ -16,6 +17,13 @@ export const suspendCommands = (cli: Argv) => {
           describe: suspendLicense.describe,
           builder: suspendLicense.builder,
           handler: suspendLicense.handler,
+        })
+        // suspend subscription
+        .command({
+          command: suspendSubscription.command,
+          describe: suspendSubscription.describe,
+          builder: suspendSubscription.builder,
+          handler: suspendSubscription.handler,
         })
         .wrap(null)
         .showHelpOnFail(true)
