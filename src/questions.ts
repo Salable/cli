@@ -810,6 +810,26 @@ export const SUSPEND_LICENSE_QUESTIONS = [
   },
 ];
 
+export const SUSPEND_SUBSCRIPTION_QUESTIONS = [
+  {
+    name: 'uuid',
+    type: 'input',
+    message: 'Subscription UUID to suspend: ',
+    when: () => isOptionNotPassed('uuid'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Subscription UUID cannot be empty';
+    },
+  },
+  {
+    name: 'when',
+    type: 'list',
+    choices: ['Now', 'End of the current billing period'],
+    message: 'When would you like to suspend the subscription? ',
+    when: () => isOptionNotPassed('when'),
+  },
+];
+
 export const LIST_CAPABILITY_QUESTIONS = [
   {
     name: 'productUuid',

@@ -5,6 +5,7 @@ import { listFeatures } from './features';
 import { listLicenses } from './licenses';
 import { listPlans } from './plans';
 import { listProducts } from './products';
+import { listSubscriptions } from './subscriptions';
 
 export const listCommands = (cli: Argv) => {
   const COMMAND_NAME = 'list';
@@ -56,6 +57,13 @@ export const listCommands = (cli: Argv) => {
           describe: listLicenses.describe,
           builder: listLicenses.builder,
           handler: listLicenses.handler,
+        })
+        // list subscriptions
+        .command({
+          command: listSubscriptions.command,
+          describe: listSubscriptions.describe,
+          builder: listSubscriptions.builder,
+          handler: listSubscriptions.handler,
         })
         .wrap(null)
         .showHelpOnFail(true)

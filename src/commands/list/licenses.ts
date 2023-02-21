@@ -18,7 +18,7 @@ const handler = async () => {
       await processAnswers<IListLicensesQuestionAnswers>();
 
     const response = await RequestBase<{
-      count: 2;
+      count: number;
       data: ILicense[];
     }>({
       method: 'GET',
