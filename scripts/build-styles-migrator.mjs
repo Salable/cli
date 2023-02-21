@@ -13,7 +13,7 @@ async function migrateStyles() {
       const fileContents = await fs.readFile(filePath, 'utf8');
 
       const newContents = fileContents.replace(
-        /<!-- TAILWIND_STYLES_PLACEHOLDER -->/g,
+        /(?=<!-- TAILWIND PLACEHOLDER START -->)(.*)(<!-- TAILWIND PLACEHOLDER END -->)/gs,
         `<style>
           ${tailwindStyles}
         </style>
