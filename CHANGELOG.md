@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/Salable/cli/compare/v1.10.0...v1.11.0) (2023-02-21)
+
+
+### Features
+
+* updated generated trello template ([030919a](https://github.com/Salable/cli/commit/030919ab33398f49310c81502dbf4f3a1f61b97f))
+
 # [1.10.0](https://github.com/Salable/cli/compare/v1.9.0...v1.10.0) (2023-01-11)
 
 
