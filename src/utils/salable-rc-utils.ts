@@ -16,13 +16,18 @@ const getFileContents = async () => {
 /**
  * Create the `.salablerc` file if it does not already exist.
  **/
-export const createSalableRc = (accessToken: string, refreshToken: string) => {
+export const createSalableRc = (
+  accessToken: string,
+  refreshToken: string,
+  organisation: string
+) => {
   if (salableRcExists) return;
 
   fs.writeFileSync(
     salableRcPath,
     `ACCESS_TOKEN=${accessToken}
-REFRESH_TOKEN=${refreshToken}`
+REFRESH_TOKEN=${refreshToken}
+ORGANISATION=${organisation}`
   );
 };
 
@@ -30,32 +35,42 @@ REFRESH_TOKEN=${refreshToken}`
  *  Update the existing `.salablerc` file, replace the line with `searchString` on to be `newValue` instead.
  **/
 export const updateSalableRc = async (
-  searchString: string,
+  searchString: 'ACCESS_TOKEN' | 'REFRESH_TOKEN' | 'ORGANISATION',
   newValue: string
 ) => {
   const regex = new RegExp(`${searchString}.*`);
 
   const fileContents = await getFileContents();
 
-  const newLine = fileContents
-    .toString()
-    .replace(regex, `${searchString}=${newValue}`);
+  // Test if the search string exists in the file
+  if (regex.test(fileContents.toString())) {
+    const newLine = fileContents
+      .toString()
+      .replace(regex, `${searchString}=${newValue}`);
 
-  await fs.promises.writeFile(salableRcPath, newLine);
+    return await fs.promises.writeFile(salableRcPath, newLine);
+  }
+
+  // If the string doesn't exist in the file then append it and it's value to the end of it
+  return await fs.promises.writeFile(
+    salableRcPath,
+    `${fileContents.toString()}
+${searchString}=${newValue}`
+  );
 };
 
 /**
- *  Fetch the requested token from the `.salablerc` file
+ *  Fetch the requested property from the `.salablerc` file
  **/
-export const getToken = async (type: 'ACCESS_TOKEN' | 'REFRESH_TOKEN') => {
+export const getProperty = async (
+  type: 'ACCESS_TOKEN' | 'REFRESH_TOKEN' | 'ORGANISATION'
+) => {
   const fileContents = await getFileContents();
 
   const splitStrings = fileContents.toString().split('\n');
-  const [tokenLine] = splitStrings.filter((string) => string.includes(type));
+  const [propertyLine] = splitStrings.filter((string) => string.includes(type));
 
-  if (!tokenLine) return undefined;
+  if (!propertyLine) return undefined;
 
-  const token = tokenLine.split('=')[1];
-
-  return token;
+  return propertyLine.split('=')[1];
 };

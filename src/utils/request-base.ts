@@ -1,10 +1,9 @@
 import 'isomorphic-fetch';
-import { SALABLE_API_ENDPOINT } from '../constants';
+import { isProd } from '../config';
 import ErrorResponse from '../error-response';
 import { HttpStatusCodes, IRequestBase } from '../types';
 import { refreshTokens } from './refresh-tokens';
-
-import { getToken } from './salable-rc-utils';
+import { getProperty } from './salable-rc-utils';
 
 export const RequestBase = async <T>({
   endpoint,
@@ -12,7 +11,8 @@ export const RequestBase = async <T>({
   body,
 }: IRequestBase): Promise<T | undefined | void> => {
   try {
-    const token = await getToken('ACCESS_TOKEN');
+    const token = await getProperty('ACCESS_TOKEN');
+    const organisation = await getProperty('ORGANISATION');
 
     if (!token) {
       throw new ErrorResponse(
@@ -21,7 +21,18 @@ export const RequestBase = async <T>({
       );
     }
 
-    const res = await fetch(`${SALABLE_API_ENDPOINT}${endpoint}`, {
+    if (!organisation) {
+      throw new ErrorResponse(
+        HttpStatusCodes.badRequest,
+        'No Organisation could be found, please reauthenticate using salable auth'
+      );
+    }
+
+    const API_URL = `https://${organisation}.${
+      isProd ? 'salable' : 'vercel'
+    }.app/api/2.0/`;
+
+    const res = await fetch(`${API_URL}${endpoint}`, {
       method,
       headers: {
         'content-type': 'application/json',

@@ -1,7 +1,3 @@
-import {
-  Auth0LoginProcessor,
-  tryGetComboToken,
-} from '@altostra/cli-login-auth0';
 import path from 'path';
 import { isProd } from '../config';
 import {
@@ -10,13 +6,38 @@ import {
   AUTH0_TOKEN_AUDIENCE,
 } from '../constants';
 import ErrorResponse from '../error-response';
-import { createSalableRc, salableRcExists, updateSalableRc } from '../utils';
+import {
+  createSalableRc,
+  processAnswers,
+  salableRcExists,
+  updateSalableRc,
+} from '../utils';
 import chalk from 'chalk';
-import { ICommand } from '../types';
+import { IAuthQuestionAnswers, ICommand } from '../types';
+import {
+  Auth0LoginProcessor,
+  tryGetComboToken,
+} from '../packages/auth0-login-processor';
+import { AUTH_QUESTIONS } from '../questions';
+import { CommandBuilder } from 'yargs';
+
+const builder: CommandBuilder = {
+  organisation: {
+    type: 'string',
+    description: 'The Salable organisation name to authenticate with.',
+    default: '',
+  },
+};
 
 const handler = async () => {
+  // 1. Get the path of the auth folder based on prod/dev
   const basePath = isProd ? path.join(__dirname, './auth/') : './src/auth/';
 
+  // 2. Get the name of the organisation from the user
+  const { organisation, username, password } =
+    await processAnswers<IAuthQuestionAnswers>(AUTH_QUESTIONS);
+
+  // 3. Create the login processor client
   const loginProcessor = new Auth0LoginProcessor(
     {
       auth0ClientId: AUTH0_CLIENT_ID,
@@ -24,9 +45,12 @@ const handler = async () => {
       auth0TokenAudience: AUTH0_TOKEN_AUDIENCE,
       auth0TokenScope: 'offline_access',
       port: 42224,
-      timeout: 60000,
+      timeout: 30000,
       successfulLoginHtmlFile: path.resolve(`${basePath}success.html`),
       failedLoginHtmlFile: path.resolve(`${basePath}error.html`),
+      organisation,
+      username,
+      password,
     },
     tryGetComboToken
   );
@@ -34,11 +58,13 @@ const handler = async () => {
   try {
     const result = await loginProcessor.runLoginProcess();
 
+    // 4. Either update or create the .salablerc file with the new data
     if (salableRcExists) {
       await updateSalableRc('ACCESS_TOKEN', result.access_token);
       await updateSalableRc('REFRESH_TOKEN', result.refresh_token);
+      await updateSalableRc('ORGANISATION', organisation);
     } else {
-      createSalableRc(result.access_token, result.refresh_token);
+      createSalableRc(result.access_token, result.refresh_token, organisation);
     }
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
@@ -52,6 +78,7 @@ const handler = async () => {
 
 export const auth: ICommand = {
   command: 'auth',
-  describe: 'Authenticate with your Salable Account',
+  describe: 'Authenticate with your Salable Organisation',
+  builder,
   handler,
 };

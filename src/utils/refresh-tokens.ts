@@ -1,7 +1,7 @@
 import 'isomorphic-fetch';
 import { AUTH0_CLIENT_ID, AUTH0_DOMAIN } from '../constants';
 import { IAuth0Tokens } from '../types';
-import { getToken, updateSalableRc } from './salable-rc-utils';
+import { getProperty, updateSalableRc } from './salable-rc-utils';
 
 /**
  * Refresh both the `access_token` and `refresh_token` from Auth0 and update the `.salablerc` file.
@@ -16,7 +16,7 @@ export const refreshTokens = async () => {
       body: JSON.stringify({
         grant_type: 'refresh_token',
         client_id: AUTH0_CLIENT_ID,
-        refresh_token: await getToken('REFRESH_TOKEN'),
+        refresh_token: await getProperty('REFRESH_TOKEN'),
       }),
     });
 

@@ -82,6 +82,8 @@
     "inquirer": "^8.2.5",
     "isomorphic-fetch": "^3.0.0",
     "node": "^18.10.0",
+    "open": "^8.4.2",
+    "puppeteer": "^19.7.2",
     "yargs": "^17.6.0"
   }
 }

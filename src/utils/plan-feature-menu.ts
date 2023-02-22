@@ -89,7 +89,7 @@ export const planFeatureMenu = async ({
         enumValue: '',
         featureUuid: uuid,
         isUnlimited: false,
-        value: trueFalseDefault.toString(),
+        value: '',
       };
   }
 };
