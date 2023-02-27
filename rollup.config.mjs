@@ -48,7 +48,8 @@ const config = {
         compilerOptions: {
           module: 'esnext',
         },
-        exclude: ['**/templates/**'],
+        exclude: ['**/templates/**', '**/docs/**'],
+        include: ['src', 'additional.d.ts'],
       },
     }),
     injectProcessEnv({
