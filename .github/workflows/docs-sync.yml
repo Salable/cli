@@ -1,0 +1,38 @@
+name: Docs Sync
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/**"
+
+jobs:
+  docs_sync:
+    name: Docs Sync
+    timeout-minutes: 15
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    env:
+      GH_TOKEN: "${{ secrets.GH_TOKEN }}"
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+
+      - name: Migrate Code to docs repo
+        run: |
+          cd salable-docs
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+          git config --global credential.helper cache
+          git clone https://${{secrets.GH_TOKEN}}@github.com/salable/docs
+          mv ../docs/docs ./gds
+          mv ../docs/versioned_docs ./gds_versioned_docs
+          mv ../docs/versioned_sidebars ./gds_versioned_sidebars
+          mv ../docs/versions.json ./gds_versions.json
+          git status
