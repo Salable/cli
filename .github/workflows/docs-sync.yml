@@ -26,8 +26,7 @@ jobs:
 
       - name: Migrate Code to docs repo
         run: |
-          mkdir salable-docs
-          cd salable-docs
+          cd lib
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"
           git config --global credential.helper cache
