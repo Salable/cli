@@ -36,4 +36,9 @@ jobs:
           mv ../docs/versioned_docs ./gds_versioned_docs
           mv ../docs/versioned_sidebars ./gds_versioned_sidebars
           mv ../docs/versions.json ./gds_versions.json
-          git status
+          git add ./gds
+          git add ./gds_versioned_docs
+          git add ./gds_versioned_sidebars
+          git add ./gds_versions.json
+          git commit -m "docs: synced with cli documentation"
+          git push
