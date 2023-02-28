@@ -51,8 +51,8 @@ jobs:
 
           # Commit the changes
           cd ./docs
-          git config user.name "GitHub Actions Bot"
-          git config user.email "<>"
+          git config user.name "Coner Murphy"
+          git config user.email "<cmurphy@adaptavist.com>"
           git config --global credential.helper cache
           git add ./${{ env.TARGET_DIR }}
           git add ./${{ env.TARGET_DIR }}_versioned_docs
