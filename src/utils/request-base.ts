@@ -28,7 +28,7 @@ export const RequestBase = async <T>({
       );
     }
 
-    const API_URL = `https://${organisation}.${
+    const API_URL = `https://${isProd ? '' : `${organisation}.`}${
       isProd ? 'salable' : 'vercel'
     }.app/api/2.0/`;
 
@@ -48,7 +48,11 @@ export const RequestBase = async <T>({
     const { status: httpStatus } = res;
 
     // Get the data from the response
-    const data = (await res.json()) as Promise<T> | string;
+    let data: Promise<T> | string = '';
+
+    if (httpStatus !== HttpStatusCodes.notFound) {
+      data = (await res.json()) as Promise<T> | string;
+    }
 
     // If the request fails with a bad request, refresh the tokens and try the request again
     if (
@@ -74,7 +78,7 @@ export const RequestBase = async <T>({
       if (httpStatus === HttpStatusCodes.notFound) {
         throw new ErrorResponse(
           httpStatus,
-          `Request to Salable API failed. Error Message: ${endpoint} not found`
+          `Request to Salable API failed. Error Message: API endpoint: ${endpoint} not found`
         );
       }
 

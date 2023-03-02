@@ -1,5 +1,3 @@
-import path from 'path';
-import { isProd } from '../config';
 import {
   AUTH0_CLIENT_ID,
   AUTH0_DOMAIN,
@@ -30,14 +28,11 @@ const builder: CommandBuilder = {
 };
 
 const handler = async () => {
-  // 1. Get the path of the auth folder based on prod/dev
-  const basePath = isProd ? path.join(__dirname, './auth/') : './src/auth/';
-
-  // 2. Get the name of the organisation from the user
+  // 1. Get the name of the organisation from the user
   const { organisation, username, password } =
     await processAnswers<IAuthQuestionAnswers>(AUTH_QUESTIONS);
 
-  // 3. Create the login processor client
+  // 2. Create the login processor client
   const loginProcessor = new Auth0LoginProcessor(
     {
       auth0ClientId: AUTH0_CLIENT_ID,
@@ -46,8 +41,6 @@ const handler = async () => {
       auth0TokenScope: 'offline_access',
       port: 42224,
       timeout: 30000,
-      successfulLoginHtmlFile: path.resolve(`${basePath}success.html`),
-      failedLoginHtmlFile: path.resolve(`${basePath}error.html`),
       organisation,
       username,
       password,
@@ -58,7 +51,7 @@ const handler = async () => {
   try {
     const result = await loginProcessor.runLoginProcess();
 
-    // 4. Either update or create the .salablerc file with the new data
+    // 3. Either update or create the .salablerc file with the new data
     if (salableRcExists) {
       await updateSalableRc('ACCESS_TOKEN', result.access_token);
       await updateSalableRc('REFRESH_TOKEN', result.refresh_token);
@@ -69,7 +62,10 @@ const handler = async () => {
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
-    console.error(chalk.red(e.message));
+    if (e.message !== 'Caught in ora') {
+      console.error(chalk.red(e.message));
+    }
+
     process.exit(1);
   }
 

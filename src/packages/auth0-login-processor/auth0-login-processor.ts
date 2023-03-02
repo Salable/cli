@@ -1,4 +1,3 @@
-import ExtendedError from './extended-error';
 import { DataExtractor } from './types';
 import {
   Deferred,
@@ -11,10 +10,12 @@ import {
   startTimeout,
 } from './utils';
 import http from 'http';
-import open from 'open';
 import 'isomorphic-fetch';
 import url from 'url';
 import * as puppeteer from 'puppeteer';
+import ErrorResponse from '../../error-response';
+import ora from 'ora';
+import chalk from 'chalk';
 
 interface AuthResponse {
   code: string;
@@ -27,8 +28,6 @@ export interface Config {
   auth0ClientId: string;
   auth0TokenScope: string;
   auth0TokenAudience: string;
-  successfulLoginHtmlFile: string;
-  failedLoginHtmlFile: string;
   organisation: string;
   username: string;
   password: string;
@@ -54,6 +53,21 @@ const clickLogin = async function ({
   return response;
 };
 
+const throwError = async (
+  page: puppeteer.Page,
+  spinner: ora.Ora,
+  el: string,
+  errMessage: string
+) => {
+  const regex = new RegExp(el, 'gi');
+  const orgError = (await page.content()).match(regex);
+
+  if (Array.isArray(orgError) && orgError?.length > 0) {
+    spinner.fail(chalk.red(errMessage));
+    throw new ErrorResponse(400, 'Caught in ora');
+  }
+};
+
 /**
  * At the end of the authentication process, that did not time out, it might take a couple of seconds
  * for the NodeJS HTTP server to close.
@@ -71,44 +85,38 @@ export class Auth0LoginProcessor<TToken> {
     public readonly parseToken: DataExtractor<TToken>
   ) {
     if (typeof config !== 'object') {
-      throw new Error(`Config is required.`);
+      throw new ErrorResponse(400, `Config is required.`);
     }
     if (
       typeof config.port !== 'number' ||
       config.port < 1 ||
       config.port > 65535
     ) {
-      throw new Error(`Invalid port number in config.`);
+      throw new ErrorResponse(400, `Invalid port number in config.`);
     }
     if (typeof config.timeout !== 'number' || config.timeout < 0) {
-      throw new Error(`Invalid timeout value.`);
+      throw new ErrorResponse(400, `Invalid timeout value.`);
     }
     if (typeof config.auth0Domain !== 'string') {
-      throw new Error(`Invalid auth0Domain string.`);
+      throw new ErrorResponse(400, `Invalid auth0Domain string.`);
     }
     if (typeof config.auth0ClientId !== 'string') {
-      throw new Error(`Invalid auth0ClientId string.`);
+      throw new ErrorResponse(400, `Invalid auth0ClientId string.`);
     }
     if (typeof config.auth0TokenScope !== 'string') {
-      throw new Error(`Invalid auth0TokenScope string.`);
+      throw new ErrorResponse(400, `Invalid auth0TokenScope string.`);
     }
     if (typeof config.auth0TokenAudience !== 'string') {
-      throw new Error(`Invalid auth0TokenAudience string.`);
-    }
-    if (typeof config.successfulLoginHtmlFile !== 'string') {
-      throw new Error(`Invalid successfulLoginHtmlFile path.`);
-    }
-    if (typeof config.failedLoginHtmlFile !== 'string') {
-      throw new Error(`Invalid failedLoginHtmlFile path.`);
+      throw new ErrorResponse(400, `Invalid auth0TokenAudience string.`);
     }
     if (typeof config.organisation !== 'string') {
-      throw new Error(`No Organisation provided.`);
+      throw new ErrorResponse(400, `No Organisation provided.`);
     }
     if (typeof config.username !== 'string') {
-      throw new Error(`No Salable Username provided.`);
+      throw new ErrorResponse(400, `No Salable Username provided.`);
     }
     if (typeof config.password !== 'string') {
-      throw new Error(`No Salable password provided.`);
+      throw new ErrorResponse(400, `No Salable password provided.`);
     }
   }
 
@@ -125,7 +133,11 @@ export class Auth0LoginProcessor<TToken> {
       this.csrfToken
     );
 
+    const spinner = ora('Performing Authentication With Salable');
+
     try {
+      spinner.start();
+
       const browser = await puppeteer.launch({
         headless: true,
         devtools: false,
@@ -140,34 +152,53 @@ export class Auth0LoginProcessor<TToken> {
         await page.waitForSelector('#organizationName', { visible: true });
         await page.type('#organizationName', this.config.organisation);
 
-        await Promise.all([clickLogin({ page }), page.waitForNavigation()]);
+        await clickLogin({ page });
 
-        await page.waitForSelector('#username', { visible: true });
-        await page.waitForSelector('#password', { visible: true });
-        await page.type('#username', this.config.username);
-        await page.type('#password', this.config.password);
+        await throwError(
+          page,
+          spinner,
+          'The organization you entered is invalid',
+          'Invalid organization name, please check it exists'
+        );
 
-        await Promise.all([clickLogin({ page }), page.waitForNavigation()]);
+        await Promise.allSettled([
+          await page.waitForSelector('#password', { visible: true }),
+          await page.waitForSelector('#username', { visible: true }),
+        ]);
+
+        await Promise.allSettled([
+          await page.type('#username', this.config.username),
+          await page.type('#password', this.config.password),
+        ]);
+
+        await clickLogin({ page });
+
+        await throwError(
+          page,
+          spinner,
+          'Wrong email or password',
+          'Invalid username or password, please try again'
+        );
       } finally {
         await page.close();
         await browser.close();
       }
     } catch (err) {
-      throw new ExtendedError(
-        'Failed to open authentication URL. See inner error for details.',
-        err as Error
-      );
+      if (!(err instanceof ErrorResponse)) {
+        throw new ErrorResponse(400, 'Failed to open authentication URL.');
+      }
+
+      throw new ErrorResponse(err.statusCode, err.message);
     }
 
     const loginTimeout = startTimeout<AuthResponse>(this.config.timeout);
 
-    const auth0Response = this.authResponse.promise.catch((err) => {
-      throw new ExtendedError(`Authentication failed`, err as Error);
+    const auth0Response = this.authResponse.promise.catch(() => {
+      throw new ErrorResponse(400, `Authentication failed`);
     });
 
-    const timeoutExpiration = loginTimeout.promise.catch(async () => {
-      await open(this.config.failedLoginHtmlFile);
-      throw new Error(`Authentication process timed out.`);
+    const timeoutExpiration = loginTimeout.promise.catch(() => {
+      throw new ErrorResponse(400, `Authentication process timed out.`);
     });
 
     try {
@@ -175,7 +206,8 @@ export class Auth0LoginProcessor<TToken> {
         auth0Response,
         timeoutExpiration,
       ]);
-      await open(this.config.successfulLoginHtmlFile);
+
+      spinner.succeed("You're now authenticated with Salable!");
       return this.getToken(this.codeVerifier, authResponse.code);
     } finally {
       loginTimeout.cancel();
@@ -200,10 +232,7 @@ export class Auth0LoginProcessor<TToken> {
     );
 
     if (response.status !== 200) {
-      new ExtendedError(
-        'Failed to get an access token. See inner error for details.',
-        response.statusText
-      );
+      new ErrorResponse(400, 'Failed to get an access token.');
     }
 
     const data = (await response.json()) as unknown;
@@ -220,9 +249,9 @@ export class Auth0LoginProcessor<TToken> {
       this.server.listen(this.config.port, (err?: Error) => {
         if (err) {
           return reject(
-            new ExtendedError(
-              `Unable to start an HTTP server on port ${this.config.port}. See inner error for details.`,
-              err
+            new ErrorResponse(
+              400,
+              `Unable to start an HTTP server on port ${this.config.port}. See inner error for details.`
             )
           );
         }
@@ -244,10 +273,7 @@ export class Auth0LoginProcessor<TToken> {
         res();
       } catch (err) {
         rej();
-        throw new ExtendedError(
-          'Failed to stop HTTP server. See inner error for details.',
-          err as Error
-        );
+        throw new ErrorResponse(400, 'Failed to stop HTTP server.');
       }
     });
   }
