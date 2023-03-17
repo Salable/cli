@@ -2,7 +2,7 @@
 sidebar_position: 4
 ---
 
-# Deprecate Plan
+# Deprecate Product
 
 This command allows you to deprecate a product
 
