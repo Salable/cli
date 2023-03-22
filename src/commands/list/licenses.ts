@@ -14,8 +14,7 @@ const builder: CommandBuilder = {
 
 const handler = async () => {
   try {
-    const { showCanceled } =
-      await processAnswers<IListLicensesQuestionAnswers>();
+    const { showCanceled } = await processAnswers<IListLicensesQuestionAnswers>();
 
     const response = await RequestBase<{
       count: 2;
@@ -26,6 +25,7 @@ const handler = async () => {
     });
 
     if (!response) {
+      // eslint-disable-next-line no-console
       console.log(chalk.yellow(`No licenses found`));
       return;
     }
@@ -33,22 +33,25 @@ const handler = async () => {
     const { data: licenses } = response;
 
     if (showCanceled === 'true') {
+      // eslint-disable-next-line no-console
       console.log(licenses);
       return;
     }
 
     const activeLicenses =
-      Array.isArray(licenses) &&
-      licenses.filter(({ status }) => status !== 'CANCELED');
+      Array.isArray(licenses) && licenses.filter(({ status }) => status !== 'CANCELED');
 
     if (Array.isArray(activeLicenses) && !activeLicenses?.length) {
+      // eslint-disable-next-line no-console
       console.log(chalk.yellow(`No licenses found`));
     } else {
+      // eslint-disable-next-line no-console
       console.log(activeLicenses);
     }
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
+    // eslint-disable-next-line no-console
     console.error(chalk.red(e.message));
   }
 };

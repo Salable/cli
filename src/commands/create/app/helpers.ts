@@ -12,22 +12,26 @@ export const CURR_DIR = process.cwd();
 const SKIP_FILES = ['node_modules', '.template.json'];
 
 export const showMessage = (options: ICreateAppCliOptions) => {
+  // eslint-disable-next-line no-console
   console.log('');
+  // eslint-disable-next-line no-console
   console.log(chalk.green('Done.'));
+  // eslint-disable-next-line no-console
   console.log(chalk.green(`Go into the project: cd ${options.projectName}`));
 
   const message = options.config.postMessage;
 
   if (message) {
+    // eslint-disable-next-line no-console
     console.log('');
+    // eslint-disable-next-line no-console
     console.log(chalk.yellow(message));
+    // eslint-disable-next-line no-console
     console.log('');
   }
 };
 
-export const getTemplateConfig = (
-  templatePath: string
-): ICreateAppTemplateConfig => {
+export const getTemplateConfig = (templatePath: string): ICreateAppTemplateConfig => {
   const configPath = path.join(templatePath, '.template.json');
 
   if (!fs.existsSync(configPath)) return {};
@@ -35,9 +39,7 @@ export const getTemplateConfig = (
   const templateConfigContent = fs.readFileSync(configPath);
 
   if (templateConfigContent) {
-    return JSON.parse(
-      templateConfigContent.toString()
-    ) as ICreateAppTemplateConfig;
+    return JSON.parse(templateConfigContent.toString()) as ICreateAppTemplateConfig;
   }
 
   return {};
@@ -45,9 +47,8 @@ export const getTemplateConfig = (
 
 export const createProject = (projectPath: string) => {
   if (fs.existsSync(projectPath)) {
-    console.log(
-      chalk.red(`Folder ${projectPath} exists. Delete or use another name.`)
-    );
+    // eslint-disable-next-line no-console
+    console.log(chalk.red(`Folder ${projectPath} exists. Delete or use another name.`));
     return false;
   }
 
@@ -83,6 +84,7 @@ export const postProcessNode = async (options: ICreateAppCliOptions) => {
 
     if (stderr) return false;
   } else {
+    // eslint-disable-next-line no-console
     console.log(chalk.red('No yarn or npm found. Cannot run installation.'));
   }
 

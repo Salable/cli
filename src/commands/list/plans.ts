@@ -18,8 +18,9 @@ const builder: CommandBuilder = {
 
 const handler = async () => {
   try {
-    const { showDeprecated, productUuid } =
-      await processAnswers<IListPlansQuestionAnswers>(LIST_PLANS_QUESTIONS);
+    const { showDeprecated, productUuid } = await processAnswers<IListPlansQuestionAnswers>(
+      LIST_PLANS_QUESTIONS
+    );
 
     const productPlans = await RequestBase<IPlan[]>({
       method: 'GET',
@@ -27,22 +28,25 @@ const handler = async () => {
     });
 
     if (showDeprecated === 'true') {
+      // eslint-disable-next-line no-console
       console.log(productPlans);
       return;
     }
 
     const activePlans =
-      Array.isArray(productPlans) &&
-      productPlans.filter(({ status }) => status !== 'DEPRECATED');
+      Array.isArray(productPlans) && productPlans.filter(({ status }) => status !== 'DEPRECATED');
 
     if (Array.isArray(activePlans) && !activePlans?.length) {
+      // eslint-disable-next-line no-console
       console.log(chalk.yellow(`No plans found`));
     } else {
+      // eslint-disable-next-line no-console
       console.log(activePlans);
     }
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
+    // eslint-disable-next-line no-console
     console.error(chalk.red(e.message));
   }
 };

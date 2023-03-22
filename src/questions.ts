@@ -208,8 +208,7 @@ export const CREATE_FEATURES_QUESTIONS = {
     type: 'list',
     choices: ['true', 'false'],
     message: 'What is the default value: ',
-    when: () =>
-      isOptionNotPassed('trueFalseDefault') && valueType === 'true/false',
+    when: () => isOptionNotPassed('trueFalseDefault') && valueType === 'true/false',
   }),
   NUMERICAL_SHOW_UNLIMITED: (prevValue?: boolean) => ({
     name: 'showUnlimited',
@@ -224,8 +223,7 @@ export const CREATE_FEATURES_QUESTIONS = {
     choices: ['Unlimited', 'Number'],
     message: 'Which field is the deafult option? ',
     when: (answers: Answers) =>
-      isOptionNotPassed('unlimitedNumberDefault') &&
-      (answers.showUnlimited as boolean),
+      isOptionNotPassed('unlimitedNumberDefault') && (answers.showUnlimited as boolean),
     ...(prevValue !== undefined && { default: prevValue }),
   }),
   NUMERICAL_NUMBER_DEFAULT: (prevValue?: number) => ({
@@ -244,17 +242,13 @@ export const CREATE_FEATURES_QUESTIONS = {
     },
     ...(prevValue !== undefined && { default: prevValue }),
   }),
-  PLAN_NUMERICAL_UNLIMITED_NUMBER_DEFAULT: (
-    answers: Answers,
-    planName: string
-  ) => ({
+  PLAN_NUMERICAL_UNLIMITED_NUMBER_DEFAULT: (answers: Answers, planName: string) => ({
     name: 'planUnlimitedNumberDefault',
     type: 'list',
     choices: ['Unlimited', 'Number'],
     message: `Which field is the deafult option for plan: ${planName}?`,
     when: () =>
-      isOptionNotPassed('planUnlimitedNumberDefault') &&
-      (answers.showUnlimited as boolean),
+      isOptionNotPassed('planUnlimitedNumberDefault') && (answers.showUnlimited as boolean),
   }),
   PLAN_NUMERICAL_NUMBER_DEFAULT: (planAnswers: Answers, planName: string) => ({
     name: 'planNumberDefault',
@@ -263,8 +257,7 @@ export const CREATE_FEATURES_QUESTIONS = {
     when: (answers: Answers) => {
       return (
         isOptionNotPassed('planNumberDefault') &&
-        (!planAnswers.showUnlimited ||
-          answers.planUnlimitedNumberDefault === 'Number')
+        (!planAnswers.showUnlimited || answers.planUnlimitedNumberDefault === 'Number')
       );
     },
     validate: (input: string) => {
@@ -388,8 +381,7 @@ export const CREATE_PLAN_QUESTIONS = {
     type: 'list',
     choices: ['User', 'Board'],
     message: 'What is the license type of the plan? ',
-    when: (answers: Answers) =>
-      isOptionNotPassed('licenseType') && answers?.appType !== 'Custom',
+    when: (answers: Answers) => isOptionNotPassed('licenseType') && answers?.appType !== 'Custom',
   },
   PLAN_TYPE: {
     name: 'planType',
@@ -401,22 +393,15 @@ export const CREATE_PLAN_QUESTIONS = {
   PLAN_CYCLE_INTERVAL: (planAnswers: Answers) => ({
     name: 'planCycleInterval',
     type: 'list',
-    choices:
-      planAnswers?.planType === 'Bespoke'
-        ? ['Year', 'Month', 'Day']
-        : ['Year', 'Month'],
+    choices: planAnswers?.planType === 'Bespoke' ? ['Year', 'Month', 'Day'] : ['Year', 'Month'],
     message: 'What is the plan cycle interval? ',
-    when: () =>
-      isOptionNotPassed('planCycleInterval') &&
-      planAnswers?.planType !== 'Evaluation',
+    when: () => isOptionNotPassed('planCycleInterval') && planAnswers?.planType !== 'Evaluation',
   }),
   PLAN_INTERVAL_LENGTH: (planAnswers: Answers) => ({
     name: 'planIntervalLength',
     type: 'number',
     message: 'What is the plan interval length? ',
-    when: () =>
-      isOptionNotPassed('planIntervalLength') &&
-      planAnswers?.planType !== 'Evaluation',
+    when: () => isOptionNotPassed('planIntervalLength') && planAnswers?.planType !== 'Evaluation',
     validate: (input: number) => {
       if (!isNaN(input)) return true;
       else return 'A numerical value is required';
@@ -459,17 +444,12 @@ export const CREATE_PLAN_QUESTIONS = {
     message: 'Is the plan published?',
     when: () => isOptionNotPassed('published'),
   },
-  TRUE_FALSE_DEFAULT: (
-    valueType: string,
-    prevValue: string,
-    featureName: string
-  ) => ({
+  TRUE_FALSE_DEFAULT: (valueType: string, prevValue: string, featureName: string) => ({
     name: 'trueFalseDefault',
     type: 'list',
     choices: ['true', 'false'],
     message: `What is the default value for ${featureName}: `,
-    when: () =>
-      isOptionNotPassed('trueFalseDefault') && valueType === 'boolean',
+    when: () => isOptionNotPassed('trueFalseDefault') && valueType === 'boolean',
     default: prevValue,
   }),
   NUMERICAL_SHOW_UNLIMITED: (prevValue: boolean, featureName: string) => ({
@@ -479,17 +459,13 @@ export const CREATE_PLAN_QUESTIONS = {
     when: () => isOptionNotPassed('showUnlimited'),
     ...(prevValue !== undefined && { default: prevValue }),
   }),
-  NUMERICAL_UNLIMITED_NUMBER_DEFAULT: (
-    prevValue: string,
-    featureName: string
-  ) => ({
+  NUMERICAL_UNLIMITED_NUMBER_DEFAULT: (prevValue: string, featureName: string) => ({
     name: 'unlimitedNumberDefault',
     type: 'list',
     choices: ['Unlimited', 'Number'],
     message: `Which field is the deafult option for the feature ${featureName}`,
     when: (answers: Answers) =>
-      isOptionNotPassed('unlimitedNumberDefault') &&
-      (answers.showUnlimited as boolean),
+      isOptionNotPassed('unlimitedNumberDefault') && (answers.showUnlimited as boolean),
     ...(prevValue !== undefined && { default: prevValue }),
   }),
   NUMERICAL_NUMBER_DEFAULT: (prevValue: number, featureName: string) => ({
@@ -573,8 +549,7 @@ export const UPDATE_PLAN_QUESTIONS = {
     type: 'list',
     choices: ['User', 'Board'],
     message: 'What is the license type of the plan? ',
-    when: (answers: Answers) =>
-      isOptionNotPassed('licenseType') && answers?.appType !== 'Custom',
+    when: (answers: Answers) => isOptionNotPassed('licenseType') && answers?.appType !== 'Custom',
   },
   PLAN_TYPE: {
     name: 'planType',
@@ -586,22 +561,15 @@ export const UPDATE_PLAN_QUESTIONS = {
   PLAN_CYCLE_INTERVAL: (planAnswers: Answers) => ({
     name: 'planCycleInterval',
     type: 'list',
-    choices:
-      planAnswers?.planType === 'Bespoke'
-        ? ['Year', 'Month', 'Day']
-        : ['Year', 'Month'],
+    choices: planAnswers?.planType === 'Bespoke' ? ['Year', 'Month', 'Day'] : ['Year', 'Month'],
     message: 'What is the plan cycle interval? ',
-    when: () =>
-      isOptionNotPassed('planCycleInterval') &&
-      planAnswers?.planType !== 'Evaluation',
+    when: () => isOptionNotPassed('planCycleInterval') && planAnswers?.planType !== 'Evaluation',
   }),
   PLAN_INTERVAL_LENGTH: (planAnswers: Answers) => ({
     name: 'planIntervalLength',
     type: 'number',
     message: 'What is the plan interval length? ',
-    when: () =>
-      isOptionNotPassed('planIntervalLength') &&
-      planAnswers?.planType !== 'Evaluation',
+    when: () => isOptionNotPassed('planIntervalLength') && planAnswers?.planType !== 'Evaluation',
     validate: (input: number) => {
       if (!isNaN(input)) return true;
       else return 'A numerical value is required';
@@ -646,17 +614,12 @@ export const UPDATE_PLAN_QUESTIONS = {
     when: () => isOptionNotPassed('published'),
     default: prevValue,
   }),
-  TRUE_FALSE_DEFAULT: (
-    valueType: string,
-    prevValue: string,
-    featureName: string
-  ) => ({
+  TRUE_FALSE_DEFAULT: (valueType: string, prevValue: string, featureName: string) => ({
     name: 'trueFalseDefault',
     type: 'list',
     choices: ['true', 'false'],
     message: `What is the default value for ${featureName}: `,
-    when: () =>
-      isOptionNotPassed('trueFalseDefault') && valueType === 'boolean',
+    when: () => isOptionNotPassed('trueFalseDefault') && valueType === 'boolean',
     default: prevValue,
   }),
   NUMERICAL_SHOW_UNLIMITED: (prevValue: boolean, featureName: string) => ({
@@ -666,17 +629,13 @@ export const UPDATE_PLAN_QUESTIONS = {
     when: () => isOptionNotPassed('showUnlimited'),
     ...(prevValue !== undefined && { default: prevValue }),
   }),
-  NUMERICAL_UNLIMITED_NUMBER_DEFAULT: (
-    prevValue: string,
-    featureName: string
-  ) => ({
+  NUMERICAL_UNLIMITED_NUMBER_DEFAULT: (prevValue: string, featureName: string) => ({
     name: 'unlimitedNumberDefault',
     type: 'list',
     choices: ['Unlimited', 'Number'],
     message: `Which field is the deafult option for the feature ${featureName}`,
     when: (answers: Answers) =>
-      isOptionNotPassed('unlimitedNumberDefault') &&
-      (answers.showUnlimited as boolean),
+      isOptionNotPassed('unlimitedNumberDefault') && (answers.showUnlimited as boolean),
     ...(prevValue !== undefined && { default: prevValue }),
   }),
   NUMERICAL_NUMBER_DEFAULT: (prevValue: number, featureName: string) => ({
@@ -732,8 +691,7 @@ export const CREATE_APP_QUESTIONS = {
     when: () => isOptionNotPassed('name'),
     validate: (input: string) => {
       if (/^([A-Za-z\-\_\d])+$/.test(input)) return true;
-      else
-        return 'Project name may only include letters, numbers, underscores and hashes.';
+      else return 'Project name may only include letters, numbers, underscores and hashes.';
     },
   },
   API_KEY: (API_KEY_CHOICES: string[]) => ({
@@ -906,8 +864,7 @@ export const UPDATE_FEATURE_QUESTIONS = {
     type: 'list',
     choices: ['true', 'false'],
     message: 'What is the default value: ',
-    when: () =>
-      isOptionNotPassed('trueFalseDefault') && valueType === 'boolean',
+    when: () => isOptionNotPassed('trueFalseDefault') && valueType === 'boolean',
     default: prevValue,
   }),
   TEXT_UPDATE_OPTIONS: (prevValues: string[]) => ({

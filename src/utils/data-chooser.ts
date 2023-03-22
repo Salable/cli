@@ -1,15 +1,8 @@
 import chalk from 'chalk';
 import { Question } from 'inquirer';
 import { isProd } from '../config';
-import {
-  ARGUMENT_SEPARATOR,
-  COMMAND_BASE,
-  CREATE_ITEM_QUESTION_OPTIONS,
-} from '../constants';
-import {
-  CREATE_API_KEY_QUESTIONS,
-  CREATE_PRODUCT_QUESTIONS,
-} from '../questions';
+import { ARGUMENT_SEPARATOR, COMMAND_BASE, CREATE_ITEM_QUESTION_OPTIONS } from '../constants';
+import { CREATE_API_KEY_QUESTIONS, CREATE_PRODUCT_QUESTIONS } from '../questions';
 import { execPromise } from './exec-promise';
 import { fetchData } from './fetch-data';
 import { processAnswers } from './process-answers';
@@ -32,10 +25,7 @@ const createQuestionSwitch = (endpoint: string) => {
   }
 };
 
-const createCommandSwitch = (
-  endpoint: string,
-  commandProps: { [key: string]: string }
-) => {
+const createCommandSwitch = (endpoint: string, commandProps: { [key: string]: string }) => {
   switch (endpoint) {
     case 'products':
       return `${COMMAND_BASE} create product ${ARGUMENT_SEPARATOR} --name="${commandProps?.name}" --displayName="${commandProps?.displayName}" --productDescription="${commandProps?.productDescription}"`;
@@ -58,11 +48,7 @@ const createCommandSwitch = (
  *
  * L ➡️ Type for the answers for the type of data the user is being asked to choose from. E.g if they're choosing from a list of products, it would be `ICreateProductQuestionAnswers`
  **/
-export const dataChooser = async <
-  T extends { name: string; status: string },
-  K,
-  L
->({
+export const dataChooser = async <T extends { name: string; status: string }, K, L>({
   question,
   startingChoices,
   endpoint,
@@ -91,9 +77,7 @@ export const dataChooser = async <
     // 4. If the option selected is one of the 'Create a new XXX' constants, then run the commands to create a new XXX
     if (CREATE_ITEM_QUESTION_OPTIONS.includes(name)) {
       // 4a. Propmpt the user with the relevant create new questions based on the endpoint provided
-      const createData = (await processAnswers<L>(
-        createQuestionSwitch(endpoint)
-      )) as {
+      const createData = (await processAnswers<L>(createQuestionSwitch(endpoint))) as {
         [key: string]: string;
       };
 
@@ -103,9 +87,11 @@ export const dataChooser = async <
       );
 
       // 4c. Log the output of the create command above
+      // eslint-disable-next-line no-console
       console.log(chalk.green(stdout));
 
       if (stderr && isProd) {
+        // eslint-disable-next-line no-console
         console.log(chalk.red(stderr));
         process.exit(1);
       }

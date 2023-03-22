@@ -1,10 +1,7 @@
 import chalk from 'chalk';
 import { CommandBuilder } from 'yargs';
 import ErrorResponse from '../../../error-response';
-import {
-  CREATE_FEATURES_QUESTIONS,
-  UPDATE_FEATURE_QUESTIONS,
-} from '../../../questions';
+import { CREATE_FEATURES_QUESTIONS, UPDATE_FEATURE_QUESTIONS } from '../../../questions';
 import {
   ICommand,
   ICreateFeatureQuestionAnswers,
@@ -57,10 +54,7 @@ const builder: CommandBuilder = {
   },
 };
 
-const updateFeatureRequestHandler = async (
-  uuid: string,
-  body: IRequestBody
-) => {
+const updateFeatureRequestHandler = async (uuid: string, body: IRequestBody) => {
   return await RequestBase<IFeature>({
     method: 'PUT',
     endpoint: `features/${uuid}`,
@@ -88,9 +82,7 @@ const handler = async () => {
       IUpdateFeatureQuestionAnswers,
       ICreateFeatureQuestionAnswers
     >({
-      question: UPDATE_FEATURE_QUESTIONS.FEATURE_NAME(
-        selectedProduct?.features
-      ),
+      question: UPDATE_FEATURE_QUESTIONS.FEATURE_NAME(selectedProduct?.features),
       startingChoices: [],
       endpoint: `products/${selectedProduct?.uuid || ''}/features`,
       targetField: 'featureName',
@@ -121,12 +113,7 @@ const handler = async () => {
         // 4a1. Prompt the user if the default is true or false for the feature
         const { trueFalseDefault } = await processAnswers<
           Pick<IUpdateFeatureQuestionAnswers, 'trueFalseDefault'>
-        >(
-          UPDATE_FEATURE_QUESTIONS.TRUE_FALSE_DEFAULT(
-            valueType,
-            featureToUpdate.defaultValue
-          )
-        );
+        >(UPDATE_FEATURE_QUESTIONS.TRUE_FALSE_DEFAULT(valueType, featureToUpdate.defaultValue));
 
         // 4a2. Perform the PUT request to the API to update the feature
         await updateFeatureRequestHandler(featureUuid, {
@@ -149,23 +136,20 @@ const handler = async () => {
          * unlimitedNumberDefault ➡️ Is "Unlimited" or "Number" the default option for the feature
          * numberDefault ➡️ If 'showUnlimited' is false or "Number" is the default, this is the number to set.
          */
-        const { showUnlimited, unlimitedNumberDefault, numberDefault } =
-          await processAnswers<
-            Pick<
-              ICreateFeatureQuestionAnswers,
-              'showUnlimited' | 'unlimitedNumberDefault' | 'numberDefault'
-            >
-          >([
-            CREATE_FEATURES_QUESTIONS.NUMERICAL_SHOW_UNLIMITED(
-              featureToUpdate.showUnlimited
-            ),
-            CREATE_FEATURES_QUESTIONS.NUMERICAL_UNLIMITED_NUMBER_DEFAULT(
-              featureToUpdate.defaultValue === '-1' ? 'Unlimited' : 'Number'
-            ),
-            CREATE_FEATURES_QUESTIONS.NUMERICAL_NUMBER_DEFAULT(
-              parseInt(featureToUpdate.defaultValue)
-            ),
-          ]);
+        const { showUnlimited, unlimitedNumberDefault, numberDefault } = await processAnswers<
+          Pick<
+            ICreateFeatureQuestionAnswers,
+            'showUnlimited' | 'unlimitedNumberDefault' | 'numberDefault'
+          >
+        >([
+          CREATE_FEATURES_QUESTIONS.NUMERICAL_SHOW_UNLIMITED(featureToUpdate.showUnlimited),
+          CREATE_FEATURES_QUESTIONS.NUMERICAL_UNLIMITED_NUMBER_DEFAULT(
+            featureToUpdate.defaultValue === '-1' ? 'Unlimited' : 'Number'
+          ),
+          CREATE_FEATURES_QUESTIONS.NUMERICAL_NUMBER_DEFAULT(
+            parseInt(featureToUpdate.defaultValue)
+          ),
+        ]);
 
         // 4b2. If showUnlimited, check if unlimited is default (-1), if not use `numberDefault` value
         const defaultValue = showUnlimited
@@ -191,9 +175,7 @@ const handler = async () => {
 
       case 'enum':
         // 4c21 Prompt the user with a recursive menu to edit the list of text options for the feature
-        const textOptions = await updateFeatureTextMenu(
-          featureToUpdate.featureEnumOptions
-        );
+        const textOptions = await updateFeatureTextMenu(featureToUpdate.featureEnumOptions);
 
         const enumNames = textOptions.map(({ name }) => name);
 
@@ -227,16 +209,14 @@ const handler = async () => {
     }
 
     // 5. Log the output of the command
+    // eslint-disable-next-line no-console
     console.log(
-      chalk.green(
-        `Feature: ${featureName} updated succesfully on ${
-          selectedProduct?.name || ''
-        }`
-      )
+      chalk.green(`Feature: ${featureName} updated succesfully on ${selectedProduct?.name || ''}`)
     );
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
+    // eslint-disable-next-line no-console
     console.error(chalk.red(e.message));
   }
 };

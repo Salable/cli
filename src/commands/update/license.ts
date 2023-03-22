@@ -34,12 +34,11 @@ const handler = async () => {
       endpoint: `licenses`,
     });
 
-    const licenseToUpdate = allLicenses?.data.find(
-      (license) => license.uuid === licenseId
-    );
+    const licenseToUpdate = allLicenses?.data.find((license) => license.uuid === licenseId);
 
     // 1a. If no license can be found for the given uuid, show an error and exit
     if (!licenseToUpdate) {
+      // eslint-disable-next-line no-console
       console.error(chalk.red('Cannot find that license, exiting...'));
       return;
     }
@@ -58,14 +57,12 @@ const handler = async () => {
       },
     });
 
-    console.log(
-      chalk.green(
-        `License ${licenseToUpdate?.name || ''} was updated succesfully`
-      )
-    );
+    // eslint-disable-next-line no-console
+    console.log(chalk.green(`License ${licenseToUpdate?.name || ''} was updated succesfully`));
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
+    // eslint-disable-next-line no-console
     console.error(chalk.red(e.message));
   }
 };

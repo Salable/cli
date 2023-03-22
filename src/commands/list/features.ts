@@ -24,13 +24,16 @@ const handler = async () => {
     });
 
     if (!productFeatures?.length) {
+      // eslint-disable-next-line no-console
       console.log(chalk.yellow(`No features found`));
     } else {
+      // eslint-disable-next-line no-console
       console.log(productFeatures);
     }
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
+    // eslint-disable-next-line no-console
     console.error(chalk.red(e.message));
   }
 };

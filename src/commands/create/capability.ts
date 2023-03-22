@@ -41,10 +41,9 @@ const handler = async () => {
       targetField: 'productName',
     });
 
-    const { name: capabilityName } =
-      await processAnswers<ICreateCapabilityQuestionAnswers>(
-        CREATE_CAPABILITY_QUESTIONS.NAME
-      );
+    const { name: capabilityName } = await processAnswers<ICreateCapabilityQuestionAnswers>(
+      CREATE_CAPABILITY_QUESTIONS.NAME
+    );
 
     await RequestBase<ICapability>({
       method: 'POST',
@@ -55,16 +54,16 @@ const handler = async () => {
       },
     });
 
+    // eslint-disable-next-line no-console
     console.log(
       chalk.green(
-        `Capability: ${capabilityName} created succesfully on ${
-          selectedProduct?.name || ''
-        }`
+        `Capability: ${capabilityName} created succesfully on ${selectedProduct?.name || ''}`
       )
     );
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
+    // eslint-disable-next-line no-console
     console.error(chalk.red(e.message));
   }
 };

@@ -15,9 +15,7 @@ const builder: CommandBuilder = {
 
 const handler = async () => {
   try {
-    const { name } = await processAnswers<ICreateApiKeyQuestionAnswers>(
-      CREATE_API_KEY_QUESTIONS
-    );
+    const { name } = await processAnswers<ICreateApiKeyQuestionAnswers>(CREATE_API_KEY_QUESTIONS);
 
     const tokenValues = await decodeToken();
 
@@ -32,16 +30,14 @@ const handler = async () => {
       },
     });
 
+    // eslint-disable-next-line no-console
     console.log(
-      chalk.green(
-        `API key "${name}" created succesfully with value: ${
-          res ? res?.value : ''
-        }`
-      )
+      chalk.green(`API key "${name}" created succesfully with value: ${res ? res?.value : ''}`)
     );
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
+    // eslint-disable-next-line no-console
     console.error(chalk.red(e.message));
   }
 };
