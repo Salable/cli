@@ -1,14 +1,7 @@
-import {
-  Auth0LoginProcessor,
-  tryGetComboToken,
-} from '@altostra/cli-login-auth0';
+import { Auth0LoginProcessor, tryGetComboToken } from '@altostra/cli-login-auth0';
 import path from 'path';
 import { isProd } from '../config';
-import {
-  AUTH0_CLIENT_ID,
-  AUTH0_DOMAIN,
-  AUTH0_TOKEN_AUDIENCE,
-} from '../constants';
+import { AUTH0_CLIENT_ID, AUTH0_DOMAIN, AUTH0_TOKEN_AUDIENCE } from '../constants';
 import ErrorResponse from '../error-response';
 import { createSalableRc, salableRcExists, updateSalableRc } from '../utils';
 import chalk from 'chalk';
@@ -43,6 +36,7 @@ const handler = async () => {
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
+    // eslint-disable-next-line no-console
     console.error(chalk.red(e.message));
     process.exit(1);
   }

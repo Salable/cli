@@ -36,5 +36,6 @@ import { validateAuth } from './middleware/validate-auth';
 
   await cli.wrap(null).argv;
 })().catch((e) => {
+  // eslint-disable-next-line no-console
   console.error(e);
 });

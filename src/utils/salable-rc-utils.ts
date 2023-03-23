@@ -29,17 +29,12 @@ REFRESH_TOKEN=${refreshToken}`
 /**
  *  Update the existing `.salablerc` file, replace the line with `searchString` on to be `newValue` instead.
  **/
-export const updateSalableRc = async (
-  searchString: string,
-  newValue: string
-) => {
+export const updateSalableRc = async (searchString: string, newValue: string) => {
   const regex = new RegExp(`${searchString}.*`);
 
   const fileContents = await getFileContents();
 
-  const newLine = fileContents
-    .toString()
-    .replace(regex, `${searchString}=${newValue}`);
+  const newLine = fileContents.toString().replace(regex, `${searchString}=${newValue}`);
 
   await fs.promises.writeFile(salableRcPath, newLine);
 };

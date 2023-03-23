@@ -166,17 +166,16 @@ const handler = async () => {
          * unlimitedNumberDefault ➡️ Is "Unlimited" or "Number" the default option for the feature
          * numberDefault ➡️ If 'showUnlimited' is false or "Number" is the default, this is the number to set.
          */
-        const { showUnlimited, unlimitedNumberDefault, numberDefault } =
-          await processAnswers<
-            Pick<
-              ICreateFeatureQuestionAnswers,
-              'showUnlimited' | 'unlimitedNumberDefault' | 'numberDefault'
-            >
-          >([
-            CREATE_FEATURES_QUESTIONS.NUMERICAL_SHOW_UNLIMITED(),
-            CREATE_FEATURES_QUESTIONS.NUMERICAL_UNLIMITED_NUMBER_DEFAULT(),
-            CREATE_FEATURES_QUESTIONS.NUMERICAL_NUMBER_DEFAULT(),
-          ]);
+        const { showUnlimited, unlimitedNumberDefault, numberDefault } = await processAnswers<
+          Pick<
+            ICreateFeatureQuestionAnswers,
+            'showUnlimited' | 'unlimitedNumberDefault' | 'numberDefault'
+          >
+        >([
+          CREATE_FEATURES_QUESTIONS.NUMERICAL_SHOW_UNLIMITED(),
+          CREATE_FEATURES_QUESTIONS.NUMERICAL_UNLIMITED_NUMBER_DEFAULT(),
+          CREATE_FEATURES_QUESTIONS.NUMERICAL_NUMBER_DEFAULT(),
+        ]);
 
         // 4b2. If showUnlimited, check if unlimited is default (-1), if not use `numberDefault` value
         const defaultValue = showUnlimited
@@ -282,16 +281,14 @@ const handler = async () => {
     }
 
     // 5. Log the output of the command
+    // eslint-disable-next-line no-console
     console.log(
-      chalk.green(
-        `Feature: ${featureName} created succesfully on ${
-          selectedProduct?.name || ''
-        }`
-      )
+      chalk.green(`Feature: ${featureName} created succesfully on ${selectedProduct?.name || ''}`)
     );
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
+    // eslint-disable-next-line no-console
     console.error(chalk.red(e.message));
   }
 };

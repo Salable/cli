@@ -13,8 +13,7 @@ const builder: CommandBuilder = {
 
 const handler = async () => {
   try {
-    const { showDeprecated } =
-      await processAnswers<IListApiKeysQuestionAnswers>();
+    const { showDeprecated } = await processAnswers<IListApiKeysQuestionAnswers>();
 
     const apiKeys = await RequestBase<IApiKey[]>({
       method: 'GET',
@@ -22,22 +21,25 @@ const handler = async () => {
     });
 
     if (showDeprecated === 'true') {
+      // eslint-disable-next-line no-console
       console.log(apiKeys);
       return;
     }
 
     const activeApiKeys =
-      Array.isArray(apiKeys) &&
-      apiKeys.filter(({ status }) => status !== 'DEPRECATED');
+      Array.isArray(apiKeys) && apiKeys.filter(({ status }) => status !== 'DEPRECATED');
 
     if (Array.isArray(activeApiKeys) && !activeApiKeys?.length) {
+      // eslint-disable-next-line no-console
       console.log(chalk.yellow(`No API keys found`));
     } else {
+      // eslint-disable-next-line no-console
       console.log(activeApiKeys);
     }
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
+    // eslint-disable-next-line no-console
     console.error(chalk.red(e.message));
   }
 };

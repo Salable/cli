@@ -13,12 +13,7 @@ import {
   IProduct,
   IRequestBody,
 } from '../../../types';
-import {
-  dataChooser,
-  planFeatureMenu,
-  processAnswers,
-  RequestBase,
-} from '../../../utils';
+import { dataChooser, planFeatureMenu, processAnswers, RequestBase } from '../../../utils';
 
 const builder: CommandBuilder = {
   productName: {
@@ -118,36 +113,26 @@ const handler = async () => {
       visibility,
     } = planAnswers;
 
-    const selectedCapabilites = productCapabilities?.reduce(
-      (acc: string[], cur) => {
-        if (capabilities.includes(cur.name)) {
-          acc.push(cur.uuid);
-        }
+    const selectedCapabilites = productCapabilities?.reduce((acc: string[], cur) => {
+      if (capabilities.includes(cur.name)) {
+        acc.push(cur.uuid);
+      }
 
-        return acc;
-      },
-      []
-    );
+      return acc;
+    }, []);
 
     if (!selectedCapabilites) {
-      throw new ErrorResponse(
-        400,
-        'No capabilities selected, please select one to continue'
-      );
+      throw new ErrorResponse(400, 'No capabilities selected, please select one to continue');
     }
 
     // 6x. Populate the sub questions based on the type selected
-    const {
-      planCycleInterval,
-      planIntervalLength,
-      evaluationPeriod,
-      evaluationPeriodDays,
-    } = await processAnswers<ICreatePlanQuestionAnswers>([
-      CREATE_PLAN_QUESTIONS.PLAN_CYCLE_INTERVAL(planAnswers),
-      CREATE_PLAN_QUESTIONS.PLAN_INTERVAL_LENGTH(planAnswers),
-      CREATE_PLAN_QUESTIONS.EVALUATION_PERIOD(planAnswers),
-      CREATE_PLAN_QUESTIONS.EVALUATION_PERIOD_DAYS(planAnswers),
-    ]);
+    const { planCycleInterval, planIntervalLength, evaluationPeriod, evaluationPeriodDays } =
+      await processAnswers<ICreatePlanQuestionAnswers>([
+        CREATE_PLAN_QUESTIONS.PLAN_CYCLE_INTERVAL(planAnswers),
+        CREATE_PLAN_QUESTIONS.PLAN_INTERVAL_LENGTH(planAnswers),
+        CREATE_PLAN_QUESTIONS.EVALUATION_PERIOD(planAnswers),
+        CREATE_PLAN_QUESTIONS.EVALUATION_PERIOD_DAYS(planAnswers),
+      ]);
 
     // 8. Get all the active features on the product
     const productFeatures = await RequestBase<IFeature[]>({
@@ -155,9 +140,7 @@ const handler = async () => {
       endpoint: `products/${selectedProduct?.uuid || ''}/features`,
     });
 
-    const activeFeatures = productFeatures?.filter(
-      ({ status }) => status === 'ACTIVE'
-    );
+    const activeFeatures = productFeatures?.filter(({ status }) => status === 'ACTIVE');
 
     // 8a. If no features exist, create the new plan
     if (!activeFeatures?.length) {
@@ -173,8 +156,7 @@ const handler = async () => {
         productUuid: selectedProduct?.uuid || '',
         evaluation: evaluationPeriod || false,
         planType,
-        licenseType:
-          licenseType === 'customId' ? licenseType : licenseType.toLowerCase(),
+        licenseType: licenseType === 'customId' ? licenseType : licenseType.toLowerCase(),
         interval: planCycleInterval.toLowerCase(),
         pricingType: 'free',
         length: planIntervalLength || 0,
@@ -203,8 +185,7 @@ const handler = async () => {
         productUuid: selectedProduct?.uuid || '',
         evaluation: evaluationPeriod || false,
         planType,
-        licenseType:
-          licenseType === 'customId' ? licenseType : licenseType.toLowerCase(),
+        licenseType: licenseType === 'customId' ? licenseType : licenseType.toLowerCase(),
         interval: planCycleInterval.toLowerCase(),
         pricingType: 'free',
         features,
@@ -214,16 +195,14 @@ const handler = async () => {
     }
 
     // 5. Log the output of the command
+    // eslint-disable-next-line no-console
     console.log(
-      chalk.green(
-        `Plan: ${planName} created succesfully on ${
-          selectedProduct?.name || ''
-        }`
-      )
+      chalk.green(`Plan: ${planName} created succesfully on ${selectedProduct?.name || ''}`)
     );
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
+    // eslint-disable-next-line no-console
     console.error(chalk.red(e.message));
   }
 };
