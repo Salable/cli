@@ -66,6 +66,23 @@ export type ICapability = {
   updatedAt: string;
 };
 
+export type ISubscription = {
+  uuid: string;
+  paymentIntegrationSubscriptionId: string;
+  productUuid: string;
+  type: string;
+  email: string;
+  organisation: string;
+  status: 'ACTIVE' | 'CANCELED';
+  createdAt: string;
+  updatedAt: string;
+  expiryDate: string;
+  licenseUuid: string;
+  planUuid: string;
+  plan: IPlan;
+  product: IProduct;
+};
+
 export type ICurrency = {
   productUuid: string;
   currencyUuid: string;
@@ -373,6 +390,11 @@ export interface ISuspendLicenseQuestionAnswers {
   uuid: string;
 }
 
+export interface ISuspendSubscriptionQuestionAnswers {
+  uuid: string;
+  when: 'Now' | 'End of the current billing period';
+}
+
 export interface IListApiKeysQuestionAnswers {
   showDeprecated: string;
 }
@@ -388,6 +410,10 @@ export interface IListCapabilitiesQuestionAnswers {
 
 export interface IListLicensesQuestionAnswers {
   showCanceled: string;
+}
+
+export interface IListSubscriptionsQuestionAnswers {
+  showSuspended: string;
 }
 
 export interface IListPlansQuestionAnswers {

@@ -17,7 +17,7 @@ const handler = async () => {
     const { showCanceled } = await processAnswers<IListLicensesQuestionAnswers>();
 
     const response = await RequestBase<{
-      count: 2;
+      count: number;
       data: ILicense[];
     }>({
       method: 'GET',
