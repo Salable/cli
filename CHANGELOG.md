@@ -1,3 +1,10 @@
+# [1.13.0](https://github.com/Salable/cli/compare/v1.12.0...v1.13.0) (2023-04-21)
+
+
+### Features
+
+* added cancel and list subscription commands ([19f1d58](https://github.com/Salable/cli/commit/19f1d5834760e8ebef0bde280b5d1b249f31fae5))
+
 # [1.12.0](https://github.com/Salable/cli/compare/v1.11.0...v1.12.0) (2023-02-21)
 
 
