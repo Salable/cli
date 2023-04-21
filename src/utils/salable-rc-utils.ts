@@ -44,9 +44,7 @@ export const updateSalableRc = async (
 
   // Test if the search string exists in the file
   if (regex.test(fileContents.toString())) {
-    const newLine = fileContents
-      .toString()
-      .replace(regex, `${searchString}=${newValue}`);
+    const newLine = fileContents.toString().replace(regex, `${searchString}=${newValue}`);
 
     return await fs.promises.writeFile(salableRcPath, newLine);
   }
@@ -62,9 +60,7 @@ ${searchString}=${newValue}`
 /**
  *  Fetch the requested property from the `.salablerc` file
  **/
-export const getProperty = async (
-  type: 'ACCESS_TOKEN' | 'REFRESH_TOKEN' | 'ORGANISATION'
-) => {
+export const getProperty = async (type: 'ACCESS_TOKEN' | 'REFRESH_TOKEN' | 'ORGANISATION') => {
   const fileContents = await getFileContents();
 
   const splitStrings = fileContents.toString().split('\n');

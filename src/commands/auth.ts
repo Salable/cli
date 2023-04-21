@@ -1,21 +1,9 @@
-import {
-  AUTH0_CLIENT_ID,
-  AUTH0_DOMAIN,
-  AUTH0_TOKEN_AUDIENCE,
-} from '../constants';
+import { AUTH0_CLIENT_ID, AUTH0_DOMAIN, AUTH0_TOKEN_AUDIENCE } from '../constants';
 import ErrorResponse from '../error-response';
-import {
-  createSalableRc,
-  processAnswers,
-  salableRcExists,
-  updateSalableRc,
-} from '../utils';
+import { createSalableRc, processAnswers, salableRcExists, updateSalableRc } from '../utils';
 import chalk from 'chalk';
 import { IAuthQuestionAnswers, ICommand } from '../types';
-import {
-  Auth0LoginProcessor,
-  tryGetComboToken,
-} from '../packages/auth0-login-processor';
+import { Auth0LoginProcessor, tryGetComboToken } from '../packages/auth0-login-processor';
 import { AUTH_QUESTIONS } from '../questions';
 import { CommandBuilder } from 'yargs';
 
@@ -29,8 +17,9 @@ const builder: CommandBuilder = {
 
 const handler = async () => {
   // 1. Get the name of the organisation from the user
-  const { organisation, username, password } =
-    await processAnswers<IAuthQuestionAnswers>(AUTH_QUESTIONS);
+  const { organisation, username, password } = await processAnswers<IAuthQuestionAnswers>(
+    AUTH_QUESTIONS
+  );
 
   // 2. Create the login processor client
   const loginProcessor = new Auth0LoginProcessor(
@@ -63,6 +52,7 @@ const handler = async () => {
     if (!(e instanceof ErrorResponse)) return;
 
     if (e.message !== 'Caught in ora') {
+      // eslint-disable-next-line no-console
       console.error(chalk.red(e.message));
     }
 

@@ -25,6 +25,7 @@ export const refreshTokens = async () => {
     await updateSalableRc('ACCESS_TOKEN', token.access_token);
     await updateSalableRc('REFRESH_TOKEN', token.refresh_token);
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.error(e);
   }
 };

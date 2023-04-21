@@ -29,9 +29,7 @@ const handler = async () => {
       name,
       displayName,
       productDescription: description,
-    } = await processAnswers<ICreateProductQuestionAnswers>(
-      CREATE_PRODUCT_QUESTIONS
-    );
+    } = await processAnswers<ICreateProductQuestionAnswers>(CREATE_PRODUCT_QUESTIONS);
 
     await RequestBase<IProduct>({
       method: 'POST',
@@ -44,10 +42,12 @@ const handler = async () => {
       },
     });
 
+    // eslint-disable-next-line no-console
     console.log(chalk.green(`Product: ${name} created succesfully`));
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
+    // eslint-disable-next-line no-console
     console.error(chalk.red(e.message));
   }
 };

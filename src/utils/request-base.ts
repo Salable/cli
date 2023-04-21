@@ -15,10 +15,7 @@ export const RequestBase = async <T>({
     const organisation = await getProperty('ORGANISATION');
 
     if (!token) {
-      throw new ErrorResponse(
-        HttpStatusCodes.badRequest,
-        'Access token is invalid'
-      );
+      throw new ErrorResponse(HttpStatusCodes.badRequest, 'Access token is invalid');
     }
 
     if (!organisation) {
@@ -55,11 +52,7 @@ export const RequestBase = async <T>({
     }
 
     // If the request fails with a bad request, refresh the tokens and try the request again
-    if (
-      httpStatus === HttpStatusCodes.badRequest &&
-      typeof data === 'string' &&
-      data?.length > 0
-    ) {
+    if (httpStatus === HttpStatusCodes.badRequest && typeof data === 'string' && data?.length > 0) {
       await refreshTokens();
 
       return await RequestBase({
@@ -70,10 +63,7 @@ export const RequestBase = async <T>({
     }
 
     // If response status is not successful, throw an error to retry
-    if (
-      httpStatus < HttpStatusCodes.ok ||
-      httpStatus >= HttpStatusCodes.multipleChoices
-    ) {
+    if (httpStatus < HttpStatusCodes.ok || httpStatus >= HttpStatusCodes.multipleChoices) {
       // 404 Error Message
       if (httpStatus === HttpStatusCodes.notFound) {
         throw new ErrorResponse(
@@ -86,9 +76,7 @@ export const RequestBase = async <T>({
       if (httpStatus === HttpStatusCodes.badRequest) {
         throw new ErrorResponse(
           httpStatus,
-          `Request to Salable API failed. Error Message: ${
-            (await res.json()) as string
-          }`
+          `Request to Salable API failed. Error Message: ${(await res.json()) as string}`
         );
       }
 

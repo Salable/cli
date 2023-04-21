@@ -39,11 +39,7 @@ export function sha256(value: Buffer): Buffer {
 }
 
 export function encodeBase64(value: Buffer): string {
-  return value
-    .toString('base64')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '');
+  return value.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }
 
 export interface Timeout<T> {
@@ -70,8 +66,6 @@ export function startTimeout<T = unknown>(duration: number): Timeout<T> {
   };
 }
 
-export function isObject(
-  val: unknown
-): val is Record<string | number | symbol, unknown> {
+export function isObject(val: unknown): val is Record<string | number | symbol, unknown> {
   return !!val && (typeof val === 'object' || typeof val === 'function');
 }

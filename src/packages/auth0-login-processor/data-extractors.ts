@@ -2,11 +2,7 @@ import { isObject } from './utils';
 import { AccessToken, RefreshToken } from './types';
 
 export function tryGetAccessToken(value: unknown): AccessToken {
-  if (
-    isObject(value) &&
-    typeof value.access_token === 'string' &&
-    value.token_type === 'Bearer'
-  ) {
+  if (isObject(value) && typeof value.access_token === 'string' && value.token_type === 'Bearer') {
     return {
       access_token: value.access_token,
     };
@@ -16,11 +12,7 @@ export function tryGetAccessToken(value: unknown): AccessToken {
 }
 
 export function tryGetRefreshToken(value: unknown): RefreshToken {
-  if (
-    isObject(value) &&
-    typeof value.refresh_token === 'string' &&
-    value.token_type === 'Bearer'
-  ) {
+  if (isObject(value) && typeof value.refresh_token === 'string' && value.token_type === 'Bearer') {
     return {
       refresh_token: value.refresh_token,
     };

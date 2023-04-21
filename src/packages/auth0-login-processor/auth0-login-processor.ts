@@ -73,25 +73,16 @@ const throwError = async (
  * for the NodeJS HTTP server to close.
  */
 export class Auth0LoginProcessor<TToken> {
-  private readonly server: http.Server = http.createServer(
-    this.handleAuth0Response.bind(this)
-  );
+  private readonly server: http.Server = http.createServer(this.handleAuth0Response.bind(this));
   private csrfToken = '';
   private codeVerifier = '';
   private authResponse: Deferred<AuthResponse> = mkDeferred();
 
-  constructor(
-    public readonly config: Config,
-    public readonly parseToken: DataExtractor<TToken>
-  ) {
+  constructor(public readonly config: Config, public readonly parseToken: DataExtractor<TToken>) {
     if (typeof config !== 'object') {
       throw new ErrorResponse(400, `Config is required.`);
     }
-    if (
-      typeof config.port !== 'number' ||
-      config.port < 1 ||
-      config.port > 65535
-    ) {
+    if (typeof config.port !== 'number' || config.port < 1 || config.port > 65535) {
       throw new ErrorResponse(400, `Invalid port number in config.`);
     }
     if (typeof config.timeout !== 'number' || config.timeout < 0) {
@@ -128,10 +119,7 @@ export class Auth0LoginProcessor<TToken> {
     await this.startServer();
 
     const codeChallenge = encodeBase64(sha256(Buffer.from(this.codeVerifier)));
-    const authenticationUrl = this.getAuthenticationUrl(
-      codeChallenge,
-      this.csrfToken
-    );
+    const authenticationUrl = this.getAuthenticationUrl(codeChallenge, this.csrfToken);
 
     const spinner = ora('Performing Authentication With Salable');
 
@@ -202,10 +190,7 @@ export class Auth0LoginProcessor<TToken> {
     });
 
     try {
-      const authResponse = await Promise.race([
-        auth0Response,
-        timeoutExpiration,
-      ]);
+      const authResponse = await Promise.race([auth0Response, timeoutExpiration]);
 
       spinner.succeed("You're now authenticated with Salable!");
       return this.getToken(this.codeVerifier, authResponse.code);
@@ -216,20 +201,17 @@ export class Auth0LoginProcessor<TToken> {
   }
 
   private async getToken(codeVerifier: string, code: string): Promise<TToken> {
-    const response = await fetch(
-      `https://${this.config.auth0Domain}/oauth/token`,
-      {
-        method: 'POST',
-        headers: { 'content-type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          grant_type: 'authorization_code',
-          client_id: this.config.auth0ClientId,
-          code_verifier: codeVerifier,
-          code: code,
-          redirect_uri: `http://localhost:${this.config.port}`,
-        }),
-      }
-    );
+    const response = await fetch(`https://${this.config.auth0Domain}/oauth/token`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type: 'authorization_code',
+        client_id: this.config.auth0ClientId,
+        code_verifier: codeVerifier,
+        code: code,
+        redirect_uri: `http://localhost:${this.config.port}`,
+      }),
+    });
 
     if (response.status !== 200) {
       new ErrorResponse(400, 'Failed to get an access token.');
@@ -278,18 +260,14 @@ export class Auth0LoginProcessor<TToken> {
     });
   }
 
-  private handleAuth0Response(
-    req: http.IncomingMessage,
-    res: http.ServerResponse
-  ): void {
+  private handleAuth0Response(req: http.IncomingMessage, res: http.ServerResponse): void {
     const urlQuery = url.parse(req.url || '', true).query;
     const { code, state, error: message } = urlQuery;
 
     if (isNonEmptyString(code) && state === this.csrfToken) {
       this.authResponse.resolve({ code });
     } else {
-      const formattedMessage =
-        message === 'access_denied' ? 'Access Denied' : message;
+      const formattedMessage = message === 'access_denied' ? 'Access Denied' : message;
 
       this.authResponse.reject({ message: formattedMessage });
     }

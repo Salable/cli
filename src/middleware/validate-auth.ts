@@ -2,15 +2,10 @@ import chalk from 'chalk';
 import { Arguments } from 'yargs';
 import { getProperty, salableRcExists } from '../utils';
 
-const checkPropertyExists = async (
-  type: 'ACCESS_TOKEN' | 'REFRESH_TOKEN' | 'ORGANISATION'
-) => {
+const checkPropertyExists = async (type: 'ACCESS_TOKEN' | 'REFRESH_TOKEN' | 'ORGANISATION') => {
   if (!(await getProperty(type))) {
-    console.error(
-      chalk.red(
-        `ERROR: No ${type} found. Please run salable auth to authenticate.`
-      )
-    );
+    // eslint-disable-next-line no-console
+    console.error(chalk.red(`ERROR: No ${type} found. Please run salable auth to authenticate.`));
     process.exit(1);
   }
 };
@@ -18,6 +13,7 @@ const checkPropertyExists = async (
 const checkSalableRcExists = () => {
   // If `.salablerc` does not exist then exit the command
   if (!salableRcExists) {
+    // eslint-disable-next-line no-console
     console.error(
       chalk.red(
         'ERROR: No `.salablerc` file exits. Please run `salable auth` to authenticate first.'
