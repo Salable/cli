@@ -1,9 +1,5 @@
 import ErrorResponse from '../../error-response';
-import {
-  ICapability,
-  ICommand,
-  IListCapabilitiesQuestionAnswers,
-} from '../../types';
+import { ICapability, ICommand, IListCapabilitiesQuestionAnswers } from '../../types';
 import { RequestBase, processAnswers } from '../../utils';
 import chalk from 'chalk';
 import { LIST_CAPABILITY_QUESTIONS } from '../../questions';
@@ -22,10 +18,9 @@ const builder: CommandBuilder = {
 
 const handler = async () => {
   try {
-    const { showDeprecated, productUuid } =
-      await processAnswers<IListCapabilitiesQuestionAnswers>(
-        LIST_CAPABILITY_QUESTIONS
-      );
+    const { showDeprecated, productUuid } = await processAnswers<IListCapabilitiesQuestionAnswers>(
+      LIST_CAPABILITY_QUESTIONS
+    );
 
     const productCapabilities = await RequestBase<ICapability[]>({
       method: 'GET',
@@ -33,6 +28,7 @@ const handler = async () => {
     });
 
     if (showDeprecated === 'true') {
+      // eslint-disable-next-line no-console
       console.log(productCapabilities);
       return;
     }
@@ -42,13 +38,16 @@ const handler = async () => {
       productCapabilities.filter(({ status }) => status !== 'DEPRECATED');
 
     if (Array.isArray(activeCapabilities) && !activeCapabilities?.length) {
+      // eslint-disable-next-line no-console
       console.log(chalk.yellow(`No capabilities found`));
     } else {
+      // eslint-disable-next-line no-console
       console.log(activeCapabilities);
     }
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
+    // eslint-disable-next-line no-console
     console.error(chalk.red(e.message));
   }
 };

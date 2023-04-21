@@ -13,8 +13,7 @@ const builder: CommandBuilder = {
 
 const handler = async () => {
   try {
-    const { showDeprecated } =
-      await processAnswers<IListProductsQuestionAnswers>();
+    const { showDeprecated } = await processAnswers<IListProductsQuestionAnswers>();
 
     const products = await RequestBase<IProduct[]>({
       method: 'GET',
@@ -22,22 +21,25 @@ const handler = async () => {
     });
 
     if (showDeprecated === 'true') {
+      // eslint-disable-next-line no-console
       console.log(products);
       return;
     }
 
     const activeProducts =
-      Array.isArray(products) &&
-      products.filter(({ status }) => status !== 'DEPRECATED');
+      Array.isArray(products) && products.filter(({ status }) => status !== 'DEPRECATED');
 
     if (Array.isArray(products) && !products.length) {
+      // eslint-disable-next-line no-console
       console.log(chalk.yellow(`No products found`));
     } else {
+      // eslint-disable-next-line no-console
       console.log(activeProducts);
     }
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
+    // eslint-disable-next-line no-console
     console.error(chalk.red(e.message));
   }
 };

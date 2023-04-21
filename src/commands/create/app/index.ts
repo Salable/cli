@@ -94,6 +94,7 @@ const handler = async () => {
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
+    // eslint-disable-next-line no-console
     console.error(chalk.red(e.message));
   }
 };

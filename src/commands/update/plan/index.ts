@@ -12,12 +12,7 @@ import {
   IRequestBody,
   IUpdatePlanQuestionAnswers,
 } from '../../../types';
-import {
-  dataChooser,
-  planFeatureMenu,
-  processAnswers,
-  RequestBase,
-} from '../../../utils';
+import { dataChooser, planFeatureMenu, processAnswers, RequestBase } from '../../../utils';
 
 const builder: CommandBuilder = {
   productName: {
@@ -115,17 +110,13 @@ const handler = async () => {
     } = planAnswers;
 
     // 4x. Populate the sub questions based on the type selected
-    const {
-      planCycleInterval,
-      planIntervalLength,
-      evaluationPeriod,
-      evaluationPeriodDays,
-    } = await processAnswers<ICreatePlanQuestionAnswers>([
-      UPDATE_PLAN_QUESTIONS.PLAN_CYCLE_INTERVAL(planAnswers),
-      UPDATE_PLAN_QUESTIONS.PLAN_INTERVAL_LENGTH(planAnswers),
-      UPDATE_PLAN_QUESTIONS.EVALUATION_PERIOD(planAnswers),
-      UPDATE_PLAN_QUESTIONS.EVALUATION_PERIOD_DAYS(planAnswers),
-    ]);
+    const { planCycleInterval, planIntervalLength, evaluationPeriod, evaluationPeriodDays } =
+      await processAnswers<ICreatePlanQuestionAnswers>([
+        UPDATE_PLAN_QUESTIONS.PLAN_CYCLE_INTERVAL(planAnswers),
+        UPDATE_PLAN_QUESTIONS.PLAN_INTERVAL_LENGTH(planAnswers),
+        UPDATE_PLAN_QUESTIONS.EVALUATION_PERIOD(planAnswers),
+        UPDATE_PLAN_QUESTIONS.EVALUATION_PERIOD_DAYS(planAnswers),
+      ]);
 
     // 5. Get all the active features on the product
     const productFeatures = await RequestBase<IFeature[]>({
@@ -133,9 +124,7 @@ const handler = async () => {
       endpoint: `products/${selectedProduct?.uuid || ''}/features`,
     });
 
-    const activeFeatures = productFeatures?.filter(
-      ({ status }) => status === 'ACTIVE'
-    );
+    const activeFeatures = productFeatures?.filter(({ status }) => status === 'ACTIVE');
 
     // 5a. If no active features exist, update the new plan
     if (!activeFeatures?.length) {
@@ -149,8 +138,7 @@ const handler = async () => {
         features: [],
         evaluation: evaluationPeriod || false,
         planType,
-        licenseType:
-          licenseType === 'customId' ? licenseType : licenseType.toLowerCase(),
+        licenseType: licenseType === 'customId' ? licenseType : licenseType.toLowerCase(),
         interval: planCycleInterval.toLowerCase(),
         pricingType: 'free',
         length: planIntervalLength || 0,
@@ -177,8 +165,7 @@ const handler = async () => {
         type: appType.toLowerCase(),
         evaluation: evaluationPeriod || false,
         planType,
-        licenseType:
-          licenseType === 'customId' ? licenseType : licenseType.toLowerCase(),
+        licenseType: licenseType === 'customId' ? licenseType : licenseType.toLowerCase(),
         interval: planCycleInterval.toLowerCase(),
         pricingType: 'free',
         features,
@@ -188,16 +175,14 @@ const handler = async () => {
     }
 
     // 6. Log the output of the command
+    // eslint-disable-next-line no-console
     console.log(
-      chalk.green(
-        `Plan: ${planName} updated succesfully on ${
-          selectedProduct?.name || ''
-        }`
-      )
+      chalk.green(`Plan: ${planName} updated succesfully on ${selectedProduct?.name || ''}`)
     );
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
+    // eslint-disable-next-line no-console
     console.error(chalk.red(e.message));
   }
 };

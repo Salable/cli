@@ -33,10 +33,7 @@ export const planTextMenu = async (defaultOptions?: string[]) => {
     }
 
     // 2b2. If the user choose the create option, prompt them to create a new option and then reprompt the user for a menu selection.
-    if (
-      chosenOption === CREATE_FEATURE_QUESTIONS.TEXT_PLAN_MENU.CREATE ||
-      !textOptions.length
-    ) {
+    if (chosenOption === CREATE_FEATURE_QUESTIONS.TEXT_PLAN_MENU.CREATE || !textOptions.length) {
       const { createTextOption } = await processAnswers<
         Pick<ICreateFeatureQuestionAnswers, 'createTextOption'>
       >(CREATE_FEATURES_QUESTIONS.TEXT_CREATE_OPTION);

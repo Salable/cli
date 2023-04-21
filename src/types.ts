@@ -30,11 +30,7 @@ export type IRequestBody = {
         [key: string]: string | boolean | { [key: string]: string | boolean };
       }
     | {
-        [key: string]:
-          | string
-          | boolean
-          | undefined
-          | { [key: string]: string | boolean };
+        [key: string]: string | boolean | undefined | { [key: string]: string | boolean };
       }[];
 };
 
@@ -266,10 +262,7 @@ export interface ICreateFeatureQuestionAnswers {
   unlimitedNumberDefault: 'Unlimited' | 'Number';
   numberDefault: number;
   createTextOption: string;
-  createTextMenuOption:
-    | 'Create a new text option'
-    | 'Delete a text option'
-    | 'Continue';
+  createTextMenuOption: 'Create a new text option' | 'Delete a text option' | 'Continue';
   deleteTextOption: string;
   textOptionsDefault: string;
   planFeatureValue: string;
@@ -337,10 +330,7 @@ export interface IUpdateFeatureQuestionAnswers {
   unlimitedNumberDefault: 'Unlimited' | 'Number';
   numberDefault: number;
   createTextOption: string;
-  createTextMenuOption:
-    | 'Create a new text option'
-    | 'Delete a text option'
-    | 'Continue';
+  createTextMenuOption: 'Create a new text option' | 'Delete a text option' | 'Continue';
   deleteTextOption: string;
   textOptionsDefault: string;
   planFeatureValue: string;

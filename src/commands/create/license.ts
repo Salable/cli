@@ -62,9 +62,8 @@ const handler = async () => {
 
     // 1a. If no uuid can be found for the product selected, show an error and exit
     if (!selectedProduct?.uuid) {
-      console.error(
-        chalk.red('Cannot find uuid for the selected product, exiting...')
-      );
+      // eslint-disable-next-line no-console
+      console.error(chalk.red('Cannot find uuid for the selected product, exiting...'));
       return;
     }
 
@@ -85,9 +84,8 @@ const handler = async () => {
 
     // 2a. If no uuid can be found for the plan selected, show an error and exit
     if (!selectedPlan?.uuid) {
-      console.error(
-        chalk.red('Cannot find uuid for the selected plan, exiting...')
-      );
+      // eslint-disable-next-line no-console
+      console.error(chalk.red('Cannot find uuid for the selected plan, exiting...'));
       return;
     }
 
@@ -116,16 +114,16 @@ const handler = async () => {
       },
     });
 
+    // eslint-disable-next-line no-console
     console.log(
       chalk.green(
-        `License for ${email} on the product ${
-          selectedProduct?.name || ''
-        } was created succesfully`
+        `License for ${email} on the product ${selectedProduct?.name || ''} was created succesfully`
       )
     );
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
+    // eslint-disable-next-line no-console
     console.error(chalk.red(e.message));
   }
 };

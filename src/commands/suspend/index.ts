@@ -4,8 +4,7 @@ import { suspendSubscription } from './subscription';
 
 export const suspendCommands = (cli: Argv) => {
   const COMMAND_NAME = 'suspend';
-  const COMMAND_DESCRIPTION =
-    'Suspend an existing [license|subscription] in your Salable Account';
+  const COMMAND_DESCRIPTION = 'Suspend an existing [license|subscription] in your Salable Account';
 
   const builder: CommandBuilder = (yargs: Argv) => {
     return (

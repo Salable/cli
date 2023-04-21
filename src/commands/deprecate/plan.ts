@@ -14,19 +14,19 @@ const builder: CommandBuilder = {
 
 const handler = async () => {
   try {
-    const { uuid } = await processAnswers<IDeprecatePlanQuestionAnswers>(
-      DEPRECATE_PLAN_QUESTIONS
-    );
+    const { uuid } = await processAnswers<IDeprecatePlanQuestionAnswers>(DEPRECATE_PLAN_QUESTIONS);
 
     await RequestBase<IProduct>({
       method: 'DELETE',
       endpoint: `plans/${uuid}`,
     });
 
+    // eslint-disable-next-line no-console
     console.log(chalk.green(`Plan: ${uuid} deprecated succesfully`));
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
+    // eslint-disable-next-line no-console
     console.error(chalk.red(e.message));
   }
 };

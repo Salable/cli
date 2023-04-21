@@ -5,8 +5,7 @@ import { updatePlan } from './plan';
 
 export const updateCommands = (cli: Argv) => {
   const COMMAND_NAME = 'update';
-  const COMMAND_DESCRIPTION =
-    'Update an existing [feature|plan] in your Salable Account';
+  const COMMAND_DESCRIPTION = 'Update an existing [feature|plan] in your Salable Account';
 
   const builder: CommandBuilder = (yargs: Argv) => {
     return (

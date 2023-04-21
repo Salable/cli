@@ -1,14 +1,9 @@
 import { CREATE_FEATURE_QUESTIONS } from '../../../constants';
 import { UPDATE_FEATURE_QUESTIONS } from '../../../questions';
-import {
-  IFeatureEnumOption,
-  IUpdateFeatureQuestionAnswers,
-} from '../../../types';
+import { IFeatureEnumOption, IUpdateFeatureQuestionAnswers } from '../../../types';
 import { processAnswers } from '../../../utils';
 
-export const updateFeatureTextMenu = async (
-  defaultOptions?: IFeatureEnumOption[]
-) => {
+export const updateFeatureTextMenu = async (defaultOptions?: IFeatureEnumOption[]) => {
   let loopTextCreate = true;
   const textOptions: IFeatureEnumOption[] = [...(defaultOptions || [])];
 
@@ -21,9 +16,7 @@ export const updateFeatureTextMenu = async (
     >(UPDATE_FEATURE_QUESTIONS.TEXT_UPDATE_OPTIONS(enumNames));
 
     // 2b1. If the user choose the continue option, exit the loop.
-    if (
-      updateTextMenuOption === CREATE_FEATURE_QUESTIONS.TEXT_PLAN_MENU.CONTINUE
-    ) {
+    if (updateTextMenuOption === CREATE_FEATURE_QUESTIONS.TEXT_PLAN_MENU.CONTINUE) {
       loopTextCreate = false;
       break;
     }
@@ -33,9 +26,7 @@ export const updateFeatureTextMenu = async (
       Pick<IUpdateFeatureQuestionAnswers, 'updateTextOption'>
     >(UPDATE_FEATURE_QUESTIONS.TEXT_UPDATE(updateTextMenuOption));
 
-    const selectedEnumIndex = textOptions.findIndex(
-      ({ name }) => name === updateTextMenuOption
-    );
+    const selectedEnumIndex = textOptions.findIndex(({ name }) => name === updateTextMenuOption);
 
     textOptions[selectedEnumIndex].name = updateTextOption;
   }
