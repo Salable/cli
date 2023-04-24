@@ -66,7 +66,7 @@ export const planFeatureMenu = async ({ valueType, uuid, ...feat }: IFeature) =>
         enumValue: '',
         featureUuid: uuid,
         isUnlimited: false,
-        value: trueFalseDefault.toString(),
+        value: '',
       };
   }
 };

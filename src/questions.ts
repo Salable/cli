@@ -902,3 +902,48 @@ export const UPDATE_FEATURE_QUESTIONS = {
     default: prevValue,
   }),
 };
+
+export const AUTH_QUESTIONS = [
+  {
+    name: 'organisation',
+    type: 'input',
+    message: 'What organisation would you like to connect to? ',
+    when: () => isOptionNotPassed('organisation'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Organisation name cannot be empty';
+    },
+  },
+  {
+    name: 'username',
+    type: 'input',
+    message: 'What is your Salable username (email address)? ',
+    when: () => isOptionNotPassed('username'),
+    validate: (input: string) => {
+      const isEmail =
+        /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()\.,;\s@\"]+\.{0,1})+([^<>()\.,;:\s@\"]{2,}|[\d\.]+))$/.test(
+          input
+        );
+
+      if (!input.length) {
+        return 'Username cannot be empty';
+      }
+
+      if (!isEmail) {
+        return 'Username be a valid email address';
+      }
+
+      return true;
+    },
+  },
+  {
+    name: 'password',
+    type: 'password',
+    message: 'What is your Salable password? ',
+    when: () => isOptionNotPassed('password'),
+    validate: (input: string) => {
+      if (input?.length) return true;
+      else return 'Password name cannot be empty';
+    },
+  },
+];

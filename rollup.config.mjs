@@ -3,7 +3,7 @@ import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import cleaner from 'rollup-plugin-cleaner';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
-import json from 'rollup-plugin-json';
+import json from '@rollup/plugin-json';
 import shebang from 'rollup-plugin-preserve-shebang';
 import copy from 'rollup-plugin-copy';
 import replace from '@rollup/plugin-replace';
@@ -20,11 +20,13 @@ const config = {
       file: packageJson.main,
       format: 'cjs',
       sourcemap: true,
+      inlineDynamicImports: true,
     },
     {
       file: packageJson.module,
       format: 'esm',
       sourcemap: true,
+      inlineDynamicImports: true,
     },
   ],
   plugins: [
@@ -40,7 +42,6 @@ const config = {
       'process.env.AUTH0_CLIENT_ID': `"${process.env.AUTH0_CLIENT_ID}"`,
       'process.env.AUTH0_DOMAIN': `"${process.env.AUTH0_DOMAIN}"`,
       'process.env.AUTH0_TOKEN_AUDIENCE': `"${process.env.AUTH0_TOKEN_AUDIENCE}"`,
-      'process.env.SALABLE_API_ENDPOINT': `"${process.env.SALABLE_API_ENDPOINT}"`,
     }),
     typescript({
       tsconfig: 'tsconfig.json',

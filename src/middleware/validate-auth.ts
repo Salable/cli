@@ -1,9 +1,9 @@
 import chalk from 'chalk';
 import { Arguments } from 'yargs';
-import { getToken, salableRcExists } from '../utils';
+import { getProperty, salableRcExists } from '../utils';
 
-const checkTokenExists = async (type: 'ACCESS_TOKEN' | 'REFRESH_TOKEN') => {
-  if (!(await getToken(type))) {
+const checkPropertyExists = async (type: 'ACCESS_TOKEN' | 'REFRESH_TOKEN' | 'ORGANISATION') => {
+  if (!(await getProperty(type))) {
     // eslint-disable-next-line no-console
     console.error(chalk.red(`ERROR: No ${type} found. Please run salable auth to authenticate.`));
     process.exit(1);
@@ -40,6 +40,7 @@ export const validateAuth = async (argv: Arguments) => {
   checkSalableRcExists();
 
   // Check if either `ACCESS_TOKEN` or `REFRESH_TOKEN` does not exist
-  await checkTokenExists('ACCESS_TOKEN');
-  await checkTokenExists('REFRESH_TOKEN');
+  await checkPropertyExists('ACCESS_TOKEN');
+  await checkPropertyExists('REFRESH_TOKEN');
+  await checkPropertyExists('ORGANISATION');
 };

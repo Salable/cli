@@ -1,11 +1,11 @@
 import { IDecodedToken } from '../types';
-import { getToken } from './salable-rc-utils';
+import { getProperty } from './salable-rc-utils';
 
 /**
  * Decode the ACCESS_TOKEN JWT to access the data inside it
  **/
 export const decodeToken = async () => {
-  const token = await getToken('ACCESS_TOKEN');
+  const token = await getProperty('ACCESS_TOKEN');
 
   if (!token) return;
 

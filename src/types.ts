@@ -208,6 +208,12 @@ export interface IApiKey {
   updatedAt: string;
 }
 
+export interface IOrganisation {
+  id: string;
+  name: string;
+  displayName: string;
+}
+
 export enum HttpStatusCodes {
   ok = 200,
   created = 201,
@@ -424,4 +430,10 @@ export interface IListPlansQuestionAnswers {
 export interface IListFeaturesQuestionAnswers {
   showDeprecated: string;
   productUuid: string;
+}
+
+export interface IAuthQuestionAnswers {
+  organisation: string;
+  username: string;
+  password: string;
 }
