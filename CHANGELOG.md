@@ -1,3 +1,12 @@
+# [1.14.0](https://github.com/Salable/cli/compare/v1.13.0...v1.14.0) (2023-04-24)
+
+
+### Features
+
+* added cancel and list subscription commands ([7291f74](https://github.com/Salable/cli/commit/7291f7451d1e16ee44f9adbc3e109d8ec0269d6b))
+* updated auth flow to not use web ui ([3ff3c4c](https://github.com/Salable/cli/commit/3ff3c4c0e1247c7a0942be99ff45670cca9637f7))
+* updated auth flow to work with preview deployments ([3dd9d2f](https://github.com/Salable/cli/commit/3dd9d2fb1600bd179d72236c2cef1fe57cea0d12))
+
 # [1.13.0](https://github.com/Salable/cli/compare/v1.12.0...v1.13.0) (2023-04-21)
 
 ### Features
