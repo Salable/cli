@@ -1,3 +1,10 @@
+## [1.14.1](https://github.com/Salable/cli/compare/v1.14.0...v1.14.1) (2023-06-01)
+
+
+### Bug Fixes
+
+* auth command failing ([aa91c2e](https://github.com/Salable/cli/commit/aa91c2e80d7a436a391fb86f418b73b0caf41eda))
+
 # [1.14.0](https://github.com/Salable/cli/compare/v1.13.0...v1.14.0) (2023-04-24)
 
 
