@@ -42,14 +42,15 @@ const clickLogin = async function ({
     visible: true,
     timeout: 5000,
   });
-
   const [response] = await Promise.all([
     page.waitForNavigation({ waitUntil: 'networkidle2' }),
     page.click('button[type="submit"]'),
   ]);
+
   if (response === null) {
     throw new Error('Response error');
   }
+
   return response;
 };
 
@@ -129,7 +130,7 @@ export class Auth0LoginProcessor<TToken> {
       const browser = await puppeteer.launch({
         headless: true,
         devtools: false,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
       });
 
       const page = await browser.newPage();
@@ -159,7 +160,7 @@ export class Auth0LoginProcessor<TToken> {
           await page.type('#password', this.config.password),
         ]);
 
-        await clickLogin({ page });
+        await new Promise((r) => setTimeout(r, 1000));
 
         await throwError(
           page,
@@ -167,6 +168,9 @@ export class Auth0LoginProcessor<TToken> {
           'Wrong email or password',
           'Invalid username or password, please try again'
         );
+
+        await page.keyboard.press('Enter');
+        await page.waitForNavigation();
       } finally {
         await page.close();
         await browser.close();
