@@ -1,3 +1,10 @@
+## [1.14.2](https://github.com/Salable/cli/compare/v1.14.1...v1.14.2) (2023-06-09)
+
+
+### Bug Fixes
+
+* handle offline access permission issue ([bf63642](https://github.com/Salable/cli/commit/bf6364279b9366edeb93be18a38c1bbe0c3610f5))
+
 ## [1.14.1](https://github.com/Salable/cli/compare/v1.14.0...v1.14.1) (2023-06-01)
 
 
