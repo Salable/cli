@@ -162,6 +162,9 @@ export class Auth0LoginProcessor<TToken> {
 
         await new Promise((r) => setTimeout(r, 1000));
 
+        await page.keyboard.press('Enter');
+        await page.waitForNavigation();
+
         await throwError(
           page,
           spinner,
@@ -169,8 +172,17 @@ export class Auth0LoginProcessor<TToken> {
           'Invalid username or password, please try again'
         );
 
-        await page.keyboard.press('Enter');
-        await page.waitForNavigation();
+        if (!page.url().includes('localhost')) {
+          await page.waitForSelector('button[value="accept"]', {
+            visible: true,
+            timeout: 5000,
+          });
+
+          await Promise.all([
+            page.waitForNavigation({ waitUntil: 'networkidle2' }),
+            page.click('button[value="accept"]'),
+          ]);
+        }
       } finally {
         await page.close();
         await browser.close();
