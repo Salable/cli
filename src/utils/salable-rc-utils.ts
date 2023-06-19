@@ -19,7 +19,8 @@ const getFileContents = async () => {
 export const createSalableRc = (
   accessToken: string,
   refreshToken: string,
-  organisation: string
+  organisation: string,
+  testMode: string
 ) => {
   if (salableRcExists) return;
 
@@ -27,7 +28,8 @@ export const createSalableRc = (
     salableRcPath,
     `ACCESS_TOKEN=${accessToken}
 REFRESH_TOKEN=${refreshToken}
-ORGANISATION=${organisation}`
+ORGANISATION=${organisation}
+TEST_MODE=${testMode}`
   );
 };
 
@@ -35,7 +37,7 @@ ORGANISATION=${organisation}`
  *  Update the existing `.salablerc` file, replace the line with `searchString` on to be `newValue` instead.
  **/
 export const updateSalableRc = async (
-  searchString: 'ACCESS_TOKEN' | 'REFRESH_TOKEN' | 'ORGANISATION',
+  searchString: 'ACCESS_TOKEN' | 'REFRESH_TOKEN' | 'ORGANISATION' | 'TEST_MODE',
   newValue: string
 ) => {
   const regex = new RegExp(`${searchString}.*`);
@@ -60,7 +62,9 @@ ${searchString}=${newValue}`
 /**
  *  Fetch the requested property from the `.salablerc` file
  **/
-export const getProperty = async (type: 'ACCESS_TOKEN' | 'REFRESH_TOKEN' | 'ORGANISATION') => {
+export const getProperty = async (
+  type: 'ACCESS_TOKEN' | 'REFRESH_TOKEN' | 'ORGANISATION' | 'TEST_MODE'
+) => {
   const fileContents = await getFileContents();
 
   const splitStrings = fileContents.toString().split('\n');

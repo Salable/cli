@@ -168,6 +168,7 @@ export type IProduct = {
   organisation: string;
   status: IStatus;
   paid: boolean;
+  appType: 'Miro' | 'Trello' | 'Custom';
   organisationPaymentIntegrationUuid: string;
   paymentIntegrationProductId?: string;
   updatedAt: string;
@@ -247,6 +248,7 @@ export interface TemplateData {
 export interface ICreateProductQuestionAnswers {
   name: string;
   displayName: string;
+  appType: 'Miro' | 'Trello' | 'Custom';
   productDescription: string;
 }
 
@@ -295,7 +297,6 @@ export interface ICreatePlanQuestionAnswers {
   productName: string;
   description: string;
   capabilities: string[];
-  appType: 'Miro' | 'Trello' | 'Custom';
   licenseType?: 'User' | 'Board';
   planType: 'Standard' | 'Bespoke' | 'Evaluation' | 'Coming Soon';
   published: boolean;
@@ -312,7 +313,6 @@ export interface IUpdatePlanQuestionAnswers {
   productName: string;
   description: string;
   capabilities: string[];
-  appType: 'Miro' | 'Trello' | 'Custom';
   licenseType?: 'User' | 'Board';
   planType: 'Standard' | 'Bespoke' | 'Evaluation' | 'Coming Soon';
   published: boolean;
@@ -436,4 +436,5 @@ export interface IAuthQuestionAnswers {
   organisation: string;
   username: string;
   password: string;
+  test: boolean;
 }

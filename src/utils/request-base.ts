@@ -4,6 +4,7 @@ import ErrorResponse from '../error-response';
 import { HttpStatusCodes, IRequestBase } from '../types';
 import { refreshTokens } from './refresh-tokens';
 import { getProperty } from './salable-rc-utils';
+import chalk from 'chalk';
 
 export const RequestBase = async <T>({
   endpoint,
@@ -13,6 +14,8 @@ export const RequestBase = async <T>({
   try {
     const token = await getProperty('ACCESS_TOKEN');
     const organisation = await getProperty('ORGANISATION');
+    const testMode = (await getProperty('TEST_MODE')) || 'false';
+    const isTest = testMode === 'true';
 
     if (!token) {
       throw new ErrorResponse(HttpStatusCodes.badRequest, 'Access token is invalid');
@@ -29,16 +32,22 @@ export const RequestBase = async <T>({
       isProd ? 'salable' : 'vercel'
     }.app/api/2.0/`;
 
+    if (isTest) {
+      // eslint-disable-next-line no-console
+      console.log(chalk.yellow(`TEST MODE: Request being performed in test mode`));
+    }
+
     const res = await fetch(`${API_URL}${endpoint}`, {
       method,
       headers: {
         'content-type': 'application/json',
         Authorization: `Bearer ${token}`,
+        'salable-test-mode': testMode,
       },
       // If not a GET Request and body is truthy, add in the body property
       ...(method !== 'GET' &&
         body && {
-          body: JSON.stringify(body),
+          body: JSON.stringify({ ...body }),
         }),
     });
 
