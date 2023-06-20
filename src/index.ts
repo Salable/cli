@@ -8,6 +8,7 @@ import {
   deprecateCommands,
   listCommands,
   suspendCommands,
+  switchMode,
   updateCommands,
 } from './commands';
 import { validateAuth } from './middleware/validate-auth';
@@ -25,6 +26,14 @@ import { validateAuth } from './middleware/validate-auth';
     describe: auth.describe,
     builder: auth.builder,
     handler: auth.handler,
+  });
+
+  // switch mode command
+  cli.command({
+    command: switchMode.command,
+    describe: switchMode.describe,
+    builder: switchMode.builder,
+    handler: switchMode.handler,
   });
 
   // sub commands
