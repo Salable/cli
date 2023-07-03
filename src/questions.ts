@@ -939,10 +939,4 @@ export const AUTH_QUESTIONS = [
       else return 'Password name cannot be empty';
     },
   },
-  {
-    name: 'test',
-    type: 'confirm',
-    message: 'Did you want to access Salable in test mode? ',
-    when: () => isOptionNotPassed('test'),
-  },
 ];

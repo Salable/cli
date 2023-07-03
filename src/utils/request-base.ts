@@ -5,6 +5,7 @@ import { HttpStatusCodes, IRequestBase } from '../types';
 import { refreshTokens } from './refresh-tokens';
 import { getProperty } from './salable-rc-utils';
 import chalk from 'chalk';
+import { getLDFlag } from '../constants';
 
 export const RequestBase = async <T>({
   endpoint,
@@ -14,8 +15,14 @@ export const RequestBase = async <T>({
   try {
     const token = await getProperty('ACCESS_TOKEN');
     const organisation = await getProperty('ORGANISATION');
+
+    const salableTestModeAllowed = await getLDFlag<boolean, boolean>({
+      flag: 'salable-test-mode',
+      defaultValue: false,
+    });
+
     const testMode = (await getProperty('TEST_MODE')) || 'false';
-    const isTest = testMode === 'true';
+    const isTest = salableTestModeAllowed && testMode === 'true';
 
     if (!token) {
       throw new ErrorResponse(HttpStatusCodes.badRequest, 'Access token is invalid');

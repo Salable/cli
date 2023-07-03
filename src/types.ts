@@ -436,5 +436,4 @@ export interface IAuthQuestionAnswers {
   organisation: string;
   username: string;
   password: string;
-  test: boolean;
 }

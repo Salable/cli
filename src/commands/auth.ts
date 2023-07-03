@@ -17,7 +17,7 @@ const builder: CommandBuilder = {
 
 const handler = async () => {
   // 1. Get the name of the organisation from the user
-  const { organisation, username, password, test } = await processAnswers<IAuthQuestionAnswers>(
+  const { organisation, username, password } = await processAnswers<IAuthQuestionAnswers>(
     AUTH_QUESTIONS
   );
 
@@ -45,9 +45,9 @@ const handler = async () => {
       await updateSalableRc('ACCESS_TOKEN', result.access_token);
       await updateSalableRc('REFRESH_TOKEN', result.refresh_token);
       await updateSalableRc('ORGANISATION', organisation);
-      await updateSalableRc('TEST_MODE', test.toString());
+      await updateSalableRc('TEST_MODE', 'false');
     } else {
-      createSalableRc(result.access_token, result.refresh_token, organisation, test.toString());
+      createSalableRc(result.access_token, result.refresh_token, organisation, 'false');
     }
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;

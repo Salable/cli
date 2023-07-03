@@ -12,8 +12,14 @@ import {
   updateCommands,
 } from './commands';
 import { validateAuth } from './middleware/validate-auth';
+import { getLDFlag } from './constants';
 
 (async () => {
+  const salableTestModeAllowed = await getLDFlag<boolean, boolean>({
+    flag: 'salable-test-mode',
+    defaultValue: false,
+  });
+
   const cli = yargs(hideBin(process.argv))
     // Useful aliases.
     .alias({ h: 'help' })
@@ -28,13 +34,15 @@ import { validateAuth } from './middleware/validate-auth';
     handler: auth.handler,
   });
 
-  // switch mode command
-  cli.command({
-    command: switchMode.command,
-    describe: switchMode.describe,
-    builder: switchMode.builder,
-    handler: switchMode.handler,
-  });
+  if (salableTestModeAllowed) {
+    // switch mode command
+    cli.command({
+      command: switchMode.command,
+      describe: switchMode.describe,
+      builder: switchMode.builder,
+      handler: switchMode.handler,
+    });
+  }
 
   // sub commands
   listCommands(cli);
@@ -44,7 +52,12 @@ import { validateAuth } from './middleware/validate-auth';
   suspendCommands(cli);
 
   await cli.wrap(null).argv;
-})().catch((e) => {
-  // eslint-disable-next-line no-console
-  console.error(e);
-});
+})()
+  .then(() => {
+    process.exit(0);
+  })
+  .catch((e) => {
+    // eslint-disable-next-line no-console
+    console.error(e);
+    process.exit(1);
+  });
