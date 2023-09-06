@@ -1,4 +1,4 @@
-import { IDecodedToken } from '../types';
+import { decodeJwt } from '@clerk/clerk-sdk-node';
 import { getProperty } from './salable-rc-utils';
 
 /**
@@ -9,9 +9,5 @@ export const decodeToken = async () => {
 
   if (!token) return;
 
-  const decodedToken = JSON.parse(
-    Buffer.from(token?.split('.')[1], 'base64').toString()
-  ) as IDecodedToken;
-
-  return decodedToken;
+  return decodeJwt(token);
 };

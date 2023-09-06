@@ -8,6 +8,7 @@ import {
   deprecateCommands,
   listCommands,
   suspendCommands,
+  switchCommands,
   updateCommands,
 } from './commands';
 import { validateAuth } from './middleware/validate-auth';
@@ -33,6 +34,7 @@ import { validateAuth } from './middleware/validate-auth';
   deprecateCommands(cli);
   updateCommands(cli);
   suspendCommands(cli);
+  switchCommands(cli);
 
   await cli.wrap(null).argv;
 })().catch((e) => {

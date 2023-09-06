@@ -755,6 +755,15 @@ export const DEPRECATE_CAPABILITY_QUESTIONS = [
   },
 ];
 
+export const SWITCH_ORGANISATION_QUESTIONS = {
+  ORGANISATION: (orgNames: string[]) => ({
+    name: 'organisation',
+    type: 'list',
+    message: 'Which organistion would you like to switch to: ',
+    choices: orgNames,
+  }),
+};
+
 export const SUSPEND_LICENSE_QUESTIONS = [
   {
     name: 'uuid',
@@ -904,16 +913,6 @@ export const UPDATE_FEATURE_QUESTIONS = {
 };
 
 export const AUTH_QUESTIONS = [
-  {
-    name: 'organisation',
-    type: 'input',
-    message: 'What organisation would you like to connect to? ',
-    when: () => isOptionNotPassed('organisation'),
-    validate: (input: string) => {
-      if (input?.length) return true;
-      else return 'Organisation name cannot be empty';
-    },
-  },
   {
     name: 'username',
     type: 'input',
