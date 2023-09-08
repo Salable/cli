@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/Salable/cli/compare/v2.0.0...v2.0.1) (2023-09-08)
+
+
+### Bug Fixes
+
+* rollup bundling not including node ([783a3fe](https://github.com/Salable/cli/commit/783a3fec172250bf40e77522d2df809aac74e6ab))
+
 # [2.0.0](https://github.com/Salable/cli/compare/v1.14.2...v2.0.0) (2023-09-08)
 
 
