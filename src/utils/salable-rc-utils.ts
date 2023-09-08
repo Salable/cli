@@ -16,28 +16,28 @@ const getFileContents = async () => {
 /**
  * Create the `.salablerc` file if it does not already exist.
  **/
-export const createSalableRc = (
-  accessToken: string,
-  refreshToken: string,
-  organisation: string
-) => {
+export const createSalableRc = (accessToken: string) => {
   if (salableRcExists) return;
 
-  fs.writeFileSync(
-    salableRcPath,
-    `ACCESS_TOKEN=${accessToken}
-REFRESH_TOKEN=${refreshToken}
-ORGANISATION=${organisation}`
-  );
+  fs.writeFileSync(salableRcPath, `ACCESS_TOKEN=${accessToken}`);
+};
+
+export const removeLineSalableRc = async (searchString: string) => {
+  const regex = new RegExp(`${searchString}.*\n`);
+
+  const fileContents = await getFileContents();
+
+  if (regex.test(fileContents.toString())) {
+    const newLine = fileContents.toString().replace(regex, '');
+
+    return await fs.promises.writeFile(salableRcPath, newLine);
+  }
 };
 
 /**
  *  Update the existing `.salablerc` file, replace the line with `searchString` on to be `newValue` instead.
  **/
-export const updateSalableRc = async (
-  searchString: 'ACCESS_TOKEN' | 'REFRESH_TOKEN' | 'ORGANISATION',
-  newValue: string
-) => {
+export const updateLineSalableRc = async (searchString: 'ACCESS_TOKEN', newValue: string) => {
   const regex = new RegExp(`${searchString}.*`);
 
   const fileContents = await getFileContents();

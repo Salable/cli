@@ -1,11 +1,17 @@
-import { AUTH0_CLIENT_ID, AUTH0_DOMAIN, AUTH0_TOKEN_AUDIENCE } from '../constants';
 import ErrorResponse from '../error-response';
-import { createSalableRc, processAnswers, salableRcExists, updateSalableRc } from '../utils';
+import {
+  createSalableRc,
+  processAnswers,
+  salableRcExists,
+  updateLineSalableRc,
+  removeLineSalableRc,
+  RequestBase,
+} from '../utils';
 import chalk from 'chalk';
 import { IAuthQuestionAnswers, ICommand } from '../types';
-import { Auth0LoginProcessor, tryGetComboToken } from '../packages/auth0-login-processor';
 import { AUTH_QUESTIONS } from '../questions';
 import { CommandBuilder } from 'yargs';
+import ora from 'ora';
 
 const builder: CommandBuilder = {
   organisation: {
@@ -17,45 +23,47 @@ const builder: CommandBuilder = {
 
 const handler = async () => {
   // 1. Get the name of the organisation from the user
-  const { organisation, username, password } = await processAnswers<IAuthQuestionAnswers>(
-    AUTH_QUESTIONS
-  );
+  const { username, password } = await processAnswers<IAuthQuestionAnswers>(AUTH_QUESTIONS);
 
-  // 2. Create the login processor client
-  const loginProcessor = new Auth0LoginProcessor(
-    {
-      auth0ClientId: AUTH0_CLIENT_ID,
-      auth0Domain: AUTH0_DOMAIN,
-      auth0TokenAudience: AUTH0_TOKEN_AUDIENCE,
-      auth0TokenScope: 'offline_access',
-      port: 42224,
-      timeout: 30000,
-      organisation,
-      username,
-      password,
-    },
-    tryGetComboToken
-  );
+  const spinner = ora('Performing Authentication With Salable');
+  spinner.start();
 
   try {
-    const result = await loginProcessor.runLoginProcess();
+    const authData = await RequestBase<{
+      token: string;
+      organisationName: string;
+    }>({
+      method: 'POST',
+      endpoint: `cli/auth`,
+      body: {
+        emailAddress: username,
+        password,
+      },
+    });
+
+    if (!authData) {
+      spinner.fail(chalk.red('Something went wrong, please try again...'));
+      return;
+    }
+
+    const { token, organisationName } = authData;
 
     // 3. Either update or create the .salablerc file with the new data
     if (salableRcExists) {
-      await updateSalableRc('ACCESS_TOKEN', result.access_token);
-      await updateSalableRc('REFRESH_TOKEN', result.refresh_token);
-      await updateSalableRc('ORGANISATION', organisation);
+      await updateLineSalableRc('ACCESS_TOKEN', token);
+      await removeLineSalableRc('REFRESH_TOKEN');
+      await removeLineSalableRc('ORGANISATION');
     } else {
-      createSalableRc(result.access_token, result.refresh_token, organisation);
+      createSalableRc(token);
     }
+
+    spinner.succeed("You're now authenticated with Salable!");
+    // eslint-disable-next-line no-console
+    console.log(`Current Org: ${organisationName}`);
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
-    if (e.message !== 'Caught in ora') {
-      // eslint-disable-next-line no-console
-      console.error(chalk.red(e.message));
-    }
-
+    spinner.fail(chalk.red(e.message));
     process.exit(1);
   }
 

@@ -7,3 +7,4 @@ export { listCommands } from './list';
 export { deprecateCommands } from './deprecate';
 export { updateCommands } from './update';
 export { suspendCommands } from './suspend';
+export { switchCommands } from './switch';
