@@ -39,6 +39,7 @@ const handler = async () => {
         emailAddress: username,
         password,
       },
+      command: auth.command,
     });
 
     if (!authData) {

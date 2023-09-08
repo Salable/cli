@@ -34,6 +34,7 @@ type IRequest = {
 
 export type IRequestBase = (IGetRequest | IRequest) & {
   endpoint: string;
+  command?: string;
 };
 
 export type IStatus = 'ACTIVE' | 'DEPRECATED' | 'CANCELED';
