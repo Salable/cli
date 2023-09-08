@@ -8,17 +8,18 @@ export const RequestBase = async <T>({
   endpoint,
   method,
   body,
+  command,
 }: IRequestBase): Promise<T | undefined | void> => {
   try {
     const token = await getProperty('ACCESS_TOKEN');
     const rfToken = await getProperty('REFRESH_TOKEN');
     const orgName = await getProperty('ORGANISATION');
 
-    if (!token) {
+    if (command !== 'auth' && !token) {
       throw new ErrorResponse(HttpStatusCodes.badRequest, 'Access token is invalid');
     }
 
-    if (rfToken || orgName) {
+    if (command !== 'auth' && (rfToken || orgName)) {
       throw new ErrorResponse(
         HttpStatusCodes.badRequest,
         `Authentication with the Salable API failed. Please re-authenticate by using "salable auth"`
@@ -33,8 +34,8 @@ export const RequestBase = async <T>({
       method,
       headers: {
         'content-type': 'application/json',
-        Cookie: `__session=${token};`,
         referer: 'cli',
+        ...(command !== 'auth' ? { Cookie: `__session=${token || ''};` } : {}),
       },
       // If not a GET Request and body is truthy, add in the body property
       ...(method !== 'GET' &&

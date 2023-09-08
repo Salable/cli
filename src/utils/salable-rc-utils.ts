@@ -23,11 +23,11 @@ export const createSalableRc = (accessToken: string) => {
 };
 
 export const removeLineSalableRc = async (searchString: string) => {
-  const regex = new RegExp(`${searchString}.*\n`);
+  const regex = new RegExp(`${searchString}.*`);
 
   const fileContents = await getFileContents();
 
-  if (regex.test(fileContents.toString())) {
+  if (fileContents.toString().match(regex)) {
     const newLine = fileContents.toString().replace(regex, '');
 
     return await fs.promises.writeFile(salableRcPath, newLine);
@@ -61,12 +61,16 @@ ${searchString}=${newValue}`
  *  Fetch the requested property from the `.salablerc` file
  **/
 export const getProperty = async (type: 'ACCESS_TOKEN' | 'REFRESH_TOKEN' | 'ORGANISATION') => {
-  const fileContents = await getFileContents();
+  try {
+    const fileContents = await getFileContents();
 
-  const splitStrings = fileContents.toString().split('\n');
-  const [propertyLine] = splitStrings.filter((string) => string.includes(type));
+    const splitStrings = fileContents.toString().split('\n');
+    const [propertyLine] = splitStrings.filter((string) => string.includes(type));
 
-  if (!propertyLine) return undefined;
+    if (!propertyLine) return undefined;
 
-  return propertyLine.split('=')[1];
+    return propertyLine.split('=')[1];
+  } catch (e) {
+    return undefined;
+  }
 };
