@@ -36,7 +36,7 @@ const config = {
     cleaner({
       targets: ['./dist'],
     }),
-    resolve(),
+    resolve({ exportConditions: ['node'] }),
     commonjs(),
     replace({
       'process.env.AUTH0_CLIENT_ID': `"${process.env.AUTH0_CLIENT_ID}"`,
