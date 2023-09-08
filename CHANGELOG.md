@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/Salable/cli/compare/v2.0.1...v2.0.2) (2023-09-08)
+
+
+### Bug Fixes
+
+* auth command failing ([8c844ec](https://github.com/Salable/cli/commit/8c844ecb5f3df7e473a6439fa71717fd43447158))
+
 ## [2.0.1](https://github.com/Salable/cli/compare/v2.0.0...v2.0.1) (2023-09-08)
 
 
