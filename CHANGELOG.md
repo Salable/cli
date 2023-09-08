@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/Salable/cli/compare/v1.14.2...v2.0.0) (2023-09-08)
+
+
+### Features
+
+* implemented clerk authentication ([3f3df14](https://github.com/Salable/cli/commit/3f3df14df4489d9a8bf294c86e66137ec771d286))
+
+
+### BREAKING CHANGES
+
+* removed auth0 authentication and replaced it with clerk
+
 ## [1.14.2](https://github.com/Salable/cli/compare/v1.14.1...v1.14.2) (2023-06-09)
 
 
