@@ -48,7 +48,7 @@ export async function getLDFlag<T, K>({ flag, defaultValue }: { flag: string; de
   const decodedToken = await decodeToken();
 
   // Update the RC file with the test mode status
-  const ldClient = await getLDClient({ key: decodedToken?.org_id || '' });
+  const ldClient = await getLDClient({ key: decodedToken?.payload.org_id || '' });
 
   const value = (await ldClient.variation(flag, defaultValue)) as T;
 

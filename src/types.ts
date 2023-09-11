@@ -1,12 +1,5 @@
+import { User } from '@clerk/clerk-sdk-node';
 import { CommandBuilder } from 'yargs';
-
-export interface IAuth0Tokens {
-  access_token: string;
-  refresh_token: string;
-  scope: string;
-  expires_in: number;
-  token_type: string;
-}
 
 export interface ICommand {
   command: string;
@@ -41,6 +34,7 @@ type IRequest = {
 
 export type IRequestBase = (IGetRequest | IRequest) & {
   endpoint: string;
+  command?: string;
 };
 
 export type IStatus = 'ACTIVE' | 'DEPRECATED' | 'CANCELED';
@@ -210,9 +204,16 @@ export interface IApiKey {
 }
 
 export interface IOrganisation {
-  id: string;
+  clerkOrgId: string;
+  addressDetails: { [k: string]: string };
+  metadata: { goals: string[] };
+  svixAppId: string;
+  logoUrl: null | string;
+  salablePlanUuid: null | string;
+  billingEmailId: string;
+  updatedAt: string;
   name: string;
-  displayName: string;
+  slug: string;
 }
 
 export enum HttpStatusCodes {
@@ -392,6 +393,10 @@ export interface IDeprecateCapabilityQuestionAnswers {
   uuid: string;
 }
 
+export interface ISwitchOrganisationQuestionAnswers {
+  organisation: string;
+}
+
 export interface ISuspendLicenseQuestionAnswers {
   uuid: string;
 }
@@ -433,7 +438,23 @@ export interface IListFeaturesQuestionAnswers {
 }
 
 export interface IAuthQuestionAnswers {
-  organisation: string;
   username: string;
   password: string;
+}
+
+export interface IJWTPayload {
+  __client_uat: string;
+  ajs_user_id: string;
+  __session: string;
+  __clerk_db_jwt: string;
+  [key: string]: string;
+}
+
+export interface IUser extends User {
+  email: string;
+  permissions: string[];
+}
+
+export interface IApiKeyScopes {
+  Admin: string[];
 }

@@ -2,7 +2,6 @@ import 'isomorphic-fetch';
 import { isProd } from '../config';
 import ErrorResponse from '../error-response';
 import { HttpStatusCodes, IRequestBase } from '../types';
-import { refreshTokens } from './refresh-tokens';
 import { getProperty } from './salable-rc-utils';
 import chalk from 'chalk';
 import { getLDFlag } from '../constants';
@@ -11,10 +10,12 @@ export const RequestBase = async <T>({
   endpoint,
   method,
   body,
+  command,
 }: IRequestBase): Promise<T | undefined | void> => {
   try {
     const token = await getProperty('ACCESS_TOKEN');
-    const organisation = await getProperty('ORGANISATION');
+    const rfToken = await getProperty('REFRESH_TOKEN');
+    const orgName = await getProperty('ORGANISATION');
 
     const salableTestModeAllowed = await getLDFlag<boolean, boolean>({
       flag: 'salable-test-mode',
@@ -24,20 +25,20 @@ export const RequestBase = async <T>({
     const testMode = (await getProperty('TEST_MODE')) || 'false';
     const isTest = salableTestModeAllowed && testMode === 'true';
 
-    if (!token) {
+    if (command !== 'auth' && !token) {
       throw new ErrorResponse(HttpStatusCodes.badRequest, 'Access token is invalid');
     }
 
-    if (!organisation) {
+    if (command !== 'auth' && (rfToken || orgName)) {
       throw new ErrorResponse(
         HttpStatusCodes.badRequest,
-        'No Organisation could be found, please reauthenticate using salable auth'
+        `Authentication with the Salable API failed. Please re-authenticate by using "salable auth"`
       );
     }
 
-    const API_URL = `https://${isProd ? '' : `${organisation}.`}${
-      isProd ? 'salable' : 'vercel'
-    }.app/api/2.0/`;
+    const API_URL = `${isProd ? 'https' : 'http'}://dashboard.${
+      isProd ? 'salable.app' : `localhost:3000`
+    }/api/2.0/`;
 
     if (isTest) {
       // eslint-disable-next-line no-console
@@ -48,8 +49,9 @@ export const RequestBase = async <T>({
       method,
       headers: {
         'content-type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        referer: 'cli',
         'salable-test-mode': testMode,
+        ...(command !== 'auth' ? { Cookie: `__session=${token || ''};` } : {}),
       },
       // If not a GET Request and body is truthy, add in the body property
       ...(method !== 'GET' &&
@@ -67,19 +69,16 @@ export const RequestBase = async <T>({
       data = (await res.json()) as Promise<T> | string;
     }
 
-    // If the request fails with a bad request, refresh the tokens and try the request again
-    if (httpStatus === HttpStatusCodes.badRequest && typeof data === 'string' && data?.length > 0) {
-      await refreshTokens();
-
-      return await RequestBase({
-        endpoint,
-        method,
-        ...(method !== 'GET' && body),
-      });
-    }
-
     // If response status is not successful, throw an error to retry
     if (httpStatus < HttpStatusCodes.ok || httpStatus >= HttpStatusCodes.multipleChoices) {
+      // 401 Error Message
+      if (httpStatus === HttpStatusCodes.unauthorized) {
+        throw new ErrorResponse(
+          httpStatus,
+          `Authentication with the Salable API failed. Please re-authenticate by using "salable auth"`
+        );
+      }
+
       // 404 Error Message
       if (httpStatus === HttpStatusCodes.notFound) {
         throw new ErrorResponse(

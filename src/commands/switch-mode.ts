@@ -1,6 +1,6 @@
 import { CommandBuilder } from 'yargs';
 import { ICommand } from '../types';
-import { getProperty, updateSalableRc } from '../utils';
+import { getProperty, updateLineSalableRc } from '../utils';
 import ErrorResponse from '../error-response';
 import chalk from 'chalk';
 
@@ -11,11 +11,11 @@ const handler = async () => {
     const currentMode = await getProperty('TEST_MODE');
 
     if (currentMode === 'true') {
-      await updateSalableRc('TEST_MODE', 'false');
+      await updateLineSalableRc('TEST_MODE', 'false');
       // eslint-disable-next-line no-console
       console.log(chalk.green('Switched to live mode'));
     } else {
-      await updateSalableRc('TEST_MODE', 'true');
+      await updateLineSalableRc('TEST_MODE', 'true');
       // eslint-disable-next-line no-console
       console.log(chalk.green('Switched to test mode'));
     }

@@ -16,28 +16,34 @@ const getFileContents = async () => {
 /**
  * Create the `.salablerc` file if it does not already exist.
  **/
-export const createSalableRc = (
-  accessToken: string,
-  refreshToken: string,
-  organisation: string,
-  testMode: string
-) => {
+export const createSalableRc = (accessToken: string, testMode: string) => {
   if (salableRcExists) return;
 
   fs.writeFileSync(
     salableRcPath,
     `ACCESS_TOKEN=${accessToken}
-REFRESH_TOKEN=${refreshToken}
-ORGANISATION=${organisation}
-TEST_MODE=${testMode}`
+  TEST_MODE=${testMode}
+  `
   );
+};
+
+export const removeLineSalableRc = async (searchString: string) => {
+  const regex = new RegExp(`${searchString}.*`);
+
+  const fileContents = await getFileContents();
+
+  if (fileContents.toString().match(regex)) {
+    const newLine = fileContents.toString().replace(regex, '');
+
+    return await fs.promises.writeFile(salableRcPath, newLine);
+  }
 };
 
 /**
  *  Update the existing `.salablerc` file, replace the line with `searchString` on to be `newValue` instead.
  **/
-export const updateSalableRc = async (
-  searchString: 'ACCESS_TOKEN' | 'REFRESH_TOKEN' | 'ORGANISATION' | 'TEST_MODE',
+export const updateLineSalableRc = async (
+  searchString: 'ACCESS_TOKEN' | 'TEST_MODE',
   newValue: string
 ) => {
   const regex = new RegExp(`${searchString}.*`);
@@ -65,12 +71,16 @@ ${searchString}=${newValue}`
 export const getProperty = async (
   type: 'ACCESS_TOKEN' | 'REFRESH_TOKEN' | 'ORGANISATION' | 'TEST_MODE'
 ) => {
-  const fileContents = await getFileContents();
+  try {
+    const fileContents = await getFileContents();
 
-  const splitStrings = fileContents.toString().split('\n');
-  const [propertyLine] = splitStrings.filter((string) => string.includes(type));
+    const splitStrings = fileContents.toString().split('\n');
+    const [propertyLine] = splitStrings.filter((string) => string.includes(type));
 
-  if (!propertyLine) return undefined;
+    if (!propertyLine) return undefined;
 
-  return propertyLine.split('=')[1];
+    return propertyLine.split('=')[1];
+  } catch (e) {
+    return undefined;
+  }
 };
