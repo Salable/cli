@@ -1,3 +1,11 @@
+# [2.1.0](https://github.com/Salable/cli/compare/v2.0.2...v2.1.0) (2023-09-11)
+
+
+### Features
+
+* added launchdarkly support ([53a795c](https://github.com/Salable/cli/commit/53a795cfc3301cd06ce7e5ca3f38dc94dc4d4fae))
+* implemented test mode into CLI ([79e847e](https://github.com/Salable/cli/commit/79e847ef8bb550f9de459bd4e72d64dd974106ac))
+
 ## [2.0.2](https://github.com/Salable/cli/compare/v2.0.1...v2.0.2) (2023-09-08)
 
 ### Bug Fixes
