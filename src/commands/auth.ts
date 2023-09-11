@@ -54,8 +54,9 @@ const handler = async () => {
       await updateLineSalableRc('ACCESS_TOKEN', token);
       await removeLineSalableRc('REFRESH_TOKEN');
       await removeLineSalableRc('ORGANISATION');
+      await updateLineSalableRc('TEST_MODE', 'false');
     } else {
-      createSalableRc(token);
+      createSalableRc(token, 'false');
     }
 
     spinner.succeed("You're now authenticated with Salable!");

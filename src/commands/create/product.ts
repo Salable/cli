@@ -28,6 +28,7 @@ const handler = async () => {
     const {
       name,
       displayName,
+      appType,
       productDescription: description,
     } = await processAnswers<ICreateProductQuestionAnswers>(CREATE_PRODUCT_QUESTIONS);
 
@@ -38,6 +39,7 @@ const handler = async () => {
         name,
         displayName,
         description,
+        appType,
         paid: false,
       },
     });

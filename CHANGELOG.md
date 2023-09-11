@@ -1,51 +1,44 @@
 ## [2.0.2](https://github.com/Salable/cli/compare/v2.0.1...v2.0.2) (2023-09-08)
 
-
 ### Bug Fixes
 
-* auth command failing ([8c844ec](https://github.com/Salable/cli/commit/8c844ecb5f3df7e473a6439fa71717fd43447158))
+- auth command failing ([8c844ec](https://github.com/Salable/cli/commit/8c844ecb5f3df7e473a6439fa71717fd43447158))
 
 ## [2.0.1](https://github.com/Salable/cli/compare/v2.0.0...v2.0.1) (2023-09-08)
 
-
 ### Bug Fixes
 
-* rollup bundling not including node ([783a3fe](https://github.com/Salable/cli/commit/783a3fec172250bf40e77522d2df809aac74e6ab))
+- rollup bundling not including node ([783a3fe](https://github.com/Salable/cli/commit/783a3fec172250bf40e77522d2df809aac74e6ab))
 
 # [2.0.0](https://github.com/Salable/cli/compare/v1.14.2...v2.0.0) (2023-09-08)
 
-
 ### Features
 
-* implemented clerk authentication ([3f3df14](https://github.com/Salable/cli/commit/3f3df14df4489d9a8bf294c86e66137ec771d286))
-
+- implemented clerk authentication ([3f3df14](https://github.com/Salable/cli/commit/3f3df14df4489d9a8bf294c86e66137ec771d286))
 
 ### BREAKING CHANGES
 
-* removed auth0 authentication and replaced it with clerk
+- removed auth0 authentication and replaced it with clerk
 
 ## [1.14.2](https://github.com/Salable/cli/compare/v1.14.1...v1.14.2) (2023-06-09)
 
-
 ### Bug Fixes
 
-* handle offline access permission issue ([bf63642](https://github.com/Salable/cli/commit/bf6364279b9366edeb93be18a38c1bbe0c3610f5))
+- handle offline access permission issue ([bf63642](https://github.com/Salable/cli/commit/bf6364279b9366edeb93be18a38c1bbe0c3610f5))
 
 ## [1.14.1](https://github.com/Salable/cli/compare/v1.14.0...v1.14.1) (2023-06-01)
 
-
 ### Bug Fixes
 
-* auth command failing ([aa91c2e](https://github.com/Salable/cli/commit/aa91c2e80d7a436a391fb86f418b73b0caf41eda))
+- auth command failing ([aa91c2e](https://github.com/Salable/cli/commit/aa91c2e80d7a436a391fb86f418b73b0caf41eda))
 
 # [1.14.0](https://github.com/Salable/cli/compare/v1.13.0...v1.14.0) (2023-04-24)
 
-
 ### Features
 
-* added cancel and list subscription commands ([7291f74](https://github.com/Salable/cli/commit/7291f7451d1e16ee44f9adbc3e109d8ec0269d6b))
-* updated auth flow to not use web ui ([3ff3c4c](https://github.com/Salable/cli/commit/3ff3c4c0e1247c7a0942be99ff45670cca9637f7))
-* updated auth flow to work with preview deployments ([3dd9d2f](https://github.com/Salable/cli/commit/3dd9d2fb1600bd179d72236c2cef1fe57cea0d12))
+- added cancel and list subscription commands ([7291f74](https://github.com/Salable/cli/commit/7291f7451d1e16ee44f9adbc3e109d8ec0269d6b))
+- updated auth flow to not use web ui ([3ff3c4c](https://github.com/Salable/cli/commit/3ff3c4c0e1247c7a0942be99ff45670cca9637f7))
+- updated auth flow to work with preview deployments ([3dd9d2f](https://github.com/Salable/cli/commit/3dd9d2fb1600bd179d72236c2cef1fe57cea0d12))
 
 # [1.13.0](https://github.com/Salable/cli/compare/v1.12.0...v1.13.0) (2023-04-21)
 

@@ -3,6 +3,8 @@ import { isProd } from '../config';
 import ErrorResponse from '../error-response';
 import { HttpStatusCodes, IRequestBase } from '../types';
 import { getProperty } from './salable-rc-utils';
+import chalk from 'chalk';
+import { getLDFlag } from '../constants';
 
 export const RequestBase = async <T>({
   endpoint,
@@ -14,6 +16,14 @@ export const RequestBase = async <T>({
     const token = await getProperty('ACCESS_TOKEN');
     const rfToken = await getProperty('REFRESH_TOKEN');
     const orgName = await getProperty('ORGANISATION');
+
+    const salableTestModeAllowed = await getLDFlag<boolean, boolean>({
+      flag: 'salable-test-mode',
+      defaultValue: false,
+    });
+
+    const testMode = (await getProperty('TEST_MODE')) || 'false';
+    const isTest = salableTestModeAllowed && testMode === 'true';
 
     if (command !== 'auth' && !token) {
       throw new ErrorResponse(HttpStatusCodes.badRequest, 'Access token is invalid');
@@ -30,17 +40,23 @@ export const RequestBase = async <T>({
       isProd ? 'salable.app' : `localhost:3000`
     }/api/2.0/`;
 
+    if (isTest) {
+      // eslint-disable-next-line no-console
+      console.log(chalk.yellow(`TEST MODE: Request being performed in test mode`));
+    }
+
     const res = await fetch(`${API_URL}${endpoint}`, {
       method,
       headers: {
         'content-type': 'application/json',
         referer: 'cli',
+        'salable-test-mode': testMode,
         ...(command !== 'auth' ? { Cookie: `__session=${token || ''};` } : {}),
       },
       // If not a GET Request and body is truthy, add in the body property
       ...(method !== 'GET' &&
         body && {
-          body: JSON.stringify(body),
+          body: JSON.stringify({ ...body }),
         }),
     });
 

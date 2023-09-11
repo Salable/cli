@@ -1,5 +1,6 @@
 import { Argv, CommandBuilder } from 'yargs';
 import { switchOrganisation } from './organisation';
+import { switchMode } from './mode';
 
 export const switchCommands = (cli: Argv) => {
   const COMMAND_NAME = 'switch';
@@ -15,6 +16,12 @@ export const switchCommands = (cli: Argv) => {
           describe: switchOrganisation.describe,
           builder: switchOrganisation.builder,
           handler: switchOrganisation.handler,
+        })
+        .command({
+          command: switchMode.command,
+          describe: switchMode.describe,
+          builder: switchMode.builder,
+          handler: switchMode.handler,
         })
         .wrap(null)
         .showHelpOnFail(true)

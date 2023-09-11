@@ -16,10 +16,15 @@ const getFileContents = async () => {
 /**
  * Create the `.salablerc` file if it does not already exist.
  **/
-export const createSalableRc = (accessToken: string) => {
+export const createSalableRc = (accessToken: string, testMode: string) => {
   if (salableRcExists) return;
 
-  fs.writeFileSync(salableRcPath, `ACCESS_TOKEN=${accessToken}`);
+  fs.writeFileSync(
+    salableRcPath,
+    `ACCESS_TOKEN=${accessToken}
+  TEST_MODE=${testMode}
+  `
+  );
 };
 
 export const removeLineSalableRc = async (searchString: string) => {
@@ -37,7 +42,10 @@ export const removeLineSalableRc = async (searchString: string) => {
 /**
  *  Update the existing `.salablerc` file, replace the line with `searchString` on to be `newValue` instead.
  **/
-export const updateLineSalableRc = async (searchString: 'ACCESS_TOKEN', newValue: string) => {
+export const updateLineSalableRc = async (
+  searchString: 'ACCESS_TOKEN' | 'TEST_MODE',
+  newValue: string
+) => {
   const regex = new RegExp(`${searchString}.*`);
 
   const fileContents = await getFileContents();
@@ -60,7 +68,9 @@ ${searchString}=${newValue}`
 /**
  *  Fetch the requested property from the `.salablerc` file
  **/
-export const getProperty = async (type: 'ACCESS_TOKEN' | 'REFRESH_TOKEN' | 'ORGANISATION') => {
+export const getProperty = async (
+  type: 'ACCESS_TOKEN' | 'REFRESH_TOKEN' | 'ORGANISATION' | 'TEST_MODE'
+) => {
   try {
     const fileContents = await getFileContents();
 

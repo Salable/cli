@@ -27,6 +27,13 @@ export const CREATE_PRODUCT_QUESTIONS = [
     },
   },
   {
+    name: 'appType',
+    type: 'list',
+    choices: ['Trello', 'Miro', 'Custom'],
+    message: 'What is the app type of the plan? ',
+    when: () => isOptionNotPassed('appType'),
+  },
+  {
     name: 'productDescription',
     type: 'input',
     message: 'Description of your product: ',
@@ -369,20 +376,13 @@ export const CREATE_PLAN_QUESTIONS = {
       else return 'At least one capability must be selected';
     },
   }),
-  APP_TYPE: {
-    name: 'appType',
-    type: 'list',
-    choices: ['Trello', 'Miro', 'Custom'],
-    message: 'What is the app type of the plan? ',
-    when: () => isOptionNotPassed('appType'),
-  },
-  LICENSE_TYPE: {
+  LICENSE_TYPE: (appType: 'Miro' | 'Trello' | 'Custom') => ({
     name: 'licenseType',
     type: 'list',
     choices: ['User', 'Board'],
     message: 'What is the license type of the plan? ',
-    when: (answers: Answers) => isOptionNotPassed('licenseType') && answers?.appType !== 'Custom',
-  },
+    when: () => isOptionNotPassed('licenseType') && appType !== 'Custom',
+  }),
   PLAN_TYPE: {
     name: 'planType',
     type: 'list',
@@ -537,20 +537,13 @@ export const UPDATE_PLAN_QUESTIONS = {
     when: () => isOptionNotPassed('description'),
     default: prevValue,
   }),
-  APP_TYPE: {
-    name: 'appType',
-    type: 'list',
-    choices: ['Trello', 'Miro', 'Custom'],
-    message: 'What is the app type of the plan? ',
-    when: () => isOptionNotPassed('appType'),
-  },
-  LICENSE_TYPE: {
+  LICENSE_TYPE: (appType: 'Miro' | 'Trello' | 'Custom') => ({
     name: 'licenseType',
     type: 'list',
     choices: ['User', 'Board'],
     message: 'What is the license type of the plan? ',
-    when: (answers: Answers) => isOptionNotPassed('licenseType') && answers?.appType !== 'Custom',
-  },
+    when: () => isOptionNotPassed('licenseType') && appType !== 'Custom',
+  }),
   PLAN_TYPE: {
     name: 'planType',
     type: 'list',
