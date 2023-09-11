@@ -12,10 +12,12 @@ import {
   updateCommands,
 } from './commands';
 import { validateAuth } from './middleware/validate-auth';
+import { version } from './commands/version';
 
 (async () => {
   const cli = yargs(hideBin(process.argv))
     // Useful aliases.
+    .version(false)
     .alias({ h: 'help' })
     .strict()
     .middleware(validateAuth);
@@ -26,6 +28,14 @@ import { validateAuth } from './middleware/validate-auth';
     describe: auth.describe,
     builder: auth.builder,
     handler: auth.handler,
+  });
+
+  // version command
+  cli.command({
+    command: version.command,
+    describe: version.describe,
+    builder: version.builder,
+    handler: version.handler,
   });
 
   // sub commands
