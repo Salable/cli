@@ -1,16 +1,10 @@
 import { Argv, CommandBuilder } from 'yargs';
 import { switchOrganisation } from './organisation';
-import { getLDFlag } from '../../constants';
-import { switchMode } from '../switch-mode';
+import { switchMode } from './mode';
 
-export const switchCommands = async (cli: Argv) => {
+export const switchCommands = (cli: Argv) => {
   const COMMAND_NAME = 'switch';
   const COMMAND_DESCRIPTION = 'Switch your active [organisation] in your Salable Account';
-
-  const salableTestModeAllowed = await getLDFlag<boolean, boolean>({
-    flag: 'salable-test-mode',
-    defaultValue: false,
-  });
 
   const builder: CommandBuilder = (yargs: Argv) => {
     return (
@@ -24,10 +18,10 @@ export const switchCommands = async (cli: Argv) => {
           handler: switchOrganisation.handler,
         })
         .command({
-          command: salableTestModeAllowed ? switchMode.command : undefined,
-          describe: salableTestModeAllowed ? switchMode.describe : undefined,
-          builder: salableTestModeAllowed ? switchMode.builder : undefined,
-          handler: salableTestModeAllowed ? switchMode.handler : () => undefined,
+          command: switchMode.command,
+          describe: switchMode.describe,
+          builder: switchMode.builder,
+          handler: switchMode.handler,
         })
         .wrap(null)
         .showHelpOnFail(true)

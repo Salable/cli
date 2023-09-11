@@ -34,7 +34,7 @@ import { validateAuth } from './middleware/validate-auth';
   deprecateCommands(cli);
   updateCommands(cli);
   suspendCommands(cli);
-  await switchCommands(cli);
+  switchCommands(cli);
 
   await cli.wrap(null).argv;
 })()

@@ -1,13 +1,26 @@
 import { CommandBuilder } from 'yargs';
-import { ICommand } from '../types';
-import { getProperty, updateLineSalableRc } from '../utils';
-import ErrorResponse from '../error-response';
+import { ICommand } from '../../types';
+import { getProperty, updateLineSalableRc } from '../../utils';
+import ErrorResponse from '../../error-response';
 import chalk from 'chalk';
+import { getLDFlag } from '../../constants';
 
 const builder: CommandBuilder = {};
 
 const handler = async () => {
   try {
+    const salableTestModeAllowed = await getLDFlag<boolean, boolean>({
+      flag: 'salable-test-mode',
+      defaultValue: false,
+    });
+
+    if (!salableTestModeAllowed) {
+      // eslint-disable-next-line no-console
+      console.error(chalk.red('Your current organisation does not have access to test mode.'));
+
+      process.exit(1);
+    }
+
     const currentMode = await getProperty('TEST_MODE');
 
     if (currentMode === 'true') {
@@ -34,7 +47,7 @@ const handler = async () => {
 };
 
 export const switchMode: ICommand = {
-  command: 'switch-mode',
+  command: 'mode',
   describe: 'Switch between live and test mode',
   builder,
   handler,

@@ -1,6 +1,6 @@
 // Generic Commands
 export { auth } from './auth';
-export { switchMode } from './switch-mode';
+export { switchMode } from './switch/mode';
 
 // Sub-directory commands
 export { createCommands } from './create';
