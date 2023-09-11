@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/Salable/cli/compare/v2.1.0...v2.2.0) (2023-09-11)
+
+
+### Features
+
+* added version command ([19cc5dd](https://github.com/Salable/cli/commit/19cc5dd8d07f11f011f8bb128d44e39c1e0f813a))
+
 # [2.1.0](https://github.com/Salable/cli/compare/v2.0.2...v2.1.0) (2023-09-11)
 
 
