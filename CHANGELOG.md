@@ -1,3 +1,10 @@
+## [2.2.1](https://github.com/Salable/cli/compare/v2.2.0...v2.2.1) (2023-10-03)
+
+
+### Bug Fixes
+
+* errors not being surfaced ([21168d5](https://github.com/Salable/cli/commit/21168d59ae43c7e7c90eb89b6398b185f834a3ca))
+
 # [2.2.0](https://github.com/Salable/cli/compare/v2.1.0...v2.2.0) (2023-09-11)
 
 

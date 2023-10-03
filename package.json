@@ -1,6 +1,6 @@
 {
   "name": "@salable/cli",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "A CLI to interact with your Salable Account",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
