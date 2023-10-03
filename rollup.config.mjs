@@ -42,6 +42,7 @@ const config = {
       'process.env.AUTH0_CLIENT_ID': `"${process.env.AUTH0_CLIENT_ID}"`,
       'process.env.AUTH0_DOMAIN': `"${process.env.AUTH0_DOMAIN}"`,
       'process.env.AUTH0_TOKEN_AUDIENCE': `"${process.env.AUTH0_TOKEN_AUDIENCE}"`,
+      'process.env.LAUNCHDARKLY_SDK_CLIENT_SIDE_ID': `"${process.env.LAUNCHDARKLY_SDK_CLIENT_SIDE_ID}"`,
     }),
     typescript({
       tsconfig: 'tsconfig.json',
