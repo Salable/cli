@@ -75,7 +75,8 @@ export const RequestBase = async <T>({
       if (httpStatus === HttpStatusCodes.unauthorized) {
         throw new ErrorResponse(
           httpStatus,
-          `Authentication with the Salable API failed. Please re-authenticate by using "salable auth"`
+          data.toString() ||
+            `Authentication with the Salable API failed. Please re-authenticate by using "salable auth"`
         );
       }
 
