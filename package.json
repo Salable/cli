@@ -84,6 +84,7 @@
     "isomorphic-fetch": "^3.0.0",
     "launchdarkly-node-client-sdk": "^3.0.2",
     "ora": "^5.4.1",
-    "yargs": "^17.6.0"
+    "yargs": "^17.6.0",
+    "zod": "^3.22.4"
   }
 }

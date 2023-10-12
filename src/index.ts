@@ -4,6 +4,7 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import {
   auth,
+  configure,
   createCommands,
   deprecateCommands,
   listCommands,
@@ -28,6 +29,14 @@ import { version } from './commands/version';
     describe: auth.describe,
     builder: auth.builder,
     handler: auth.handler,
+  });
+
+  // configure command
+  cli.command({
+    command: configure.command,
+    describe: configure.describe,
+    builder: configure.builder,
+    handler: configure.handler,
   });
 
   // version command
