@@ -25,25 +25,24 @@ const numericFeatureSchema = baseFeatureSchema.extend({
   type: z.literal('Numerical'),
   showUnlimited: z.boolean(),
   value: z.number(),
-  defaultValue: z.discriminatedUnion('showUnlimited', [
-    z.object({
-      showUnlimited: z.literal(true),
-      defaultValue: z.literal('Unlimited').or(z.coerce.string().refine((val) => parseInt(val))),
-    }),
-    z.object({
-      showUnlimited: z.literal(false),
-      defaultValue: z.coerce.string().refine((val) => parseInt(val)),
-    }),
-  ]),
+  // defaultValue: z.discriminatedUnion('showUnlimited', [
+  //   z.object({
+  //     showUnlimited: z.literal(true),
+  //     defaultValue: z.literal('Unlimited').or(z.coerce.string().refine((val) => parseInt(val))),
+  //   }),
+  //   z.object({
+  //     showUnlimited: z.literal(false),
+  //     defaultValue: z.coerce.string().refine((val) => parseInt(val)),
+  //   }),
+  // ]),
+  defaultValue: z.literal('Unlimited').or(z.coerce.string().refine((val) => parseInt(val))),
 });
 
-const textFeatureSchema = baseFeatureSchema
-  .extend({
-    type: z.literal('Text'),
-    options: z.array(z.string()),
-    defaultValue: z.string(),
-  })
-  .refine(({ options, defaultValue }) => options.includes(defaultValue));
+const textFeatureSchema = baseFeatureSchema.extend({
+  type: z.literal('Text'),
+  options: z.array(z.string()),
+  defaultValue: z.string(),
+});
 
 const plansSchema = z.object({
   name: z.string(),
@@ -81,7 +80,14 @@ const salableJsonSchema = z.object({
       appType: z.enum(['Trello', 'Miro', 'Custom']),
       paid: z.boolean(),
       currency: z.enum(['GBP', 'USD', 'EUR']),
-      features: z.union([booleanFeatureSchema, numericFeatureSchema, textFeatureSchema]),
+      features: z
+        .discriminatedUnion('type', [booleanFeatureSchema, numericFeatureSchema, textFeatureSchema])
+        // .refine((val) => {
+        //   if (val.type === 'Text') {
+        //     val.options.includes(val.defaultValue);
+        //   }
+        // })
+        .array(),
       plans: z.array(plansSchema),
       capabilities: z.array(z.string()),
     })
