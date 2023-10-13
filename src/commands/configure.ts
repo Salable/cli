@@ -25,16 +25,6 @@ const numericFeatureSchema = baseFeatureSchema.extend({
   type: z.literal('Numerical'),
   showUnlimited: z.boolean(),
   value: z.number(),
-  // defaultValue: z.discriminatedUnion('showUnlimited', [
-  //   z.object({
-  //     showUnlimited: z.literal(true),
-  //     defaultValue: z.literal('Unlimited').or(z.coerce.string().refine((val) => parseInt(val))),
-  //   }),
-  //   z.object({
-  //     showUnlimited: z.literal(false),
-  //     defaultValue: z.coerce.string().refine((val) => parseInt(val)),
-  //   }),
-  // ]),
   defaultValue: z.literal('Unlimited').or(z.coerce.string().refine((val) => parseInt(val))),
 });
 
@@ -51,7 +41,7 @@ const plansSchema = z.object({
   capabilities: z.array(z.string()),
   planType: z.enum(['Standard', 'Bespoke', 'Evaluation', 'Coming Soon']),
   planPricing: z.enum(['Free', 'Paid']),
-  price: z.number(),
+  price: z.number().optional(),
   planCycle: z.object({
     interval: z.enum(['Month', 'Year']),
     quantity: z.number(),
@@ -82,11 +72,17 @@ const salableJsonSchema = z.object({
       currency: z.enum(['GBP', 'USD', 'EUR']),
       features: z
         .discriminatedUnion('type', [booleanFeatureSchema, numericFeatureSchema, textFeatureSchema])
-        // .refine((val) => {
-        //   if (val.type === 'Text') {
-        //     val.options.includes(val.defaultValue);
-        //   }
-        // })
+        .refine((val) => {
+          if (val.type === 'Text') {
+            return val.options.includes(val.defaultValue);
+          }
+
+          if (val.type === 'Numerical') {
+            return !(!val.showUnlimited && val.defaultValue === 'Unlimited');
+          }
+
+          return true;
+        })
         .array(),
       plans: z.array(plansSchema),
       capabilities: z.array(z.string()),
