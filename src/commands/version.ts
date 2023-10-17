@@ -1,13 +1,13 @@
 import { ICommand } from '../types';
 import { CommandBuilder } from 'yargs';
 import pjson from '../../package.json';
+import { log } from '../utils';
 
 const builder: CommandBuilder = {};
 
 // eslint-disable-next-line @typescript-eslint/require-await
 const handler = async () => {
-  // eslint-disable-next-line no-console
-  console.log(pjson.version);
+  log.plain(pjson.version);
 };
 
 export const version: ICommand = {

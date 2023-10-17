@@ -6,8 +6,8 @@ import {
   updateLineSalableRc,
   removeLineSalableRc,
   RequestBase,
+  log,
 } from '../utils';
-import chalk from 'chalk';
 import { IAuthQuestionAnswers, ICommand } from '../types';
 import { AUTH_QUESTIONS } from '../questions';
 import { CommandBuilder } from 'yargs';
@@ -43,7 +43,7 @@ const handler = async () => {
     });
 
     if (!authData) {
-      spinner.fail(chalk.red('Something went wrong, please try again...'));
+      spinner.fail(log.error('Something went wrong, please try again...').exit(0));
       return;
     }
 
@@ -60,16 +60,12 @@ const handler = async () => {
     }
 
     spinner.succeed("You're now authenticated with Salable!");
-    // eslint-disable-next-line no-console
-    console.log(`Current Org: ${organisationName}`);
+    log.success(`Current Org: ${organisationName}`).exit(0);
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
-    spinner.fail(chalk.red(e.message));
-    process.exit(1);
+    spinner.fail(log.error(e.message).exit(1));
   }
-
-  process.exit(0);
 };
 
 export const auth: ICommand = {

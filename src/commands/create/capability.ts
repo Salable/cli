@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import { CommandBuilder } from 'yargs';
 import { CREATE_PRODUCT_NAME_QUESTION_OPTION } from '../../constants';
 import ErrorResponse from '../../error-response';
@@ -11,7 +10,7 @@ import {
   ICreateProductQuestionAnswers,
   IProduct,
 } from '../../types';
-import { dataChooser, processAnswers, RequestBase } from '../../utils';
+import { dataChooser, log, processAnswers, RequestBase } from '../../utils';
 
 const builder: CommandBuilder = {
   productName: {
@@ -54,17 +53,13 @@ const handler = async () => {
       },
     });
 
-    // eslint-disable-next-line no-console
-    console.log(
-      chalk.green(
-        `Capability: ${capabilityName} created succesfully on ${selectedProduct?.name || ''}`
-      )
+    log.success(
+      `Capability: ${capabilityName} created succesfully on ${selectedProduct?.name || ''}`
     );
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
-    // eslint-disable-next-line no-console
-    console.error(chalk.red(e.message));
+    log.error(e.message).exit(1);
   }
 };
 

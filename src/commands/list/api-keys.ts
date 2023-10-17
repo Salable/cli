@@ -1,7 +1,6 @@
 import ErrorResponse from '../../error-response';
 import { IApiKey, ICommand, IListApiKeysQuestionAnswers } from '../../types';
-import { RequestBase, processAnswers } from '../../utils';
-import chalk from 'chalk';
+import { RequestBase, log, processAnswers } from '../../utils';
 import { CommandBuilder } from 'yargs';
 
 const builder: CommandBuilder = {
@@ -21,8 +20,7 @@ const handler = async () => {
     });
 
     if (showDeprecated === 'true') {
-      // eslint-disable-next-line no-console
-      console.log(apiKeys);
+      log.plain(JSON.stringify(apiKeys));
       return;
     }
 
@@ -30,17 +28,14 @@ const handler = async () => {
       Array.isArray(apiKeys) && apiKeys.filter(({ status }) => status !== 'DEPRECATED');
 
     if (Array.isArray(activeApiKeys) && !activeApiKeys?.length) {
-      // eslint-disable-next-line no-console
-      console.log(chalk.yellow(`No API keys found`));
+      log.warn('No API Keys found').exit(0);
     } else {
-      // eslint-disable-next-line no-console
-      console.log(activeApiKeys);
+      log.plain(JSON.stringify(activeApiKeys)).exit(0);
     }
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
-    // eslint-disable-next-line no-console
-    console.error(chalk.red(e.message));
+    log.error(e.message).exit(1);
   }
 };
 

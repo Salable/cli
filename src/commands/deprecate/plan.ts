@@ -1,5 +1,4 @@
-import { RequestBase, processAnswers } from '../../utils';
-import chalk from 'chalk';
+import { RequestBase, log, processAnswers } from '../../utils';
 import ErrorResponse from '../../error-response';
 import { ICommand, IDeprecatePlanQuestionAnswers, IProduct } from '../../types';
 import { DEPRECATE_PLAN_QUESTIONS } from '../../questions';
@@ -21,13 +20,11 @@ const handler = async () => {
       endpoint: `plans/${uuid}`,
     });
 
-    // eslint-disable-next-line no-console
-    console.log(chalk.green(`Plan: ${uuid} deprecated succesfully`));
+    log.success(`Plan: ${uuid} deprecated succesfully`).exit(0);
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
-    // eslint-disable-next-line no-console
-    console.error(chalk.red(e.message));
+    log.error(e.message).exit(1);
   }
 };
 

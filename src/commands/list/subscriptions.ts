@@ -1,7 +1,6 @@
 import ErrorResponse from '../../error-response';
 import { ICommand, IListSubscriptionsQuestionAnswers, ISubscription } from '../../types';
-import chalk from 'chalk';
-import { RequestBase, processAnswers } from '../../utils';
+import { RequestBase, log, processAnswers } from '../../utils';
 import { CommandBuilder } from 'yargs';
 
 const builder: CommandBuilder = {
@@ -24,16 +23,14 @@ const handler = async () => {
     });
 
     if (!response) {
-      // eslint-disable-next-line no-console
-      console.log(chalk.yellow(`No subscriptions found`));
+      log.warn(`No subscriptions found`);
       return;
     }
 
     const { data: subscriptions } = response;
 
     if (showSuspended === 'true') {
-      // eslint-disable-next-line no-console
-      console.log(subscriptions);
+      log.plain<ISubscription[]>(subscriptions);
       return;
     }
 
@@ -41,17 +38,14 @@ const handler = async () => {
       Array.isArray(subscriptions) && subscriptions.filter(({ status }) => status !== 'CANCELED');
 
     if (Array.isArray(subscriptions) && !subscriptions.length) {
-      // eslint-disable-next-line no-console
-      console.log(chalk.yellow(`No subscriptions found`));
+      log.warn(`No subscriptions found`).exit(0);
     } else {
-      // eslint-disable-next-line no-console
-      console.log(activeSubscriptions);
+      log.plain(JSON.stringify(activeSubscriptions));
     }
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
-    // eslint-disable-next-line no-console
-    console.error(chalk.red(e.message));
+    log.error(e.message).exit(1);
   }
 };
 

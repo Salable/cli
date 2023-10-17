@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import chalk from 'chalk';
 import { isProd } from '../../../config';
 import ErrorResponse from '../../../error-response';
 import {
@@ -12,7 +11,7 @@ import {
 } from '../../../types';
 import { CREATE_API_KEY_QUESTION_OPTION } from '../../../constants';
 import { CREATE_APP_QUESTIONS } from '../../../questions';
-import { processAnswers, dataChooser } from '../../../utils';
+import { processAnswers, dataChooser, log } from '../../../utils';
 import { CommandBuilder } from 'yargs';
 import {
   createDirectoryContents,
@@ -94,8 +93,7 @@ const handler = async () => {
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
-    // eslint-disable-next-line no-console
-    console.error(chalk.red(e.message));
+    log.error(e.message).exit(1);
   }
 };
 

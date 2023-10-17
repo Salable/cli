@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import { CommandBuilder } from 'yargs';
 import ErrorResponse from '../../../error-response';
 import { CREATE_FEATURES_QUESTIONS, UPDATE_FEATURE_QUESTIONS } from '../../../questions';
@@ -11,7 +10,7 @@ import {
   IRequestBody,
   IUpdateFeatureQuestionAnswers,
 } from '../../../types';
-import { dataChooser, processAnswers, RequestBase } from '../../../utils';
+import { dataChooser, log, processAnswers, RequestBase } from '../../../utils';
 import { updateFeatureTextMenu } from './update-feature-text-menu';
 
 const builder: CommandBuilder = {
@@ -209,15 +208,11 @@ const handler = async () => {
     }
 
     // 5. Log the output of the command
-    // eslint-disable-next-line no-console
-    console.log(
-      chalk.green(`Feature: ${featureName} updated succesfully on ${selectedProduct?.name || ''}`)
-    );
+    log.success(`Feature: ${featureName} updated succesfully on ${selectedProduct?.name || ''}`);
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
-    // eslint-disable-next-line no-console
-    console.error(chalk.red(e.message));
+    log.error(e.message).exit(1);
   }
 };
 

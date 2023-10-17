@@ -14,6 +14,7 @@ import {
 } from './commands';
 import { validateAuth } from './middleware/validate-auth';
 import { version } from './commands/version';
+import { log } from './utils';
 
 (async () => {
   const cli = yargs(hideBin(process.argv))
@@ -61,7 +62,5 @@ import { version } from './commands/version';
     process.exit(0);
   })
   .catch((e) => {
-    // eslint-disable-next-line no-console
-    console.error(e);
-    process.exit(1);
+    log.error(e as string).exit(1);
   });

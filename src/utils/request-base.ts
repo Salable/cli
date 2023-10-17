@@ -3,8 +3,8 @@ import { isProd } from '../config';
 import ErrorResponse from '../error-response';
 import { HttpStatusCodes, IRequestBase } from '../types';
 import { getProperty } from './salable-rc-utils';
-import chalk from 'chalk';
 import { getLDFlag } from '../constants';
+import { log } from './log';
 
 export const RequestBase = async <T>({
   endpoint,
@@ -36,13 +36,12 @@ export const RequestBase = async <T>({
       );
     }
 
-    const API_URL = `${isProd ? 'https' : 'http'}://dashboard.${
+    const API_URL = `${isProd ? 'https' : 'http'}://${
       isProd ? 'salable.app' : `localhost:3000`
     }/api/2.0/`;
 
     if (isTest) {
-      // eslint-disable-next-line no-console
-      console.log(chalk.yellow(`TEST MODE: Request being performed in test mode`));
+      log.warn(`TEST MODE: Request being performed in test mode`);
     }
 
     const res = await fetch(`${API_URL}${endpoint}`, {

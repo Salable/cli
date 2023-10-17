@@ -1,7 +1,6 @@
 import ErrorResponse from '../../error-response';
 import { ICapability, ICommand, IListCapabilitiesQuestionAnswers } from '../../types';
-import { RequestBase, processAnswers } from '../../utils';
-import chalk from 'chalk';
+import { RequestBase, log, processAnswers } from '../../utils';
 import { LIST_CAPABILITY_QUESTIONS } from '../../questions';
 import { CommandBuilder } from 'yargs';
 
@@ -28,8 +27,7 @@ const handler = async () => {
     });
 
     if (showDeprecated === 'true') {
-      // eslint-disable-next-line no-console
-      console.log(productCapabilities);
+      log.plain(JSON.stringify(productCapabilities));
       return;
     }
 
@@ -38,17 +36,14 @@ const handler = async () => {
       productCapabilities.filter(({ status }) => status !== 'DEPRECATED');
 
     if (Array.isArray(activeCapabilities) && !activeCapabilities?.length) {
-      // eslint-disable-next-line no-console
-      console.log(chalk.yellow(`No capabilities found`));
+      log.warn(`No capabilities found`).exit(0);
     } else {
-      // eslint-disable-next-line no-console
-      console.log(activeCapabilities);
+      log.plain(JSON.stringify(activeCapabilities)).exit(0);
     }
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
-    // eslint-disable-next-line no-console
-    console.error(chalk.red(e.message));
+    log.error(e.message).exit(1);
   }
 };
 

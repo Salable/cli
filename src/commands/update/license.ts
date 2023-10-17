@@ -1,10 +1,10 @@
-import chalk from 'chalk';
 import { CommandBuilder } from 'yargs';
 import ErrorResponse from '../../error-response';
 import { UPDATE_LICENSE_QUESTIONS } from '../../questions';
 import { ICommand, ILicense, IUpdateLicenseQuestionAnswers } from '../../types';
 import { processAnswers } from '../../utils/process-answers';
 import { RequestBase } from '../../utils/request-base';
+import { log } from '../../utils';
 
 const builder: CommandBuilder = {
   licenseId: {
@@ -38,9 +38,7 @@ const handler = async () => {
 
     // 1a. If no license can be found for the given uuid, show an error and exit
     if (!licenseToUpdate) {
-      // eslint-disable-next-line no-console
-      console.error(chalk.red('Cannot find that license, exiting...'));
-      return;
+      throw new Error('Cannot find that license, exiting...');
     }
 
     // 2. Prompt the user for the new licence info
@@ -57,13 +55,11 @@ const handler = async () => {
       },
     });
 
-    // eslint-disable-next-line no-console
-    console.log(chalk.green(`License ${licenseToUpdate?.name || ''} was updated succesfully`));
+    log.success(`License ${licenseToUpdate?.name || ''} was updated succesfully`).exit(0);
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
-    // eslint-disable-next-line no-console
-    console.error(chalk.red(e.message));
+    log.error(e.message).exit(1);
   }
 };
 

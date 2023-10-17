@@ -1,5 +1,4 @@
-import { RequestBase, processAnswers } from '../../utils';
-import chalk from 'chalk';
+import { RequestBase, log, processAnswers } from '../../utils';
 import ErrorResponse from '../../error-response';
 import { ICommand, ICreateProductQuestionAnswers, IProduct } from '../../types';
 import { CREATE_PRODUCT_QUESTIONS } from '../../questions';
@@ -44,13 +43,11 @@ const handler = async () => {
       },
     });
 
-    // eslint-disable-next-line no-console
-    console.log(chalk.green(`Product: ${name} created succesfully`));
+    log.success(`Product: ${name} created succesfully`);
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
-    // eslint-disable-next-line no-console
-    console.error(chalk.red(e.message));
+    log.error(e.message).exit(1);
   }
 };
 
