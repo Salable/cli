@@ -5,89 +5,14 @@ import { resolve } from 'path';
 import { z } from 'zod';
 import chalk from 'chalk';
 import { RequestBase } from '../utils';
+import { settingsSchema } from '../schemas/settings';
+import { productSchema } from '../schemas/product';
 
 const builder: CommandBuilder = {};
 
-const baseFeatureSchema = z.object({
-  name: z.string(),
-  displayName: z.string(),
-  variableName: z.string(),
-  description: z.string().optional(),
-  visibility: z.enum(['Public', 'Private']),
-});
-
-const booleanFeatureSchema = baseFeatureSchema.extend({
-  type: z.literal('Boolean'),
-  defaultValue: z.boolean(),
-});
-
-const numericFeatureSchema = baseFeatureSchema.extend({
-  type: z.literal('Numerical'),
-  showUnlimited: z.boolean(),
-  value: z.number(),
-  defaultValue: z.literal('Unlimited').or(z.coerce.string().refine((val) => parseInt(val))),
-});
-
-const textFeatureSchema = baseFeatureSchema.extend({
-  type: z.literal('Text'),
-  options: z.array(z.string()),
-  defaultValue: z.string(),
-});
-
-const plansSchema = z.object({
-  name: z.string(),
-  displayName: z.string(),
-  description: z.string().optional(),
-  capabilities: z.array(z.string()),
-  planType: z.enum(['Standard', 'Bespoke', 'Evaluation', 'Coming Soon']),
-  planPricing: z.enum(['Free', 'Paid']),
-  price: z.number().optional(),
-  planCycle: z.object({
-    interval: z.enum(['Month', 'Year']),
-    quantity: z.number(),
-  }),
-  licenseType: z.literal('Licensed'),
-  evaluationPeriod: z.number(),
-  visibility: z.enum(['Public', 'Private']),
-  published: z.boolean(),
-});
-
 const salableJsonSchema = z.object({
-  settings: z.object({
-    apiKeys: z.array(
-      z.object({
-        name: z.string(),
-        roles: z.array(z.string()).default(['Admin']),
-        scopes: z.array(z.string()),
-      })
-    ),
-  }),
-  products: z.array(
-    z.object({
-      name: z.string(),
-      displayName: z.string(),
-      description: z.string().optional(),
-      appType: z.enum(['Trello', 'Miro', 'Custom']),
-      paid: z.boolean(),
-      currency: z.enum(['GBP', 'USD', 'EUR']),
-      features: z
-        .discriminatedUnion('type', [booleanFeatureSchema, numericFeatureSchema, textFeatureSchema])
-        .refine((val) => {
-          if (val.type === 'Text') {
-            return val.options.includes(val.defaultValue);
-          }
-
-          if (val.type === 'Numerical') {
-            return !(!val.showUnlimited && val.defaultValue === 'Unlimited');
-          }
-
-          return true;
-        })
-        .array(),
-      plans: z.array(plansSchema),
-      capabilities: z.array(z.string()),
-    })
-  ),
+  settings: settingsSchema,
+  products: productSchema,
 });
 
 const handler = async () => {
