@@ -442,6 +442,10 @@ export interface IAuthQuestionAnswers {
   password: string;
 }
 
+export interface IConfigureQuestionAnswers {
+  paymentIntegration: string;
+}
+
 export interface IJWTPayload {
   __client_uat: string;
   ajs_user_id: string;

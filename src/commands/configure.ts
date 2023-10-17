@@ -1,14 +1,17 @@
 import { readFile } from 'fs/promises';
-import { ICommand, IOrganisationPaymentIntegration, IRequestBody } from '../types';
-import { CommandBuilder } from 'yargs';
+import {
+  ICommand,
+  IConfigureQuestionAnswers,
+  IOrganisationPaymentIntegration,
+  IRequestBody,
+} from '../types';
 import { resolve } from 'path';
 import { z } from 'zod';
 import chalk from 'chalk';
-import { RequestBase } from '../utils';
+import { RequestBase, processAnswers } from '../utils';
 import { settingsSchema } from '../schemas/settings';
 import { productSchema } from '../schemas/product';
-
-const builder: CommandBuilder = {};
+import { CONFIGURE_QUESTIONS } from '../questions';
 
 const salableJsonSchema = z.object({
   settings: settingsSchema,
@@ -16,17 +19,17 @@ const salableJsonSchema = z.object({
 });
 
 const handler = async () => {
+  let selectedPaymentIntegration = '';
+
   const salableJsonPath = resolve(process.cwd(), '.salable.json');
 
   // TODO: handle errors nicer
   try {
-    const piData = await RequestBase<IOrganisationPaymentIntegration[]>({
+    const paymentIntegrations = await RequestBase<IOrganisationPaymentIntegration[]>({
       method: 'GET',
       endpoint: `/payment-integrations`,
       command: configure.command,
     });
-
-    // TODO: If multiple PIs prompt the user to select the one they want to use
 
     const salableJson = salableJsonSchema.parse(
       JSON.parse(
@@ -36,10 +39,45 @@ const handler = async () => {
       )
     );
 
-    if (!Array.isArray(piData)) {
+    const isFreeProductsOnly = salableJson.products.every((prod) => !prod.paid);
+
+    if (!isFreeProductsOnly && !paymentIntegrations?.length) {
       // eslint-disable-next-line no-console
-      console.log(chalk.red('Something went wrong...'));
+      console.log(
+        chalk.red(
+          'Error: Unable to create a paid product without a payment integration configured. Please configure one in the dashboard to continue.'
+        )
+      );
+
+      // eslint-disable-next-line no-console
+      console.log(
+        chalk.red(
+          'Read More: https://docs.salable.app/docs/payment-integration/add-stripe-to-salable'
+        )
+      );
       process.exit(1);
+    }
+
+    const paymentIntegrationNames = paymentIntegrations?.map((int) => int.integrationName);
+
+    if (paymentIntegrations && paymentIntegrationNames) {
+      // 1. Get the user to choose a payment integration
+      const { paymentIntegration: chosenPaymentIntegrationName } =
+        await processAnswers<IConfigureQuestionAnswers>(
+          CONFIGURE_QUESTIONS.PAYMENT_INTEGRATION(paymentIntegrationNames)
+        );
+
+      const data = paymentIntegrations.find(
+        (int) => int.integrationName === chosenPaymentIntegrationName
+      );
+
+      if (!data) {
+        // eslint-disable-next-line no-console
+        console.log(chalk.red('Error: Unable to find that payment integration, please try again.'));
+        process.exit(1);
+      }
+
+      selectedPaymentIntegration = data?.uuid;
     }
 
     await RequestBase<{
@@ -50,14 +88,13 @@ const handler = async () => {
       endpoint: `cli/configure`,
       body: {
         schema: salableJson,
-        selectedPaymentIntegration: piData[0]?.uuid,
+        ...(paymentIntegrations && { selectedPaymentIntegration }),
       } as unknown as IRequestBody,
       command: configure.command,
     });
 
     // eslint-disable-next-line no-console
     console.log(chalk.green('It worked...'));
-
     process.exit(0);
   } catch (e) {
     // eslint-disable-next-line no-console
@@ -69,6 +106,5 @@ const handler = async () => {
 export const configure: ICommand = {
   command: 'configure',
   describe: 'Configure your Salable account',
-  builder,
   handler,
 };
