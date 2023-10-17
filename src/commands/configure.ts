@@ -6,7 +6,7 @@ import {
   IRequestBody,
 } from '../types';
 import { resolve } from 'path';
-import { z } from 'zod';
+import { ZodError, z } from 'zod';
 import { RequestBase, log, processAnswers } from '../utils';
 import { settingsSchema } from '../schemas/settings';
 import { productSchema } from '../schemas/product';
@@ -17,12 +17,19 @@ const salableJsonSchema = z.object({
   products: productSchema,
 });
 
+function buildErrorPath(path: (string | number)[]) {
+  return path.reduce((acc, cur, i) => {
+    const isCurNumber = typeof cur === 'number';
+    acc = `${acc}${isCurNumber ? `[${cur}]` : `${i ? '.' : ''}${cur}`}`;
+    return acc;
+  }, '');
+}
+
 const handler = async () => {
   let selectedPaymentIntegration = '';
 
   const salableJsonPath = resolve(process.cwd(), '.salable.json');
 
-  // TODO: handle errors nicer
   try {
     const paymentIntegrations = await RequestBase<IOrganisationPaymentIntegration[]>({
       method: 'GET',
@@ -79,6 +86,16 @@ const handler = async () => {
 
     log.success('It worked...').exit(0);
   } catch (e) {
+    if (e instanceof ZodError) {
+      log.error(`${e.errors.length} validation errors found...`);
+      e.errors.forEach((e, i) => {
+        log.error(
+          `Validation Error ${i + 1} - Path: "${buildErrorPath(e.path)}" - Error: "${e.message}"`
+        );
+      });
+      process.exit(1);
+    }
+
     const error = e as Error;
     log.error(error.message || 'Something went wrong...').exit(1);
   }
