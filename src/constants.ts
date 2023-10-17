@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 import { isProd } from './config';
-import { LDContext, initialize } from 'launchdarkly-node-client-sdk';
+import { LDContext, basicLogger, initialize } from 'launchdarkly-node-client-sdk';
 import { decodeToken } from './utils';
 
 dotenv.config();
@@ -37,7 +37,9 @@ export async function getLDClient({ key }: { key: string }) {
     key,
   };
 
-  const client = initialize(LAUNCHDARKLY_SDK_CLIENT_SIDE_ID, context);
+  const client = initialize(LAUNCHDARKLY_SDK_CLIENT_SIDE_ID, context, {
+    logger: basicLogger({ level: isProd ? 'none' : 'info' }),
+  });
 
   await client.waitUntilReady();
 
