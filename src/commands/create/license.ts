@@ -101,7 +101,10 @@ const handler = async () => {
     const [parsedDate] = new Date(endDate).toISOString().split('T');
 
     // 4. Perform POST request to create the license
-    await RequestBase<ILicense>({
+    await RequestBase<
+      ILicense,
+      { email: string; granteeId: string; endDate: string; planUuid: string }
+    >({
       method: 'POST',
       endpoint: 'licenses',
       body: {

@@ -27,12 +27,12 @@ export type IRequestBody = {
       }[];
 };
 
-type IRequest = {
+type IRequest<T> = {
   method: 'POST' | 'PUT' | 'DELETE';
-  body?: IRequestBody;
+  body?: T;
 };
 
-export type IRequestBase = (IGetRequest | IRequest) & {
+export type IRequestBase<T> = (IGetRequest | IRequest<T>) & {
   endpoint: string;
   command?: string;
 };

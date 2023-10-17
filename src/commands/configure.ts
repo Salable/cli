@@ -1,10 +1,5 @@
 import { readFile } from 'fs/promises';
-import {
-  ICommand,
-  IConfigureQuestionAnswers,
-  IOrganisationPaymentIntegration,
-  IRequestBody,
-} from '../types';
+import { ICommand, IConfigureQuestionAnswers, IOrganisationPaymentIntegration } from '../types';
 import { resolve } from 'path';
 import { ZodError, z } from 'zod';
 import { RequestBase, log, processAnswers } from '../utils';
@@ -71,16 +66,22 @@ const handler = async () => {
       selectedPaymentIntegration = data?.uuid;
     }
 
-    await RequestBase<{
-      token: string;
-      organisationName: string;
-    }>({
+    await RequestBase<
+      {
+        token: string;
+        organisationName: string;
+      },
+      {
+        schema: typeof salableJson;
+        selectedPaymentIntegration?: string;
+      }
+    >({
       method: 'POST',
       endpoint: `cli/configure`,
       body: {
         schema: salableJson,
         ...(paymentIntegrations && { selectedPaymentIntegration }),
-      } as unknown as IRequestBody,
+      },
       command: configure.command,
     });
 

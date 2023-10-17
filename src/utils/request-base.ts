@@ -6,12 +6,12 @@ import { getProperty } from './salable-rc-utils';
 import { getLDFlag } from '../constants';
 import { log } from './log';
 
-export const RequestBase = async <T>({
+export const RequestBase = async <T, K = void>({
   endpoint,
   method,
   body,
   command,
-}: IRequestBase): Promise<T | undefined | void> => {
+}: IRequestBase<K>): Promise<T | undefined | void> => {
   try {
     const token = await getProperty('ACCESS_TOKEN');
     const rfToken = await getProperty('REFRESH_TOKEN');

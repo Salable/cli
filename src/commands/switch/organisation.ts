@@ -32,7 +32,7 @@ const handler = async () => {
 
     const currentToken = await getProperty('ACCESS_TOKEN');
 
-    const newSessionToken = await RequestBase<string>({
+    const newSessionToken = await RequestBase<string, { organisation: string }>({
       method: 'POST',
       endpoint: `cli/switch-organisation`,
       body: {

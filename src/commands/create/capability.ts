@@ -44,7 +44,7 @@ const handler = async () => {
       CREATE_CAPABILITY_QUESTIONS.NAME
     );
 
-    await RequestBase<ICapability>({
+    await RequestBase<ICapability, { productUuid: string; name: string }>({
       method: 'POST',
       endpoint: 'capabilities',
       body: {

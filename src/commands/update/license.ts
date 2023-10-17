@@ -47,7 +47,7 @@ const handler = async () => {
     ]);
 
     // 3. Perform PUT request to update the license
-    await RequestBase<ILicense>({
+    await RequestBase<ILicense, { granteeId: string }>({
       method: 'PUT',
       endpoint: `licenses/${licenseToUpdate.uuid}`,
       body: {

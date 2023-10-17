@@ -45,7 +45,15 @@ const handler = async () => {
       return;
     }
 
-    const res = await RequestBase<IApiKey>({
+    const res = await RequestBase<
+      IApiKey,
+      {
+        name: string;
+        sub: string;
+        scopes: string[];
+        roles: string[];
+      }
+    >({
       method: 'POST',
       endpoint: 'api-keys',
       body: {

@@ -29,10 +29,16 @@ const handler = async () => {
   spinner.start();
 
   try {
-    const authData = await RequestBase<{
-      token: string;
-      organisationName: string;
-    }>({
+    const authData = await RequestBase<
+      {
+        token: string;
+        organisationName: string;
+      },
+      {
+        emailAddress: string;
+        password: string;
+      }
+    >({
       method: 'POST',
       endpoint: `cli/auth`,
       body: {

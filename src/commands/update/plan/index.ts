@@ -48,7 +48,7 @@ const builder: CommandBuilder = {
 };
 
 const updatePlanRequestHandler = async (uuid: string, body: IRequestBody) => {
-  return await RequestBase<IPlan>({
+  return await RequestBase<IPlan, IRequestBody>({
     method: 'PUT',
     endpoint: `plans/${uuid}`,
     body,

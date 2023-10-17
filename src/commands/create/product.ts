@@ -31,7 +31,10 @@ const handler = async () => {
       productDescription: description,
     } = await processAnswers<ICreateProductQuestionAnswers>(CREATE_PRODUCT_QUESTIONS);
 
-    await RequestBase<IProduct>({
+    await RequestBase<
+      IProduct,
+      { name: string; displayName: string; description: string; appType: string; paid: boolean }
+    >({
       method: 'POST',
       endpoint: 'products',
       body: {

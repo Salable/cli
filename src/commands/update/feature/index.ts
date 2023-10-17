@@ -54,7 +54,7 @@ const builder: CommandBuilder = {
 };
 
 const updateFeatureRequestHandler = async (uuid: string, body: IRequestBody) => {
-  return await RequestBase<IFeature>({
+  return await RequestBase<IFeature, IRequestBody>({
     method: 'PUT',
     endpoint: `features/${uuid}`,
     body,

@@ -56,7 +56,7 @@ const builder: CommandBuilder = {
 };
 
 const createFeatureRequestHandler = async (body: IRequestBody) => {
-  return await RequestBase<IFeature>({
+  return await RequestBase<IFeature, IRequestBody>({
     method: 'POST',
     endpoint: 'features',
     body,

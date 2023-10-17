@@ -44,7 +44,7 @@ const builder: CommandBuilder = {
 };
 
 const createPlanRequestHandler = async (body: IRequestBody) => {
-  return await RequestBase<IPlan>({
+  return await RequestBase<IPlan, IRequestBody>({
     method: 'POST',
     endpoint: 'plans',
     body,
