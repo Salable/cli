@@ -45,7 +45,7 @@ const handler = async () => {
         Read More: https://docs.salable.app/docs/payment-integration/add-stripe-to-salable`);
     }
 
-    const paymentIntegrationNames = paymentIntegrations?.map((int) => int.integrationName);
+    const paymentIntegrationNames = paymentIntegrations?.map((int) => int.accountName);
 
     if (!isFreeProductsOnly && paymentIntegrations && paymentIntegrationNames) {
       const { paymentIntegration: chosenPaymentIntegrationName } =
@@ -54,7 +54,7 @@ const handler = async () => {
         );
 
       const data = paymentIntegrations.find(
-        (int) => int.integrationName === chosenPaymentIntegrationName
+        (int) => int.accountName === chosenPaymentIntegrationName
       );
 
       if (!data) {
