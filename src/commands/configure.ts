@@ -7,8 +7,7 @@ import {
 } from '../types';
 import { resolve } from 'path';
 import { z } from 'zod';
-import chalk from 'chalk';
-import { RequestBase, processAnswers } from '../utils';
+import { RequestBase, log, processAnswers } from '../utils';
 import { settingsSchema } from '../schemas/settings';
 import { productSchema } from '../schemas/product';
 import { CONFIGURE_QUESTIONS } from '../questions';
@@ -42,26 +41,13 @@ const handler = async () => {
     const isFreeProductsOnly = salableJson.products.every((prod) => !prod.paid);
 
     if (!isFreeProductsOnly && !paymentIntegrations?.length) {
-      // eslint-disable-next-line no-console
-      console.log(
-        chalk.red(
-          'Error: Unable to create a paid product without a payment integration configured. Please configure one in the dashboard to continue.'
-        )
-      );
-
-      // eslint-disable-next-line no-console
-      console.log(
-        chalk.red(
-          'Read More: https://docs.salable.app/docs/payment-integration/add-stripe-to-salable'
-        )
-      );
-      process.exit(1);
+      throw new Error(`Error: Unable to create a paid product without a payment integration configured. Please configure one in the dashboard to continue.
+        Read More: https://docs.salable.app/docs/payment-integration/add-stripe-to-salable`);
     }
 
     const paymentIntegrationNames = paymentIntegrations?.map((int) => int.integrationName);
 
-    if (paymentIntegrations && paymentIntegrationNames) {
-      // 1. Get the user to choose a payment integration
+    if (!isFreeProductsOnly && paymentIntegrations && paymentIntegrationNames) {
       const { paymentIntegration: chosenPaymentIntegrationName } =
         await processAnswers<IConfigureQuestionAnswers>(
           CONFIGURE_QUESTIONS.PAYMENT_INTEGRATION(paymentIntegrationNames)
@@ -72,9 +58,7 @@ const handler = async () => {
       );
 
       if (!data) {
-        // eslint-disable-next-line no-console
-        console.log(chalk.red('Error: Unable to find that payment integration, please try again.'));
-        process.exit(1);
+        throw new Error('Error: Unable to find that payment integration, please try again.');
       }
 
       selectedPaymentIntegration = data?.uuid;
@@ -93,13 +77,10 @@ const handler = async () => {
       command: configure.command,
     });
 
-    // eslint-disable-next-line no-console
-    console.log(chalk.green('It worked...'));
-    process.exit(0);
+    log.success('It worked...').exit(0);
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(chalk.red('Something went wrong...'));
-    process.exit(1);
+    const error = e as Error;
+    log.error(error.message || 'Something went wrong...').exit(1);
   }
 };
 
