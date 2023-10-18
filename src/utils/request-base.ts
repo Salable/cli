@@ -11,6 +11,7 @@ export const RequestBase = async <T, K = void>({
   method,
   body,
   command,
+  hideTestModeWarning = false,
 }: IRequestBase<K>): Promise<T | undefined | void> => {
   try {
     const token = await getProperty('ACCESS_TOKEN');
@@ -40,7 +41,7 @@ export const RequestBase = async <T, K = void>({
       isProd ? 'salable.app' : `localhost:3000`
     }/api/2.0/`;
 
-    if (isTest) {
+    if (isTest && hideTestModeWarning) {
       log.warn(`TEST MODE: Request being performed in test mode`);
     }
 
@@ -91,7 +92,7 @@ export const RequestBase = async <T, K = void>({
       if (httpStatus === HttpStatusCodes.badRequest) {
         throw new ErrorResponse(
           httpStatus,
-          `Request to Salable API failed. Error Message: ${(await res.json()) as string}`
+          `Request to Salable API failed. Error Message: ${data.toString()}`
         );
       }
 

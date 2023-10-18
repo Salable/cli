@@ -1,5 +1,11 @@
 import { readFile } from 'fs/promises';
-import { ICommand, IConfigureQuestionAnswers, IOrganisationPaymentIntegration } from '../types';
+import {
+  IApiKey,
+  ICommand,
+  IConfigureQuestionAnswers,
+  IOrganisationPaymentIntegration,
+  IProduct,
+} from '../types';
 import { resolve } from 'path';
 import { ZodError, z } from 'zod';
 import { RequestBase, log, processAnswers } from '../utils';
@@ -66,10 +72,10 @@ const handler = async () => {
       selectedPaymentIntegration = data?.uuid;
     }
 
-    await RequestBase<
+    const createdData = await RequestBase<
       {
-        token: string;
-        organisationName: string;
+        apiKeys: IApiKey[];
+        products: IProduct[];
       },
       {
         schema: typeof salableJson;
@@ -83,17 +89,79 @@ const handler = async () => {
         ...(paymentIntegrations && { selectedPaymentIntegration }),
       },
       command: configure.command,
+      hideTestModeWarning: true,
     });
 
-    log.success('It worked...').exit(0);
+    if (!createdData) {
+      throw new Error('Something went wrong...');
+    }
+
+    if (createdData?.apiKeys.length) {
+      const apiKeys = {};
+      log.success(`===== API keys created: ${createdData?.apiKeys.length} =====`);
+
+      createdData.apiKeys.forEach((key, i) => {
+        apiKeys[i + 1] = {
+          name: key.name,
+          value: key.value,
+          scopes: key.scopes,
+        };
+      });
+
+      log.plain(apiKeys, 'table');
+    }
+
+    if (createdData?.products.length) {
+      const products = {};
+      const plans: {
+        [productUuid: string]: {
+          [planIndex: number]: {
+            name: string;
+            uuid: string;
+          };
+        };
+      } = {};
+      log.success(`===== Products created: ${createdData?.products.length} =====`);
+
+      createdData.products.forEach((product, i) => {
+        products[i + 1] = {
+          name: product.name,
+          uuid: product.uuid,
+          plans: product.plans.length,
+        };
+
+        product.plans.forEach((plan, planI) => {
+          plans[product.uuid] = {
+            ...plans[product.uuid],
+            [planI + 1]: {
+              name: plan.name,
+              uuid: plan.uuid,
+            },
+          };
+        });
+      });
+
+      log.plain(products, 'table');
+
+      Object.entries(plans).forEach(([product, plans]) => {
+        log.success(`===== Plans for Product: ${product} =====`);
+        log.plain(plans, 'table');
+      });
+    }
   } catch (e) {
     if (e instanceof ZodError) {
+      const errors = {};
+
       log.error(`${e.errors.length} validation errors found...`);
+
       e.errors.forEach((e, i) => {
-        log.error(
-          `Validation Error ${i + 1} - Path: "${buildErrorPath(e.path)}" - Error: "${e.message}"`
-        );
+        errors[i + 1] = {
+          path: buildErrorPath(e.path),
+          error: e.message,
+        };
       });
+
+      log.plain(errors, 'table');
       process.exit(1);
     }
 

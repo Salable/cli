@@ -8,11 +8,17 @@ import { Chalk, green, red, yellow, white } from 'chalk';
  * @returns Log instance using the provided Chalk colours
  */
 function createLogMethod(colour: Chalk) {
-  return <T>(message: string | T) => {
-    if (colour === white) {
-      console.log(message);
-    } else {
-      console.log(colour(message));
+  return <T>(message: string | T, type: 'log' | 'table' = 'log') => {
+    if (type === 'table') {
+      console.table(message);
+    }
+
+    if (type === 'log') {
+      if (colour === white) {
+        console.log(message);
+      } else {
+        console.log(colour(message));
+      }
     }
 
     return {

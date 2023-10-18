@@ -35,6 +35,7 @@ type IRequest<T> = {
 export type IRequestBase<T> = (IGetRequest | IRequest<T>) & {
   endpoint: string;
   command?: string;
+  hideTestModeWarning?: boolean;
 };
 
 export type IStatus = 'ACTIVE' | 'DEPRECATED' | 'CANCELED';
