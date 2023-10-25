@@ -1,3 +1,21 @@
+# [2.3.0](https://github.com/Salable/cli/compare/v2.2.1...v2.3.0) (2023-10-25)
+
+
+### Bug Fixes
+
+* issue with free product check ([63b8ac8](https://github.com/Salable/cli/commit/63b8ac88fc8548b648f1b82115b212deb68989a4))
+* launchdarkly logging error ([b15c2e0](https://github.com/Salable/cli/commit/b15c2e0f09e9d2de4f8354f999a6371ae80b0e32))
+* stripe integration names not showing ([7c2cfe6](https://github.com/Salable/cli/commit/7c2cfe6bbf7ce4aad5bdd83af1ba69cee6f33df0))
+
+
+### Features
+
+* added feature support to configure command ([b49eb87](https://github.com/Salable/cli/commit/b49eb871b1f72fe7b2a8fe11e0c92a9786ba65fe))
+* added question prompt for payment integrations in configure command ([130bd68](https://github.com/Salable/cli/commit/130bd68fdcbba80411c30ac64f8d72ccdfd5a504))
+* created configure command ([2318c21](https://github.com/Salable/cli/commit/2318c21f8062c8a8efc4ba3d3bf4d57de574efb3))
+* handled zod errors nicer ([91e96aa](https://github.com/Salable/cli/commit/91e96aa6ce43b2c53bc39bbb630ba92822e9c3f8))
+* updated logs to be in a table ([afbbc03](https://github.com/Salable/cli/commit/afbbc03b932a3dcdfa0c1b2be301106fda3d5252))
+
 ## [2.2.1](https://github.com/Salable/cli/compare/v2.2.0...v2.2.1) (2023-10-03)
 
 
