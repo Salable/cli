@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import { CommandBuilder } from 'yargs';
 import { CREATE_PRODUCT_NAME_QUESTION_OPTION } from '../../../constants';
 import ErrorResponse from '../../../error-response';
@@ -12,7 +11,7 @@ import {
   IProduct,
   IRequestBody,
 } from '../../../types';
-import { dataChooser, processAnswers, RequestBase } from '../../../utils';
+import { dataChooser, log, processAnswers, RequestBase } from '../../../utils';
 import { choosePlanFeatureValue } from './choose-plan-feature-value';
 import { planTextMenu } from './plan-text-menu';
 
@@ -57,7 +56,7 @@ const builder: CommandBuilder = {
 };
 
 const createFeatureRequestHandler = async (body: IRequestBody) => {
-  return await RequestBase<IFeature>({
+  return await RequestBase<IFeature, IRequestBody>({
     method: 'POST',
     endpoint: 'features',
     body,
@@ -281,15 +280,11 @@ const handler = async () => {
     }
 
     // 5. Log the output of the command
-    // eslint-disable-next-line no-console
-    console.log(
-      chalk.green(`Feature: ${featureName} created succesfully on ${selectedProduct?.name || ''}`)
-    );
+    log.success(`Feature: ${featureName} created succesfully on ${selectedProduct?.name || ''}`);
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
-    // eslint-disable-next-line no-console
-    console.error(chalk.red(e.message));
+    log.error(e.message).exit(1);
   }
 };
 

@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import * as fs from 'fs';
 import * as path from 'path';
 import {
@@ -6,28 +5,18 @@ import {
   ICreateAppCreateDirectoryContents,
   ICreateAppTemplateConfig,
 } from '../../../types';
-import { execPromise, renderTemplate } from '../../../utils';
+import { execPromise, log, renderTemplate } from '../../../utils';
 
 export const CURR_DIR = process.cwd();
 const SKIP_FILES = ['node_modules', '.template.json'];
 
 export const showMessage = (options: ICreateAppCliOptions) => {
-  // eslint-disable-next-line no-console
-  console.log('');
-  // eslint-disable-next-line no-console
-  console.log(chalk.green('Done.'));
-  // eslint-disable-next-line no-console
-  console.log(chalk.green(`Go into the project: cd ${options.projectName}`));
+  log.success(`Success! Go into the project: cd ${options.projectName}`);
 
   const message = options.config.postMessage;
 
   if (message) {
-    // eslint-disable-next-line no-console
-    console.log('');
-    // eslint-disable-next-line no-console
-    console.log(chalk.yellow(message));
-    // eslint-disable-next-line no-console
-    console.log('');
+    log.warn(message);
   }
 };
 
@@ -47,8 +36,7 @@ export const getTemplateConfig = (templatePath: string): ICreateAppTemplateConfi
 
 export const createProject = (projectPath: string) => {
   if (fs.existsSync(projectPath)) {
-    // eslint-disable-next-line no-console
-    console.log(chalk.red(`Folder ${projectPath} exists. Delete or use another name.`));
+    log.error(`Folder ${projectPath} exists. Delete or use another name.`);
     return false;
   }
 
@@ -84,8 +72,7 @@ export const postProcessNode = async (options: ICreateAppCliOptions) => {
 
     if (stderr) return false;
   } else {
-    // eslint-disable-next-line no-console
-    console.log(chalk.red('No yarn or npm found. Cannot run installation.'));
+    log.error('No yarn or npm found. Cannot run installation.');
   }
 
   return true;

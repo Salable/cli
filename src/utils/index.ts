@@ -7,3 +7,4 @@ export * from './process-answers';
 export * from './request-base';
 export * from './salable-rc-utils';
 export * from './template';
+export * from './log';

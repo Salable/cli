@@ -1,7 +1,6 @@
 import ErrorResponse from '../../error-response';
 import { ICommand, IListPlansQuestionAnswers, IPlan } from '../../types';
-import { RequestBase, processAnswers } from '../../utils';
-import chalk from 'chalk';
+import { RequestBase, log, processAnswers } from '../../utils';
 import { LIST_PLANS_QUESTIONS } from '../../questions';
 import { CommandBuilder } from 'yargs';
 
@@ -28,8 +27,12 @@ const handler = async () => {
     });
 
     if (showDeprecated === 'true') {
-      // eslint-disable-next-line no-console
-      console.log(productPlans);
+      if (!productPlans) {
+        log.warn('No plans found');
+        return;
+      }
+
+      log.plain<IPlan[]>(productPlans);
       return;
     }
 
@@ -37,17 +40,14 @@ const handler = async () => {
       Array.isArray(productPlans) && productPlans.filter(({ status }) => status !== 'DEPRECATED');
 
     if (Array.isArray(activePlans) && !activePlans?.length) {
-      // eslint-disable-next-line no-console
-      console.log(chalk.yellow(`No plans found`));
+      log.warn(`No plans found`).exit(0);
     } else {
-      // eslint-disable-next-line no-console
-      console.log(activePlans);
+      log.plain(JSON.stringify(activePlans));
     }
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
-    // eslint-disable-next-line no-console
-    console.error(chalk.red(e.message));
+    log.error(e.message).exit(1);
   }
 };
 

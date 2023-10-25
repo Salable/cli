@@ -1,7 +1,6 @@
 import ErrorResponse from '../../error-response';
 import { ICommand, IFeature, IListFeaturesQuestionAnswers } from '../../types';
-import { RequestBase, processAnswers } from '../../utils';
-import chalk from 'chalk';
+import { RequestBase, log, processAnswers } from '../../utils';
 import { LIST_FEATURES_QUESTIONS } from '../../questions';
 import { CommandBuilder } from 'yargs';
 
@@ -24,17 +23,14 @@ const handler = async () => {
     });
 
     if (!productFeatures?.length) {
-      // eslint-disable-next-line no-console
-      console.log(chalk.yellow(`No features found`));
+      log.warn(`No features found`).exit(0);
     } else {
-      // eslint-disable-next-line no-console
-      console.log(productFeatures);
+      log.plain(JSON.stringify(productFeatures)).exit(0);
     }
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
-    // eslint-disable-next-line no-console
-    console.error(chalk.red(e.message));
+    log.error(e.message).exit(1);
   }
 };
 

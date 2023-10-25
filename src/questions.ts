@@ -939,3 +939,12 @@ export const AUTH_QUESTIONS = [
     },
   },
 ];
+
+export const CONFIGURE_QUESTIONS = {
+  PAYMENT_INTEGRATION: (choices: string[]) => ({
+    name: 'paymentIntegration',
+    type: 'list',
+    message: 'What payment integration would you like to use? ',
+    choices,
+  }),
+};

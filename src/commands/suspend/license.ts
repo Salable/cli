@@ -1,10 +1,10 @@
 import { RequestBase } from '../../utils/request-base';
-import chalk from 'chalk';
 import ErrorResponse from '../../error-response';
 import { ICommand, ILicense, ISuspendLicenseQuestionAnswers } from '../../types';
 import { SUSPEND_LICENSE_QUESTIONS } from '../../questions';
 import { processAnswers } from '../../utils/process-answers';
 import { CommandBuilder } from 'yargs';
+import { log } from '../../utils';
 
 const builder: CommandBuilder = {
   uuid: {
@@ -24,13 +24,11 @@ const handler = async () => {
       endpoint: `licenses/${uuid}`,
     });
 
-    // eslint-disable-next-line no-console
-    console.log(chalk.green(`License: ${uuid} suspended succesfully`));
+    log.success(`License: ${uuid} suspended succesfully`);
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
-    // eslint-disable-next-line no-console
-    console.error(chalk.red(e.message));
+    log.error(e.message).exit(1);
   }
 };
 

@@ -1,9 +1,8 @@
-import chalk from 'chalk';
 import { CommandBuilder } from 'yargs';
 import ErrorResponse from '../../error-response';
 import { DEPRECATE_API_KEY_QUESTIONS } from '../../questions';
 import { IApiKey, ICommand, IDeprecateApiKeyQuestionAnswers } from '../../types';
-import { processAnswers, RequestBase } from '../../utils';
+import { log, processAnswers, RequestBase } from '../../utils';
 
 const builder: CommandBuilder = {
   value: {
@@ -24,13 +23,11 @@ const handler = async () => {
       endpoint: `api-keys/${value}`,
     });
 
-    // eslint-disable-next-line no-console
-    console.log(chalk.green(`API key: ${value} deprecated succesfully`));
+    log.success(`API Key: ${value} deprecated succesfully`).exit(0);
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
-    // eslint-disable-next-line no-console
-    console.error(chalk.red(e.message));
+    log.error(e.message).exit(1);
   }
 };
 

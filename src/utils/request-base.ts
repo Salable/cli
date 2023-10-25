@@ -3,15 +3,16 @@ import { isProd } from '../config';
 import ErrorResponse from '../error-response';
 import { HttpStatusCodes, IRequestBase } from '../types';
 import { getProperty } from './salable-rc-utils';
-import chalk from 'chalk';
 import { getLDFlag } from '../constants';
+import { log } from './log';
 
-export const RequestBase = async <T>({
+export const RequestBase = async <T, K = void>({
   endpoint,
   method,
   body,
   command,
-}: IRequestBase): Promise<T | undefined | void> => {
+  hideTestModeWarning = false,
+}: IRequestBase<K>): Promise<T | undefined | void> => {
   try {
     const token = await getProperty('ACCESS_TOKEN');
     const rfToken = await getProperty('REFRESH_TOKEN');
@@ -36,13 +37,12 @@ export const RequestBase = async <T>({
       );
     }
 
-    const API_URL = `${isProd ? 'https' : 'http'}://dashboard.${
+    const API_URL = `${isProd ? 'https' : 'http'}://${
       isProd ? 'salable.app' : `localhost:3000`
     }/api/2.0/`;
 
-    if (isTest) {
-      // eslint-disable-next-line no-console
-      console.log(chalk.yellow(`TEST MODE: Request being performed in test mode`));
+    if (isTest && hideTestModeWarning) {
+      log.warn(`TEST MODE: Request being performed in test mode`);
     }
 
     const res = await fetch(`${API_URL}${endpoint}`, {
@@ -92,7 +92,7 @@ export const RequestBase = async <T>({
       if (httpStatus === HttpStatusCodes.badRequest) {
         throw new ErrorResponse(
           httpStatus,
-          `Request to Salable API failed. Error Message: ${(await res.json()) as string}`
+          `Request to Salable API failed. Error Message: ${data.toString()}`
         );
       }
 

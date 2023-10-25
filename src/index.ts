@@ -4,6 +4,7 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import {
   auth,
+  configure,
   createCommands,
   deprecateCommands,
   listCommands,
@@ -13,6 +14,7 @@ import {
 } from './commands';
 import { validateAuth } from './middleware/validate-auth';
 import { version } from './commands/version';
+import { log } from './utils';
 
 (async () => {
   const cli = yargs(hideBin(process.argv))
@@ -28,6 +30,14 @@ import { version } from './commands/version';
     describe: auth.describe,
     builder: auth.builder,
     handler: auth.handler,
+  });
+
+  // configure command
+  cli.command({
+    command: configure.command,
+    describe: configure.describe,
+    builder: configure.builder,
+    handler: configure.handler,
   });
 
   // version command
@@ -52,7 +62,5 @@ import { version } from './commands/version';
     process.exit(0);
   })
   .catch((e) => {
-    // eslint-disable-next-line no-console
-    console.error(e);
-    process.exit(1);
+    log.error(e as string).exit(1);
   });

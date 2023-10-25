@@ -1,5 +1,6 @@
 // Generic Commands
 export { auth } from './auth';
+export { configure } from './configure';
 export { switchMode } from './switch/mode';
 
 // Sub-directory commands

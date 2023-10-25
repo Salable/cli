@@ -1,8 +1,7 @@
 import { CommandBuilder } from 'yargs';
 import { ICommand } from '../../types';
-import { getProperty, updateLineSalableRc } from '../../utils';
+import { getProperty, log, updateLineSalableRc } from '../../utils';
 import ErrorResponse from '../../error-response';
-import chalk from 'chalk';
 import { getLDFlag } from '../../constants';
 
 const builder: CommandBuilder = {};
@@ -15,34 +14,25 @@ const handler = async () => {
     });
 
     if (!salableTestModeAllowed) {
-      // eslint-disable-next-line no-console
-      console.error(chalk.red('Your current organisation does not have access to test mode.'));
-
-      process.exit(1);
+      throw new Error('Your current organisation does not have access to test mode.');
     }
 
     const currentMode = await getProperty('TEST_MODE');
 
     if (currentMode === 'true') {
       await updateLineSalableRc('TEST_MODE', 'false');
-      // eslint-disable-next-line no-console
-      console.log(chalk.green('Switched to live mode'));
+
+      log.success('Switched to live mode').exit(0);
     } else {
       await updateLineSalableRc('TEST_MODE', 'true');
-      // eslint-disable-next-line no-console
-      console.log(chalk.green('Switched to test mode'));
+      log.success('Switched to test mode').exit(0);
     }
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
     if (e.message !== 'Caught in ora') {
-      // eslint-disable-next-line no-console
-      console.error(chalk.red(e.message));
+      log.error(e.message).exit(1);
     }
-
-    process.exit(1);
-  } finally {
-    process.exit(0);
   }
 };
 

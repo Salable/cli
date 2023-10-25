@@ -1,5 +1,4 @@
-import { RequestBase, processAnswers } from '../../utils';
-import chalk from 'chalk';
+import { RequestBase, log, processAnswers } from '../../utils';
 import ErrorResponse from '../../error-response';
 import { ICapability, ICommand, IDeprecateCapabilityQuestionAnswers } from '../../types';
 import { DEPRECATE_CAPABILITY_QUESTIONS } from '../../questions';
@@ -23,13 +22,11 @@ const handler = async () => {
       endpoint: `capabilities/${uuid}`,
     });
 
-    // eslint-disable-next-line no-console
-    console.log(chalk.green(`Capability: ${uuid} deprecated succesfully`));
+    log.success(`Capability: ${uuid} deprecated succesfully`).exit(0);
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
-    // eslint-disable-next-line no-console
-    console.error(chalk.red(e.message));
+    log.error(e.message).exit(1);
   }
 };
 

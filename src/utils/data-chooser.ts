@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import { Question } from 'inquirer';
 import { isProd } from '../config';
 import { ARGUMENT_SEPARATOR, COMMAND_BASE, CREATE_ITEM_QUESTION_OPTIONS } from '../constants';
@@ -6,6 +5,7 @@ import { CREATE_API_KEY_QUESTIONS, CREATE_PRODUCT_QUESTIONS } from '../questions
 import { execPromise } from './exec-promise';
 import { fetchData } from './fetch-data';
 import { processAnswers } from './process-answers';
+import { log } from './log';
 
 interface IProps {
   question: Question;
@@ -87,13 +87,10 @@ export const dataChooser = async <T extends { name: string; status: string }, K,
       );
 
       // 4c. Log the output of the create command above
-      // eslint-disable-next-line no-console
-      console.log(chalk.green(stdout));
+      log.success(stdout);
 
       if (stderr && isProd) {
-        // eslint-disable-next-line no-console
-        console.log(chalk.red(stderr));
-        process.exit(1);
+        log.error(stderr).exit(1);
       }
     } else {
       loopCreate = false;

@@ -27,14 +27,15 @@ export type IRequestBody = {
       }[];
 };
 
-type IRequest = {
+type IRequest<T> = {
   method: 'POST' | 'PUT' | 'DELETE';
-  body?: IRequestBody;
+  body?: T;
 };
 
-export type IRequestBase = (IGetRequest | IRequest) & {
+export type IRequestBase<T> = (IGetRequest | IRequest<T>) & {
   endpoint: string;
   command?: string;
+  hideTestModeWarning?: boolean;
 };
 
 export type IStatus = 'ACTIVE' | 'DEPRECATED' | 'CANCELED';
@@ -440,6 +441,10 @@ export interface IListFeaturesQuestionAnswers {
 export interface IAuthQuestionAnswers {
   username: string;
   password: string;
+}
+
+export interface IConfigureQuestionAnswers {
+  paymentIntegration: string;
 }
 
 export interface IJWTPayload {

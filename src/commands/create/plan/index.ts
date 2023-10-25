@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import { CommandBuilder } from 'yargs';
 import { CREATE_PRODUCT_NAME_QUESTION_OPTION } from '../../../constants';
 import ErrorResponse from '../../../error-response';
@@ -13,7 +12,7 @@ import {
   IProduct,
   IRequestBody,
 } from '../../../types';
-import { dataChooser, planFeatureMenu, processAnswers, RequestBase } from '../../../utils';
+import { dataChooser, log, planFeatureMenu, processAnswers, RequestBase } from '../../../utils';
 
 const builder: CommandBuilder = {
   productName: {
@@ -45,7 +44,7 @@ const builder: CommandBuilder = {
 };
 
 const createPlanRequestHandler = async (body: IRequestBody) => {
-  return await RequestBase<IPlan>({
+  return await RequestBase<IPlan, IRequestBody>({
     method: 'POST',
     endpoint: 'plans',
     body,
@@ -191,15 +190,11 @@ const handler = async () => {
     }
 
     // 5. Log the output of the command
-    // eslint-disable-next-line no-console
-    console.log(
-      chalk.green(`Plan: ${planName} created succesfully on ${selectedProduct?.name || ''}`)
-    );
+    log.success(`Plan: ${planName} created succesfully on ${selectedProduct?.name || ''}`).exit(0);
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
-    // eslint-disable-next-line no-console
-    console.error(chalk.red(e.message));
+    log.error(e.message).exit(1);
   }
 };
 

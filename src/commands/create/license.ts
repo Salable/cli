@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import { CommandBuilder } from 'yargs';
 import { CREATE_PRODUCT_NAME_QUESTION_OPTION } from '../../constants';
 import ErrorResponse from '../../error-response';
@@ -15,6 +14,7 @@ import {
 import { dataChooser } from '../../utils/data-chooser';
 import { processAnswers } from '../../utils/process-answers';
 import { RequestBase } from '../../utils/request-base';
+import { log } from '../../utils';
 
 const builder: CommandBuilder = {
   productName: {
@@ -62,8 +62,7 @@ const handler = async () => {
 
     // 1a. If no uuid can be found for the product selected, show an error and exit
     if (!selectedProduct?.uuid) {
-      // eslint-disable-next-line no-console
-      console.error(chalk.red('Cannot find uuid for the selected product, exiting...'));
+      log.error('Cannot find uuid for the selected product, exiting...');
       return;
     }
 
@@ -84,8 +83,7 @@ const handler = async () => {
 
     // 2a. If no uuid can be found for the plan selected, show an error and exit
     if (!selectedPlan?.uuid) {
-      // eslint-disable-next-line no-console
-      console.error(chalk.red('Cannot find uuid for the selected plan, exiting...'));
+      log.error('Cannot find uuid for the selected plan, exiting...');
       return;
     }
 
@@ -103,7 +101,10 @@ const handler = async () => {
     const [parsedDate] = new Date(endDate).toISOString().split('T');
 
     // 4. Perform POST request to create the license
-    await RequestBase<ILicense>({
+    await RequestBase<
+      ILicense,
+      { email: string; granteeId: string; endDate: string; planUuid: string }
+    >({
       method: 'POST',
       endpoint: 'licenses',
       body: {
@@ -114,17 +115,13 @@ const handler = async () => {
       },
     });
 
-    // eslint-disable-next-line no-console
-    console.log(
-      chalk.green(
-        `License for ${email} on the product ${selectedProduct?.name || ''} was created succesfully`
-      )
+    log.success(
+      `License for ${email} on the product ${selectedProduct?.name || ''} was created succesfully`
     );
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
-    // eslint-disable-next-line no-console
-    console.error(chalk.red(e.message));
+    log.error(e.message).exit(1);
   }
 };
 

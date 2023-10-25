@@ -1,5 +1,4 @@
-import { decodeToken, RequestBase, processAnswers } from '../../utils';
-import chalk from 'chalk';
+import { decodeToken, RequestBase, processAnswers, log } from '../../utils';
 import ErrorResponse from '../../error-response';
 import { IApiKey, IApiKeyScopes, ICommand, ICreateApiKeyQuestionAnswers, IUser } from '../../types';
 import { CREATE_API_KEY_QUESTIONS } from '../../questions';
@@ -20,8 +19,7 @@ const handler = async () => {
     const tokenValues = await decodeToken();
 
     if (!tokenValues) {
-      // eslint-disable-next-line no-console
-      console.error(chalk.red('Something went wrong. Please try again...'));
+      log.error('Something went wrong. Please try again...');
       return;
     }
 
@@ -33,10 +31,7 @@ const handler = async () => {
     });
 
     if (!userRbacData?.permissions.includes('apiKey:write')) {
-      // eslint-disable-next-line no-console
-      console.error(
-        chalk.red("You currently don't have permission to create API keys in this organisation.")
-      );
+      log.error("You currently don't have permission to create API keys in this organisation.");
       return;
     }
 
@@ -46,12 +41,19 @@ const handler = async () => {
     });
 
     if (!userRbacData || !apiKeyScopes) {
-      // eslint-disable-next-line no-console
-      console.error(chalk.red('Something went wrong. Please try again...'));
+      log.error('Something went wrong. Please try again...');
       return;
     }
 
-    const res = await RequestBase<IApiKey>({
+    const res = await RequestBase<
+      IApiKey,
+      {
+        name: string;
+        sub: string;
+        scopes: string[];
+        roles: string[];
+      }
+    >({
       method: 'POST',
       endpoint: 'api-keys',
       body: {
@@ -62,15 +64,11 @@ const handler = async () => {
       },
     });
 
-    // eslint-disable-next-line no-console
-    console.log(
-      chalk.green(`API key "${name}" created succesfully with value: ${res ? res?.value : ''}`)
-    );
+    log.success(`API key "${name}" created succesfully with value: ${res ? res?.value : ''}`);
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
-    // eslint-disable-next-line no-console
-    console.error(chalk.red(e.message));
+    log.error(e.message).exit(1);
   }
 };
 

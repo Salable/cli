@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import { CommandBuilder } from 'yargs';
 import ErrorResponse from '../../../error-response';
 import { UPDATE_PLAN_QUESTIONS } from '../../../questions';
@@ -12,7 +11,7 @@ import {
   IRequestBody,
   IUpdatePlanQuestionAnswers,
 } from '../../../types';
-import { dataChooser, planFeatureMenu, processAnswers, RequestBase } from '../../../utils';
+import { dataChooser, log, planFeatureMenu, processAnswers, RequestBase } from '../../../utils';
 
 const builder: CommandBuilder = {
   productName: {
@@ -49,7 +48,7 @@ const builder: CommandBuilder = {
 };
 
 const updatePlanRequestHandler = async (uuid: string, body: IRequestBody) => {
-  return await RequestBase<IPlan>({
+  return await RequestBase<IPlan, IRequestBody>({
     method: 'PUT',
     endpoint: `plans/${uuid}`,
     body,
@@ -171,15 +170,11 @@ const handler = async () => {
     }
 
     // 6. Log the output of the command
-    // eslint-disable-next-line no-console
-    console.log(
-      chalk.green(`Plan: ${planName} updated succesfully on ${selectedProduct?.name || ''}`)
-    );
+    log.success(`Plan: ${planName} updated succesfully on ${selectedProduct?.name || ''}`).exit(0);
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
-    // eslint-disable-next-line no-console
-    console.error(chalk.red(e.message));
+    log.error(e.message).exit(1);
   }
 };
 

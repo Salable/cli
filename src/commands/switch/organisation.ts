@@ -1,9 +1,8 @@
 import { RequestBase } from '../../utils/request-base';
-import chalk from 'chalk';
 import ErrorResponse from '../../error-response';
 import { ICommand, IOrganisation, ISwitchOrganisationQuestionAnswers } from '../../types';
 import { CommandBuilder } from 'yargs';
-import { getProperty, processAnswers, updateLineSalableRc } from '../../utils';
+import { getProperty, log, processAnswers, updateLineSalableRc } from '../../utils';
 import { SWITCH_ORGANISATION_QUESTIONS } from '../../questions';
 
 const builder: CommandBuilder = {};
@@ -16,9 +15,7 @@ const handler = async () => {
     });
 
     if (!organisations) {
-      // eslint-disable-next-line no-console
-      console.log(chalk.yellow(`No organisations found`));
-      return;
+      throw new Error(`No organisations found`);
     }
 
     const orgNames = organisations.map((org) => org.name);
@@ -30,14 +27,12 @@ const handler = async () => {
     const targetOrg = organisations.find((org) => org.name === organisation);
 
     if (!targetOrg) {
-      // eslint-disable-next-line no-console
-      console.error(chalk.red('Specified organisation cannot be found. Please try again.'));
-      return;
+      throw new Error('Specified organisation cannot be found. Please try again.');
     }
 
     const currentToken = await getProperty('ACCESS_TOKEN');
 
-    const newSessionToken = await RequestBase<string>({
+    const newSessionToken = await RequestBase<string, { organisation: string }>({
       method: 'POST',
       endpoint: `cli/switch-organisation`,
       body: {
@@ -46,20 +41,16 @@ const handler = async () => {
     });
 
     if (!currentToken || !newSessionToken) {
-      // eslint-disable-next-line no-console
-      console.error(chalk.red('Something went wrong, please try again...'));
-      return;
+      throw new Error('Something went wrong, please try again...');
     }
 
     await updateLineSalableRc('ACCESS_TOKEN', newSessionToken);
 
-    // eslint-disable-next-line no-console
-    console.log(chalk.green(`Successfully switched to the organisation: ${targetOrg?.name}`));
+    log.success(`Successfully switched to the organisation: ${targetOrg?.name}`).exit(0);
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
-    // eslint-disable-next-line no-console
-    console.error(chalk.red(e.message));
+    log.error(e.message).exit(1);
   }
 };
 
