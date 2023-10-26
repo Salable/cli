@@ -13,6 +13,7 @@ import { settingsSchema } from '../schemas/settings';
 import { productSchema } from '../schemas/product';
 import { CONFIGURE_QUESTIONS } from '../questions';
 import { buildErrorPath } from '../utils/build-error-path';
+import ora from 'ora';
 
 const salableJsonSchema = z.object({
   settings: settingsSchema,
@@ -23,6 +24,7 @@ const handler = async () => {
   let selectedPaymentIntegration = '';
 
   const salableJsonPath = resolve(process.cwd(), '.salable.json');
+  const spinner = ora('Configuring your Salable account...');
 
   try {
     const paymentIntegrations = await RequestBase<IOrganisationPaymentIntegration[]>({
@@ -65,6 +67,8 @@ const handler = async () => {
       selectedPaymentIntegration = data?.uuid;
     }
 
+    spinner.start();
+
     const createdData = await RequestBase<
       {
         apiKeys: IApiKey[];
@@ -88,6 +92,8 @@ const handler = async () => {
     if (!createdData) {
       throw new Error('Something went wrong...');
     }
+
+    spinner.succeed('Salable configuration complete');
 
     if (createdData?.apiKeys.length) {
       const apiKeys = {};
@@ -154,6 +160,7 @@ const handler = async () => {
 
       const errors = {};
 
+      spinner.fail('Salable configuration failed');
       log.error(`${err.errors.length} validation errors found...`);
 
       err.errors.forEach((e, i) => {

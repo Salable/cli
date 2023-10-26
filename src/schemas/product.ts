@@ -30,7 +30,7 @@ export const productSchema = z.array(
     })
     .refine(
       (value) => {
-        return !value.paid && value.plans.every((p) => p.planPricing === 'Free');
+        return value.paid || (!value.paid && value.plans.every((p) => p.planPricing === 'Free'));
       },
       (value) => ({
         message: `Product: ${value.name} is a free product, it cannot contain paid plans.`,
