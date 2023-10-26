@@ -2,21 +2,11 @@ import { CommandBuilder } from 'yargs';
 import { ICommand } from '../../types';
 import { getProperty, log, updateLineSalableRc } from '../../utils';
 import ErrorResponse from '../../error-response';
-import { getLDFlag } from '../../constants';
 
 const builder: CommandBuilder = {};
 
 const handler = async () => {
   try {
-    const salableTestModeAllowed = await getLDFlag<boolean, boolean>({
-      flag: 'salable-test-mode',
-      defaultValue: false,
-    });
-
-    if (!salableTestModeAllowed) {
-      throw new Error('Your current organisation does not have access to test mode.');
-    }
-
     const currentMode = await getProperty('TEST_MODE');
 
     if (currentMode === 'true') {

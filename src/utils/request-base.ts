@@ -3,8 +3,8 @@ import { isProd } from '../config';
 import ErrorResponse from '../error-response';
 import { HttpStatusCodes, IRequestBase } from '../types';
 import { getProperty } from './salable-rc-utils';
-import { getLDFlag } from '../constants';
 import { log } from './log';
+import { ZodError } from 'zod';
 
 export const RequestBase = async <T, K = void>({
   endpoint,
@@ -18,13 +18,8 @@ export const RequestBase = async <T, K = void>({
     const rfToken = await getProperty('REFRESH_TOKEN');
     const orgName = await getProperty('ORGANISATION');
 
-    const salableTestModeAllowed = await getLDFlag<boolean, boolean>({
-      flag: 'salable-test-mode',
-      defaultValue: false,
-    });
-
     const testMode = (await getProperty('TEST_MODE')) || 'false';
-    const isTest = salableTestModeAllowed && testMode === 'true';
+    const isTest = testMode === 'true';
 
     if (command !== 'auth' && !token) {
       throw new ErrorResponse(HttpStatusCodes.badRequest, 'Access token is invalid');
@@ -90,6 +85,14 @@ export const RequestBase = async <T, K = void>({
 
       // 400 Error Message
       if (httpStatus === HttpStatusCodes.badRequest) {
+        if (typeof data === 'string') {
+          const parsedJson = JSON.parse(data) as ZodError;
+
+          if (parsedJson.name === 'ZodError') {
+            throw new ErrorResponse(httpStatus, data);
+          }
+        }
+
         throw new ErrorResponse(
           httpStatus,
           `Request to Salable API failed. Error Message: ${data.toString()}`
