@@ -1,3 +1,12 @@
+## [2.3.1](https://github.com/Salable/cli/compare/v2.3.0...v2.3.1) (2023-10-26)
+
+
+### Bug Fixes
+
+* added spinner to configure ([2690995](https://github.com/Salable/cli/commit/26909952af69cd6165eb9abbf21acad71df3adca))
+* free product configure not working ([51fafd3](https://github.com/Salable/cli/commit/51fafd397d1e5675bf15ff400732311ed7e7486f))
+* test mode switcher not working ([83c27e4](https://github.com/Salable/cli/commit/83c27e410a612767ee2eee2c2ad6de1f53dad2a5))
+
 # [2.3.0](https://github.com/Salable/cli/compare/v2.2.1...v2.3.0) (2023-10-25)
 
 
