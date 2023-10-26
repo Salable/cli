@@ -4,6 +4,7 @@ import ErrorResponse from '../error-response';
 import { HttpStatusCodes, IRequestBase } from '../types';
 import { getProperty } from './salable-rc-utils';
 import { log } from './log';
+import { ZodError } from 'zod';
 
 export const RequestBase = async <T, K = void>({
   endpoint,
@@ -84,6 +85,14 @@ export const RequestBase = async <T, K = void>({
 
       // 400 Error Message
       if (httpStatus === HttpStatusCodes.badRequest) {
+        if (typeof data === 'string') {
+          const parsedJson = JSON.parse(data) as ZodError;
+
+          if (parsedJson.name === 'ZodError') {
+            throw new ErrorResponse(httpStatus, data);
+          }
+        }
+
         throw new ErrorResponse(
           httpStatus,
           `Request to Salable API failed. Error Message: ${data.toString()}`

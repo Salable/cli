@@ -12,19 +12,12 @@ import { RequestBase, log, processAnswers } from '../utils';
 import { settingsSchema } from '../schemas/settings';
 import { productSchema } from '../schemas/product';
 import { CONFIGURE_QUESTIONS } from '../questions';
+import { buildErrorPath } from '../utils/build-error-path';
 
 const salableJsonSchema = z.object({
   settings: settingsSchema,
   products: productSchema,
 });
-
-function buildErrorPath(path: (string | number)[]) {
-  return path.reduce((acc, cur, i) => {
-    const isCurNumber = typeof cur === 'number';
-    acc = `${acc}${isCurNumber ? `[${cur}]` : `${i ? '.' : ''}${cur}`}`;
-    return acc;
-  }, '');
-}
 
 const handler = async () => {
   let selectedPaymentIntegration = '';
@@ -149,12 +142,21 @@ const handler = async () => {
       });
     }
   } catch (e) {
-    if (e instanceof ZodError) {
+    const error = e as Error;
+
+    if (error.message.includes('ZodError') || e instanceof ZodError) {
+      let err: ZodError;
+      if (e instanceof ZodError) {
+        err = e;
+      } else {
+        err = JSON.parse(error.message) as unknown as ZodError;
+      }
+
       const errors = {};
 
-      log.error(`${e.errors.length} validation errors found...`);
+      log.error(`${err.errors.length} validation errors found...`);
 
-      e.errors.forEach((e, i) => {
+      err.errors.forEach((e, i) => {
         errors[i + 1] = {
           path: buildErrorPath(e.path),
           error: e.message,
@@ -165,7 +167,6 @@ const handler = async () => {
       process.exit(1);
     }
 
-    const error = e as Error;
     log.error(error.message || 'Something went wrong...').exit(1);
   }
 };
