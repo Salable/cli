@@ -3,7 +3,6 @@ import { isProd } from '../config';
 import ErrorResponse from '../error-response';
 import { HttpStatusCodes, IRequestBase } from '../types';
 import { getProperty } from './salable-rc-utils';
-import { getLDFlag } from '../constants';
 import { log } from './log';
 
 export const RequestBase = async <T, K = void>({
@@ -18,13 +17,8 @@ export const RequestBase = async <T, K = void>({
     const rfToken = await getProperty('REFRESH_TOKEN');
     const orgName = await getProperty('ORGANISATION');
 
-    const salableTestModeAllowed = await getLDFlag<boolean, boolean>({
-      flag: 'salable-test-mode',
-      defaultValue: false,
-    });
-
     const testMode = (await getProperty('TEST_MODE')) || 'false';
-    const isTest = salableTestModeAllowed && testMode === 'true';
+    const isTest = testMode === 'true';
 
     if (command !== 'auth' && !token) {
       throw new ErrorResponse(HttpStatusCodes.badRequest, 'Access token is invalid');
