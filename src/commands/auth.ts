@@ -1,4 +1,4 @@
-import { URLSearchParams, parse } from 'url';
+import { parse } from 'url';
 import http from 'node:http';
 import open from 'open';
 import { nanoid } from 'nanoid';
@@ -29,21 +29,34 @@ const handler: () => Promise<void> = async () =>
     const basePath = isProd ? path.join(__dirname, './auth') : './src/auth';
     const htmlFile = readFileSync(`${basePath}/complete.html`);
 
-    const url =
-      process.env.OAUTH_AUTHORIZE_URL +
-      '?' +
-      new URLSearchParams({
-        response_type: 'code',
-        redirect_uri: 'http://localhost:9999/oauth/callback',
-        client_id: process.env.OAUTH_CLIENT_ID || '',
-        scope: 'profile email',
+    const handshakeData = await RequestBase<
+      {
+        url: string;
+      },
+      {
+        state: string;
+      }
+    >({
+      method: 'POST',
+      endpoint: `cli/auth/handshake`,
+      body: {
         state,
-      }).toString();
+      },
+      command: auth.command,
+    });
+
+    if (!handshakeData) {
+      log.error('Failed to authorise safely. Please try again').exit(1);
+      return;
+    }
+
+    const { url } = handshakeData;
 
     http
       .createServer(async (req, res) => {
         if (req.url?.includes('/oauth/callback')) {
           const { query } = parse(req.url, true);
+          const { query: handshakeQuery } = parse(url, true);
 
           if (state !== query.state) {
             log.error('Failed to authorise safely. Please try again').exit(1);
@@ -57,12 +70,14 @@ const handler: () => Promise<void> = async () =>
               },
               {
                 code: string;
+                codeChallenge: string;
               }
             >({
               method: 'POST',
               endpoint: `cli/auth`,
               body: {
                 code: query.code as string,
+                codeChallenge: handshakeQuery?.code_challenge as string,
               },
               command: auth.command,
             });
