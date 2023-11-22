@@ -1,3 +1,11 @@
+# [2.4.0](https://github.com/Salable/cli/compare/v2.3.1...v2.4.0) (2023-11-22)
+
+
+### Features
+
+* migrated auth to oauth authorization flow ([d8d4066](https://github.com/Salable/cli/commit/d8d4066ccfca4d32865cf3f3726110f04a010086))
+* updated auth flow to use pkce ([03a204d](https://github.com/Salable/cli/commit/03a204d35f9cce1806ea73173369da65b2eba25f))
+
 ## [2.3.1](https://github.com/Salable/cli/compare/v2.3.0...v2.3.1) (2023-10-26)
 
 
