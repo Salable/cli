@@ -25,6 +25,7 @@
     "prepare": "husky install",
     "pre-commit": "lint-staged",
     "build": "rollup -c",
+    "postbuild": "npx ts-node scripts/generate-schema.ts",
     "test": "jest --passWithNoTests",
     "test:globalCoverage": "jest --coverage --passWithNoTests",
     "test:coverage": "jest --coverage --changedSince=origin/main --passWithNoTests",
@@ -87,6 +88,7 @@
     "open": "^8.4.2",
     "ora": "^5.4.1",
     "yargs": "^17.6.0",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "zod-to-json-schema": "^3.22.1"
   }
 }
