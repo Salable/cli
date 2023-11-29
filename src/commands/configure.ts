@@ -7,18 +7,12 @@ import {
   IProduct,
 } from '../types';
 import { resolve } from 'path';
-import { ZodError, z } from 'zod';
+import { ZodError } from 'zod';
 import { RequestBase, log, processAnswers } from '../utils';
-import { settingsSchema } from '../schemas/settings';
-import { productSchema } from '../schemas/product';
+import { configureSchema } from '../schemas/configure';
 import { CONFIGURE_QUESTIONS } from '../questions';
 import { buildErrorPath } from '../utils/build-error-path';
 import ora from 'ora';
-
-const salableJsonSchema = z.object({
-  settings: settingsSchema,
-  products: productSchema,
-});
 
 const handler = async () => {
   let selectedPaymentIntegration = '';
@@ -33,7 +27,7 @@ const handler = async () => {
       command: configure.command,
     });
 
-    const salableJson = salableJsonSchema.parse(
+    const salableJson = configureSchema.parse(
       JSON.parse(
         await readFile(salableJsonPath, {
           encoding: 'utf-8',
