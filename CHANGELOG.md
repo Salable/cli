@@ -1,3 +1,10 @@
+# [2.5.0](https://github.com/Salable/cli/compare/v2.4.0...v2.5.0) (2023-11-29)
+
+
+### Features
+
+* add configure JSON schema to build ([9c77628](https://github.com/Salable/cli/commit/9c77628fa09c064d6b99beea23e4f67173fdccc5))
+
 # [2.4.0](https://github.com/Salable/cli/compare/v2.3.1...v2.4.0) (2023-11-22)
 
 
