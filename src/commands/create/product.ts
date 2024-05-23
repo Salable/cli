@@ -3,16 +3,12 @@ import ErrorResponse from '../../error-response';
 import { ICommand, ICreateProductQuestionAnswers, IProduct } from '../../types';
 import { CREATE_PRODUCT_QUESTIONS } from '../../questions';
 import { CommandBuilder } from 'yargs';
+import { slugify } from '../../utils/slugify';
 
 const builder: CommandBuilder = {
-  name: {
-    type: 'string',
-    description: 'The name of the product for the Salable Backend',
-    default: '',
-  },
   displayName: {
     type: 'string',
-    description: 'The name of the product to show in Pricing Tables',
+    description: 'The name of your product',
     default: '',
   },
   productDescription: {
@@ -25,7 +21,6 @@ const builder: CommandBuilder = {
 const handler = async () => {
   try {
     const {
-      name,
       displayName,
       appType,
       productDescription: description,
@@ -33,12 +28,20 @@ const handler = async () => {
 
     await RequestBase<
       IProduct,
-      { name: string; displayName: string; description: string; appType: string; paid: boolean }
+      {
+        name: string;
+        slug: string;
+        displayName: string;
+        description: string;
+        appType: string;
+        paid: boolean;
+      }
     >({
       method: 'POST',
       endpoint: 'products',
       body: {
-        name,
+        name: '',
+        slug: slugify(displayName),
         displayName,
         description,
         appType,
@@ -46,7 +49,7 @@ const handler = async () => {
       },
     });
 
-    log.success(`Product: ${name} created succesfully`);
+    log.success(`Product: ${displayName} created succesfully`);
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 

@@ -157,6 +157,7 @@ export type ILicense = {
 export type IProduct = {
   uuid: string;
   name: string;
+  slug: string;
   description: string;
   logoUrl: string | null;
   displayName: string;
@@ -248,7 +249,6 @@ export interface TemplateData {
 
 // Question Answers
 export interface ICreateProductQuestionAnswers {
-  name: string;
   displayName: string;
   appType: 'Miro' | 'Trello' | 'Custom';
   productDescription: string;
@@ -294,13 +294,12 @@ export interface IUpdateLicenseQuestionAnswers {
 }
 
 export interface ICreatePlanQuestionAnswers {
-  name: string;
   displayName: string;
   productName: string;
   description: string;
   capabilities: string[];
   licenseType?: 'User' | 'Board';
-  planType: 'Standard' | 'Bespoke' | 'Evaluation' | 'Coming Soon';
+  planType: 'Standard' | 'Bespoke' | 'Coming Soon';
   published: boolean;
   visibility: string;
   planCycleInterval: 'Year' | 'Month';
@@ -310,13 +309,12 @@ export interface ICreatePlanQuestionAnswers {
 }
 
 export interface IUpdatePlanQuestionAnswers {
-  name: string;
   displayName: string;
   productName: string;
   description: string;
   capabilities: string[];
   licenseType?: 'User' | 'Board';
-  planType: 'Standard' | 'Bespoke' | 'Evaluation' | 'Coming Soon';
+  planType: 'Standard' | 'Bespoke' | 'Coming Soon';
   published: boolean;
   visibility: string;
   planCycleInterval: 'Year' | 'Month';

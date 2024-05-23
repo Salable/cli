@@ -2,10 +2,11 @@ import { z } from 'zod';
 
 export const planSchema = z.object({
   name: z.string(),
+  slug: z.string(),
   displayName: z.string(),
   description: z.string().optional(),
   capabilities: z.array(z.string()),
-  planType: z.enum(['Standard', 'Bespoke', 'Evaluation', 'Coming Soon']),
+  planType: z.enum(['Standard', 'Bespoke', 'Coming Soon']),
   planPricing: z.enum(['Free', 'Paid']),
   price: z.number().optional(),
   planCycle: z.object({

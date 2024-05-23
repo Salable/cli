@@ -7,19 +7,9 @@ const isOptionNotPassed = (option: string) =>
 
 export const CREATE_PRODUCT_QUESTIONS = [
   {
-    name: 'name',
-    type: 'input',
-    message: 'Product name to use in Salable Backend: ',
-    when: () => isOptionNotPassed('name'),
-    validate: (input: string) => {
-      if (input?.length) return true;
-      else return 'Project name cannot be empty';
-    },
-  },
-  {
     name: 'displayName',
     type: 'input',
-    message: 'Product name to show in Pricing Tables: ',
+    message: 'What would you like to name your product?',
     when: () => isOptionNotPassed('displayName'),
     validate: (input: string) => {
       if (input?.length) return true;
@@ -339,16 +329,6 @@ export const CREATE_PLAN_QUESTIONS = {
     choices: PRODUCT_NAME_CHOICES,
     when: () => isOptionNotPassed('productName'),
   }),
-  NAME: {
-    name: 'name',
-    type: 'input',
-    message: 'What would you like to name the plan: ',
-    when: () => isOptionNotPassed('name'),
-    validate: (input: string) => {
-      if (input?.length) return true;
-      else return 'Feature name cannot be empty';
-    },
-  },
   DISPLAY_NAME: {
     name: 'displayName',
     type: 'input',
@@ -379,14 +359,14 @@ export const CREATE_PLAN_QUESTIONS = {
   LICENSE_TYPE: (appType: 'Miro' | 'Trello' | 'Custom') => ({
     name: 'licenseType',
     type: 'list',
-    choices: ['User', 'Board'],
+    choices: ['Licensed'],
     message: 'What is the license type of the plan? ',
     when: () => isOptionNotPassed('licenseType') && appType !== 'Custom',
   }),
   PLAN_TYPE: {
     name: 'planType',
     type: 'list',
-    choices: ['Standard', 'Bespoke', 'Evaluation', 'Coming Soon'],
+    choices: ['Standard', 'Bespoke', 'Coming Soon'],
     message: 'What is the plan type? ',
     when: () => isOptionNotPassed('planType'),
   },
@@ -395,13 +375,13 @@ export const CREATE_PLAN_QUESTIONS = {
     type: 'list',
     choices: planAnswers?.planType === 'Bespoke' ? ['Year', 'Month', 'Day'] : ['Year', 'Month'],
     message: 'What is the plan cycle interval? ',
-    when: () => isOptionNotPassed('planCycleInterval') && planAnswers?.planType !== 'Evaluation',
+    when: () => isOptionNotPassed('planCycleInterval'),
   }),
-  PLAN_INTERVAL_LENGTH: (planAnswers: Answers) => ({
+  PLAN_INTERVAL_LENGTH: () => ({
     name: 'planIntervalLength',
     type: 'number',
     message: 'What is the plan interval length? ',
-    when: () => isOptionNotPassed('planIntervalLength') && planAnswers?.planType !== 'Evaluation',
+    when: () => isOptionNotPassed('planIntervalLength'),
     validate: (input: number) => {
       if (!isNaN(input)) return true;
       else return 'A numerical value is required';
@@ -413,7 +393,7 @@ export const CREATE_PLAN_QUESTIONS = {
     message: 'Does this plan have an evaluation period? ',
     when: () =>
       isOptionNotPassed('evaluationPeriod') &&
-      !['Evaluation', 'Coming Soon'].includes(planAnswers?.planType as string),
+      !['Coming Soon'].includes(planAnswers?.planType as string),
   }),
   EVALUATION_PERIOD_DAYS: (planAnswers: Answers) => ({
     name: 'evaluationPeriodDays',
@@ -421,9 +401,8 @@ export const CREATE_PLAN_QUESTIONS = {
     message: 'How many days is the evaluation period? ',
     when: (answers: Answers) =>
       isOptionNotPassed('evaluationPeriodDays') &&
-      ((!['Coming Soon'].includes(planAnswers?.planType as string) &&
-        (answers.evaluationPeriod as boolean)) ||
-        planAnswers?.planType === 'Evaluation'),
+      !['Coming Soon'].includes(planAnswers?.planType as string) &&
+      (answers.evaluationPeriod as boolean),
     validate: (input: number) => {
       if (!isNaN(input)) return true;
       else return 'A numerical value is required';
@@ -508,17 +487,6 @@ export const UPDATE_PLAN_QUESTIONS = {
     choices: PLAN_NAME_CHOICES,
     when: () => isOptionNotPassed('planName'),
   }),
-  NAME: (prevValue: string) => ({
-    name: 'name',
-    type: 'input',
-    message: 'What would you like to name the plan: ',
-    when: () => isOptionNotPassed('name'),
-    validate: (input: string) => {
-      if (input?.length) return true;
-      else return 'Feature name cannot be empty';
-    },
-    default: prevValue,
-  }),
   DISPLAY_NAME: (prevValue: string) => ({
     name: 'displayName',
     type: 'input',
@@ -540,14 +508,14 @@ export const UPDATE_PLAN_QUESTIONS = {
   LICENSE_TYPE: (appType: 'Miro' | 'Trello' | 'Custom') => ({
     name: 'licenseType',
     type: 'list',
-    choices: ['User', 'Board'],
+    choices: ['Licensed'],
     message: 'What is the license type of the plan? ',
     when: () => isOptionNotPassed('licenseType') && appType !== 'Custom',
   }),
   PLAN_TYPE: {
     name: 'planType',
     type: 'list',
-    choices: ['Standard', 'Bespoke', 'Evaluation', 'Coming Soon'],
+    choices: ['Standard', 'Bespoke', 'Coming Soon'],
     message: 'What is the plan type? ',
     when: () => isOptionNotPassed('planType'),
   },
@@ -556,13 +524,13 @@ export const UPDATE_PLAN_QUESTIONS = {
     type: 'list',
     choices: planAnswers?.planType === 'Bespoke' ? ['Year', 'Month', 'Day'] : ['Year', 'Month'],
     message: 'What is the plan cycle interval? ',
-    when: () => isOptionNotPassed('planCycleInterval') && planAnswers?.planType !== 'Evaluation',
+    when: () => isOptionNotPassed('planCycleInterval'),
   }),
-  PLAN_INTERVAL_LENGTH: (planAnswers: Answers) => ({
+  PLAN_INTERVAL_LENGTH: () => ({
     name: 'planIntervalLength',
     type: 'number',
     message: 'What is the plan interval length? ',
-    when: () => isOptionNotPassed('planIntervalLength') && planAnswers?.planType !== 'Evaluation',
+    when: () => isOptionNotPassed('planIntervalLength'),
     validate: (input: number) => {
       if (!isNaN(input)) return true;
       else return 'A numerical value is required';
@@ -574,7 +542,7 @@ export const UPDATE_PLAN_QUESTIONS = {
     message: 'Does this plan have an evaluation period? ',
     when: () =>
       isOptionNotPassed('evaluationPeriod') &&
-      !['Evaluation', 'Coming Soon'].includes(planAnswers?.planType as string),
+      !['Coming Soon'].includes(planAnswers?.planType as string),
   }),
   EVALUATION_PERIOD_DAYS: (planAnswers: Answers) => ({
     name: 'evaluationPeriodDays',
@@ -582,9 +550,8 @@ export const UPDATE_PLAN_QUESTIONS = {
     message: 'How many days is the evaluation period? ',
     when: (answers: Answers) =>
       isOptionNotPassed('evaluationPeriodDays') &&
-      ((!['Coming Soon'].includes(planAnswers?.planType as string) &&
-        (answers.evaluationPeriod as boolean)) ||
-        planAnswers?.planType === 'Evaluation'),
+      !['Coming Soon'].includes(planAnswers?.planType as string) &&
+      (answers.evaluationPeriod as boolean),
     validate: (input: number) => {
       if (!isNaN(input)) return true;
       else return 'A numerical value is required';
