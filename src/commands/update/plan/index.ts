@@ -1,3 +1,4 @@
+import slugify from 'slugify';
 import { CommandBuilder } from 'yargs';
 import ErrorResponse from '../../../error-response';
 import { UPDATE_PLAN_QUESTIONS } from '../../../questions';
@@ -22,11 +23,6 @@ const builder: CommandBuilder = {
   planName: {
     type: 'string',
     description: 'The name of the plan to update',
-    default: '',
-  },
-  name: {
-    type: 'string',
-    description: 'The name of the plan',
     default: '',
   },
   displayName: {
@@ -73,7 +69,7 @@ const handler = async () => {
     const planToUpdate = await dataChooser<
       IPlan,
       IUpdatePlanQuestionAnswers,
-      ICreatePlanQuestionAnswers
+      IUpdatePlanQuestionAnswers
     >({
       question: UPDATE_PLAN_QUESTIONS.PLAN_NAME(selectedProduct?.plans),
       startingChoices: [],
@@ -87,7 +83,6 @@ const handler = async () => {
 
     // 3. Get NAME, DISPLAY_NAME, DESCRIPTION, APP_TYPE, LICENSE_TYPE, and PUBLISHED for the new plan
     const planAnswers = await processAnswers<ICreatePlanQuestionAnswers>([
-      UPDATE_PLAN_QUESTIONS.NAME(planToUpdate.name),
       UPDATE_PLAN_QUESTIONS.DISPLAY_NAME(planToUpdate.displayName),
       UPDATE_PLAN_QUESTIONS.DESCRIPTION(planToUpdate.description || ''),
       UPDATE_PLAN_QUESTIONS.LICENSE_TYPE(selectedProduct?.appType || 'Custom'),
@@ -97,7 +92,6 @@ const handler = async () => {
     ]);
 
     const {
-      name: planName,
       displayName,
       description,
       licenseType = 'customId',
@@ -108,9 +102,9 @@ const handler = async () => {
 
     // 4x. Populate the sub questions based on the type selected
     const { planCycleInterval, planIntervalLength, evaluationPeriod, evaluationPeriodDays } =
-      await processAnswers<ICreatePlanQuestionAnswers>([
+      await processAnswers<IUpdatePlanQuestionAnswers>([
         UPDATE_PLAN_QUESTIONS.PLAN_CYCLE_INTERVAL(planAnswers),
-        UPDATE_PLAN_QUESTIONS.PLAN_INTERVAL_LENGTH(planAnswers),
+        UPDATE_PLAN_QUESTIONS.PLAN_INTERVAL_LENGTH(),
         UPDATE_PLAN_QUESTIONS.EVALUATION_PERIOD(planAnswers),
         UPDATE_PLAN_QUESTIONS.EVALUATION_PERIOD_DAYS(planAnswers),
       ]);
@@ -128,9 +122,11 @@ const handler = async () => {
       await updatePlanRequestHandler(planToUpdate.uuid, {
         active: published,
         description,
+        name: '',
+        slug: slugify(displayName),
         displayName,
-        name: planName,
         visibility: visibility || 'private',
+        capabilities: [],
         features: [],
         evaluation: evaluationPeriod || false,
         planType,
@@ -155,7 +151,9 @@ const handler = async () => {
       await updatePlanRequestHandler(planToUpdate.uuid, {
         active: published,
         displayName,
-        name: planName,
+        name: '',
+        slug: slugify(displayName),
+        capabilities: [],
         description,
         visibility: visibility || 'private',
         evaluation: evaluationPeriod || false,
@@ -170,7 +168,9 @@ const handler = async () => {
     }
 
     // 6. Log the output of the command
-    log.success(`Plan: ${planName} updated succesfully on ${selectedProduct?.name || ''}`).exit(0);
+    log
+      .success(`Plan: ${displayName} updated succesfully on ${selectedProduct?.name || ''}`)
+      .exit(0);
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 

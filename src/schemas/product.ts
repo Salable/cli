@@ -6,6 +6,7 @@ export const productSchema = z.array(
   z
     .object({
       name: z.string(),
+      slug: z.string(),
       displayName: z.string(),
       description: z.string().optional(),
       appType: z.enum(['Trello', 'Miro', 'Custom']),

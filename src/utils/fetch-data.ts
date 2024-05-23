@@ -5,7 +5,7 @@ interface IProps {
   endpoint: string;
 }
 
-export const fetchData = async <T extends { status: string; name: string }>({
+export const fetchData = async <T extends { status: string; displayName?: string; name: string }>({
   choices,
   endpoint,
 }: IProps) => {
@@ -22,7 +22,7 @@ export const fetchData = async <T extends { status: string; name: string }>({
     });
 
     data.unshift(...activeData);
-    choices.unshift(...activeData.map((d) => d?.name));
+    choices.unshift(...activeData.map((d) => d?.displayName || d.name));
 
     data = Array.from(new Set(data));
     choices = Array.from(new Set(choices));

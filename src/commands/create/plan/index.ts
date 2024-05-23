@@ -13,16 +13,12 @@ import {
   IRequestBody,
 } from '../../../types';
 import { dataChooser, log, planFeatureMenu, processAnswers, RequestBase } from '../../../utils';
+import { slugify } from '../../../utils/slugify';
 
 const builder: CommandBuilder = {
   productName: {
     type: 'string',
     description: 'The product to create the plan on',
-    default: '',
-  },
-  name: {
-    type: 'string',
-    description: 'The name of the plan',
     default: '',
   },
   displayName: {
@@ -87,9 +83,8 @@ const handler = async () => {
       );
     }
 
-    // 3. Get NAME, DISPLAY_NAME, DESCRIPTION, CAPABILITIES, APP_TYPE, LICENSE_TYPE, and PUBLISHED for the new plan
+    // 3. Get DISPLAY_NAME, DESCRIPTION, CAPABILITIES, APP_TYPE, LICENSE_TYPE, and PUBLISHED for the new plan
     const planAnswers = await processAnswers<ICreatePlanQuestionAnswers>([
-      CREATE_PLAN_QUESTIONS.NAME,
       CREATE_PLAN_QUESTIONS.DISPLAY_NAME,
       CREATE_PLAN_QUESTIONS.DESCRIPTION,
       CREATE_PLAN_QUESTIONS.CAPABILITIES(capNames),
@@ -100,7 +95,6 @@ const handler = async () => {
     ]);
 
     const {
-      name: planName,
       displayName,
       description,
       capabilities,
@@ -126,7 +120,7 @@ const handler = async () => {
     const { planCycleInterval, planIntervalLength, evaluationPeriod, evaluationPeriodDays } =
       await processAnswers<ICreatePlanQuestionAnswers>([
         CREATE_PLAN_QUESTIONS.PLAN_CYCLE_INTERVAL(planAnswers),
-        CREATE_PLAN_QUESTIONS.PLAN_INTERVAL_LENGTH(planAnswers),
+        CREATE_PLAN_QUESTIONS.PLAN_INTERVAL_LENGTH(),
         CREATE_PLAN_QUESTIONS.EVALUATION_PERIOD(planAnswers),
         CREATE_PLAN_QUESTIONS.EVALUATION_PERIOD_DAYS(planAnswers),
       ]);
@@ -145,7 +139,8 @@ const handler = async () => {
         active: published,
         capabilities: selectedCapabilites,
         displayName,
-        name: planName,
+        name: '',
+        slug: slugify(displayName),
         description,
         visibility: visibility || 'private',
         features: [],
@@ -174,7 +169,8 @@ const handler = async () => {
         active: published,
         capabilities: selectedCapabilites,
         displayName,
-        name: planName,
+        name: '',
+        slug: slugify(displayName),
         description,
         visibility: visibility || 'private',
         productUuid: selectedProduct?.uuid || '',
@@ -190,7 +186,9 @@ const handler = async () => {
     }
 
     // 5. Log the output of the command
-    log.success(`Plan: ${planName} created succesfully on ${selectedProduct?.name || ''}`).exit(0);
+    log
+      .success(`Plan: ${displayName} created succesfully on ${selectedProduct?.displayName || ''}`)
+      .exit(0);
   } catch (e) {
     if (!(e instanceof ErrorResponse)) return;
 
