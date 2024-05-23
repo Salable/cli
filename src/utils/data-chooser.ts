@@ -48,7 +48,11 @@ const createCommandSwitch = (endpoint: string, commandProps: { [key: string]: st
  *
  * L ➡️ Type for the answers for the type of data the user is being asked to choose from. E.g if they're choosing from a list of products, it would be `ICreateProductQuestionAnswers`
  **/
-export const dataChooser = async <T extends { displayName: string; status: string }, K, L>({
+export const dataChooser = async <
+  T extends { displayName?: string; name: string; status: string },
+  K,
+  L
+>({
   question,
   startingChoices,
   endpoint,
