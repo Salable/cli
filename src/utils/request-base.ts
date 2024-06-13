@@ -45,8 +45,9 @@ export const RequestBase = async <T, K = void>({
       headers: {
         'content-type': 'application/json',
         referer: 'cli',
-        'salable-test-mode': testMode,
-        ...(command !== 'auth' ? { Cookie: `__session=${token || ''};` } : {}),
+        Cookie: `Salable-Test-Status=${testMode}; ${
+          command !== 'auth' && token ? `__session=${token}` : ''
+        }`,
       },
       // If not a GET Request and body is truthy, add in the body property
       ...(method !== 'GET' &&
