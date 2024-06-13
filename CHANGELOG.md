@@ -1,3 +1,10 @@
+## [2.5.2](https://github.com/Salable/cli/compare/v2.5.1...v2.5.2) (2024-06-13)
+
+
+### Bug Fixes
+
+* **SD-722:** update cli requests to use cookie test mode ([e2118ba](https://github.com/Salable/cli/commit/e2118bad063148688ff4f330ec28fa369130162d))
+
 ## [2.5.1](https://github.com/Salable/cli/compare/v2.5.0...v2.5.1) (2024-05-23)
 
 
